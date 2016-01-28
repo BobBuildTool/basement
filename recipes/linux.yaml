@@ -1,0 +1,43 @@
+inherit: [make]
+
+environment:
+    PKG_VERSION: "4.3.3"
+
+checkoutVars: [PKG_VERSION]
+checkoutSCM:
+    scm: url
+    url: https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-${PKG_VERSION}.tar.xz
+    digestSHA1: "ac25bed0b9f084c7234fd2add361ee20d14f8310"
+
+buildTools: [host-toolchain, target-toolchain]
+buildVars: [ARCH, CROSS_COMPILE, LINUX_CONFIG]
+buildScript: |
+    # prevent timestamps in configuration
+    export KCONFIG_NOTIMESTAMP=1
+    export KBUILD_BUILD_TIMESTAMP='Mon Dec 28 22:49:40 CET 2015'
+
+    if [[ ! -e ".config" ]] ; then
+        if [[ ${ARCH:+true} ]] ; then
+            make -C "$1/linux-${PKG_VERSION}" O=$PWD "${LINUX_CONFIG}_defconfig"
+        else
+            make -C "$1/linux-${PKG_VERSION}" O=$PWD defconfig
+        fi
+    fi
+
+multiPackage:
+    image:
+        buildVars: [LINUX_DTB]
+        buildScript: |
+            makeParallel bzImage
+            make ${LINUX_DTB}.dtb
+        packageScript: |
+            mkdir -p boot
+            cp -au $1/arch/$ARCH/boot/zImage boot/
+            cp -ap $1/arch/$ARCH/boot/dts/${LINUX_DTB}.dtb boot/
+
+    headers:
+        buildScript: |
+            make headers_install
+        packageScript: |
+            cp -a $1/usr .
+

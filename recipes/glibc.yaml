@@ -1,0 +1,32 @@
+inherit: [make]
+
+depends:
+    - linux-headers
+
+checkoutSCM:
+    scm: url
+    url: http://ftp.gnu.org/gnu/glibc/glibc-2.22.tar.xz
+
+buildScript: |
+    EXTRA=
+    [ -e $1/usr/include/selinux/selinux.h ] || EXTRA+=" --without-selinux"
+
+    mkdir -p build install
+    pushd build
+    $1/glibc-2.22/configure --with-headers=$2/usr/include --prefix=/usr $EXTRA
+    makeParallel
+    make install DESTDIR=${PWD}/../install
+    popd
+    cp -a $2/usr install/
+
+multiPackage:
+    dev:
+        packageScript: |
+            cp -a $1/install/* .
+
+    tgt:
+        packageScript: |
+            cp -a $1/install/{etc,lib,sbin,var} .
+            mkdir usr
+            cp -a $1/install/usr/{bin,libexec,sbin,share} usr/
+

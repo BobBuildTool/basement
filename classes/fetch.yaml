@@ -1,0 +1,82 @@
+# Provide URL archive downloader and extractor
+#
+# This class might be used if the recipe does only download (and optionally
+# extract) an archive/file. The fetchArchive function expects exactly two
+# argumes:
+#
+#   fetchArchive [-k] [-n] [-t <type>] URL SHA1
+#
+#       URL:  URL of file/archive to download
+#       SHA1: SHA-1 digest of downloaded file
+#
+# By default the file is treated as tar archive and will be extracted to the
+# current directory. To prevent extraction add the '-n' option. After
+# extraction the archive will be deleted. To keep the archive add the '-k'
+# option. If the URL does not point to a tar archive specify the real type with
+# '-t <type>'. Currently only 'zip' is supported.
+packageScript: |
+    fetchArchive()
+    {
+        local URL= DIGEST= TYPE=tar EXTRACT=1 KEEP=0
+
+        # parse arguments
+        OPTIND=1
+        local opt
+        while getopts "knt:" opt ; do
+            case "$opt" in
+                k)
+                    KEEP=1
+                    ;;
+                n)
+                    EXTRACT=0
+                    ;;
+                t)
+                    TYPE="$OPTARG"
+                    ;;
+                \?)
+                  echo "Invalid option: -$OPTARG" >&2
+                  exit 1
+                  ;;
+            esac
+        done
+
+        if [[ $(( OPTIND + 1 )) -ne $# ]] ; then
+            echo "Wrong number of arguments for fetchArchive()" >&2
+            exit 1
+        fi
+        URL="${*:$((OPTIND+0)):1}"
+        DIGEST="${*:$((OPTIND+1)):1}"
+
+        # process
+        local FN="${URL##*/}"
+        if [[ ( $EXTRACT -eq 1 ) && ( ! -f ".${FN}.extracted" ) ]] ; then
+            (
+                T=$(mktemp)
+                trap 'rm -f $T' EXIT
+                curl -sSg -o $T "$URL"
+                echo "$DIGEST" "$T" | sha1sum -c
+
+                case $TYPE in
+                    tar)
+                        tar xf "$T"
+                        ;;
+                    zip)
+                        unzip "$T"
+                        ;;
+                    *)
+                        echo "Unknown archive type: $TYPE" >&2
+                        exit 1
+                esac
+            )
+            touch ".${FN}.extracted"
+        elif [[ ( $EXTRACT -eq 0 ) && ( ! -f "$FN" ) ]] ; then
+            (
+                T=$(mktemp)
+                trap 'rm -f $T' EXIT
+                curl -sSg -o $T "$URL"
+                echo "$DIGEST" "$T" | sha1sum -c
+                mv $T "$FN"
+            )
+        fi
+    }
+

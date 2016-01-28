@@ -1,0 +1,15 @@
+inherit: [make]
+
+root: True
+depends:
+    - glibc-dev
+
+checkoutSCM:
+    scm: url
+    url: http://ftp.gnu.org/gnu/make/make-4.1.tar.bz2
+
+buildScript: |
+    false
+
+packageScript: |
+    false

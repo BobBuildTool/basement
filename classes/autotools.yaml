@@ -1,0 +1,60 @@
+inherit: [make]
+
+buildScript: |
+    _AUTOTOOLS_DEP_PATHS=( "$@" )
+
+    # $1 : source path
+    autotoolsBuild()
+    {
+        local i CFLAGS LDFLAGS
+
+        # Gather all include and library paths. Add library paths to runtime
+        # path because "configure" might try to link and run a test with one of
+        # these libraries.
+        for i in "${_AUTOTOOLS_DEP_PATHS[@]:1}" ; do
+            if [[ -d "$i/usr/include" ]] ; then CFLAGS+=" -I$i/usr/include" ; fi
+            if [[ -d "$i/lib" ]] ; then
+                LDFLAGS+=" -L$i/lib"
+                LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}$i/lib"
+            fi
+            if [[ -d "$i/usr/lib" ]] ; then
+                LDFLAGS+=" -L$i/usr/lib"
+                LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}$i/usr/lib"
+            fi
+        done
+        [ -z "${CFLAGS:+true}" ] || export CFLAGS
+        [ -z "${LDFLAGS:+true}" ] || export LDFLAGS
+        [ -z "${LD_LIBRARY_PATH:+true}" ] || export LD_LIBRARY_PATH
+
+        mkdir -p build install
+        pushd build
+        $1/configure \
+            --prefix="/usr" \
+            --sysconfdir="/etc" \
+            --localstatedir="/var" \
+            --enable-shared --disable-static \
+            --disable-gtk-doc \
+            --disable-gtk-doc-html \
+            --disable-doc \
+            --disable-docs \
+            --disable-documentation \
+            --disable-debug \
+            --with-xmlto=no \
+            --with-fop=no \
+            --disable-dependency-tracking \
+            "${@:2}"
+        makeParallel
+        make install DESTDIR=${PWD}/../install
+        popd
+    }
+
+packageScript: |
+    _AUTOTOOLS_BUILD_PATH=$1
+    autotoolsPackage()
+    {
+        cp -a $_AUTOTOOLS_BUILD_PATH/install/* .
+
+        # fixup libtool files
+        find -name '*.la' -exec sed -i -e '/^dependency_libs/s/-L[^ ]* //g' {} \;
+    }
+

@@ -1,0 +1,3 @@
+environment:
+    GNU_MIRROR: "http://ftp.gnu.org/pub/gnu"
+

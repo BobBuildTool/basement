@@ -1,0 +1,13 @@
+depends:
+    -
+        name: toolchain::make
+        use: [tools]
+
+buildVars: [MAKE_JOBS]
+buildTools: [make]
+buildScript: |
+    makeParallel()
+    {
+        make -j "${MAKE_JOBS-$(nproc)}" "$@"
+    }
+

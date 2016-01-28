@@ -1,0 +1,25 @@
+root: True
+inherit: [make]
+
+environment:
+    PKG_VERSION: "1.4.17"
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/m4/m4-${PKG_VERSION}.tar.xz
+    digestSHA1: 74ad71fa100ec8c13bc715082757eb9ab1e4bbb0
+
+buildVars: [PKG_VERSION]
+buildScript: |
+    mkdir -p build install
+    cd build
+    $1/m4-${PKG_VERSION}/configure --prefix=/usr
+    makeParallel
+    make install DESTDIR=${PWD}/../install
+
+packageScript: |
+    cp -a $1/install/* .
+
+provideTools:
+    m4: "usr/bin"
+

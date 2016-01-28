@@ -1,0 +1,12 @@
+inherit: [fetch]
+shared: True
+
+packageScript: |
+    # use host gcc if available
+    if [ -z "$(type -p make)" ] ; then
+        fetchArchive https://BobBuildTool.github.io/bob-tutorials/make.tar.xz "e2e749037935512208b0ba79e439561871a5ad42"
+    fi
+
+provideTools:
+    make:
+        path: "usr/bin"
