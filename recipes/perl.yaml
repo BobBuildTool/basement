@@ -1,0 +1,68 @@
+inherit: [make]
+
+environment:
+    PERL_VERSION: "5.22.0"
+    PERL_CROSS_VERSION: "1.0.1"
+    PERL_ARCH: "${ARCH}-linux"
+
+checkoutSCM:
+    -
+        scm: url
+        url: "http://www.cpan.org/src/5.0/perl-${PERL_VERSION}.tar.bz2"
+        digestSHA1: "400338c91c56420d98142cbfcb84d418cae2c98c"
+    -
+        scm: url
+        url: "https://raw.githubusercontent.com/arsv/perl-cross/releases/perl-${PERL_VERSION}-cross-${PERL_CROSS_VERSION}.tar.gz"
+        digestSHA1: "94f8504000d637850f31243974b894c27f30b094"
+        extract: False
+
+checkoutVars: [PERL_VERSION, PERL_CROSS_VERSION]
+checkoutDeterministic: True
+checkoutScript: |
+    tar --strip-components=1 -C perl-${PERL_VERSION} -xf \
+        perl-${PERL_VERSION}-cross-${PERL_CROSS_VERSION}.tar.gz
+
+    # fix configure script (remove non-existent entry)
+    sed -i -e 's/x2p\/Makefile//' perl-${PERL_VERSION}/configure
+
+buildTools: [target-toolchain]
+buildVars: [AUTOCONF_HOST, CROSS_COMPILE]
+buildScript: |
+    CFLAGS=
+    LDFLAGS=
+    for i in "${BOB_DEP_PATHS[@]:1}" ; do
+        if [[ -d "$i/usr/include" ]] ; then CFLAGS+=" -I$i/usr/include" ; fi
+        if [[ -d "$i/lib" ]] ; then LDFLAGS+=" -L$i/lib" ; fi
+        if [[ -d "$i/usr/lib" ]] ; then LDFLAGS+=" -L$i/usr/lib" ; fi
+    done
+
+    mkdir -p build install
+    cd build
+
+    $1/perl-${PERL_VERSION}/configure \
+        --target=${AUTOCONF_HOST} \
+        --target-tools-prefix=${CROSS_COMPILE} \
+        --prefix=/usr \
+        -Dld="${CROSS_COMPILE}gcc" \
+        -Dccflags="$CFLAGS" \
+        -Dldflags="$LDFLAGS -lm" \
+        -Dmydomain="" \
+        -Dmyhostname="bob" \
+        -Dmyuname="Buildroot 1.2.3" \
+        -Dosname=linux \
+        -Dosvers=4.1.0 \
+        -Dperladmin=root
+
+    makeParallel all
+    make DESTDIR=$PWD/../install install.perl
+
+packageVars: [PERL_ARCH]
+packageScript: |
+    cp -a $1/install/* .
+
+    rm -rf usr/lib/perl5/${PERL_VERSION}/pod
+    rm -rf usr/lib/perl5/${PERL_VERSION}/${PERL_ARCH}/CORE
+    find /usr/lib/perl5/ -name 'extralibs.ld' -print0 | xargs -0 rm -f
+    find /usr/lib/perl5/ -name '*.bs' -print0 | xargs -0 rm -f
+    find /usr/lib/perl5/ -name '.packlist' -print0 | xargs -0 rm -f
+

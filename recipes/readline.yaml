@@ -1,0 +1,28 @@
+inherit: [autotools]
+
+environment:
+    READLINE_VERSION: "6.3"
+
+depends:
+    - ncurses
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/readline/readline-${READLINE_VERSION}.tar.gz
+    digestSHA1: "017b92dc7fd4e636a2b5c9265a77ccc05798c9e1"
+
+buildVars: [READLINE_VERSION]
+buildScript: |
+    export bash_cv_func_sigsetjmp=yes
+    export bash_cv_wcwidth_broken=no
+    autotoolsBuild $1/readline-${READLINE_VERSION}
+
+packageScript: |
+    autotoolsPackage
+
+provideDeps:
+    - ncurses
+
+provideVars:
+    READLINE_VERSION: "$READLINE_VERSION"
+

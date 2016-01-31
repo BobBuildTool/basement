@@ -1,10 +1,4 @@
-depends:
-    -
-        name: toolchain::make
-        use: [tools]
-
 buildVars: [MAKE_JOBS]
-buildTools: [make]
 buildScript: |
     makeParallel()
     {

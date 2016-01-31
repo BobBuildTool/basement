@@ -1,27 +1,55 @@
 inherit: [make]
 
 environment:
-    PKG_VERSION: "4.3.3"
+    LINUX_VERSION: "4.3.3"
 
-checkoutVars: [PKG_VERSION]
 checkoutSCM:
     scm: url
-    url: https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-${PKG_VERSION}.tar.xz
+    url: https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-${LINUX_VERSION}.tar.xz
     digestSHA1: "ac25bed0b9f084c7234fd2add361ee20d14f8310"
 
 buildTools: [host-toolchain, target-toolchain]
-buildVars: [ARCH, CROSS_COMPILE, LINUX_CONFIG]
+buildVars: [CROSS_COMPILE, LINUX_ARCH, LINUX_CONFIG, LINUX_VERSION]
 buildScript: |
     # prevent timestamps in configuration
     export KCONFIG_NOTIMESTAMP=1
     export KBUILD_BUILD_TIMESTAMP='Mon Dec 28 22:49:40 CET 2015'
 
-    if [[ ! -e ".config" ]] ; then
-        if [[ ${ARCH:+true} ]] ; then
-            make -C "$1/linux-${PKG_VERSION}" O=$PWD "${LINUX_CONFIG}_defconfig"
-        else
-            make -C "$1/linux-${PKG_VERSION}" O=$PWD defconfig
-        fi
+    # Compute arch if not given
+    if [[ ! ${LINUX_ARCH:+true} ]] ; then
+        LINUX_ARCH=$(uname -m | sed -e "s/-.*//" \
+            -e s/i.86/i386/ -e s/sun4u/sparc64/ \
+            -e s/arcle/arc/ \
+            -e s/arceb/arc/ \
+            -e s/arm.*/arm/ -e s/sa110/arm/ \
+            -e s/aarch64.*/arm64/ \
+            -e s/bfin/blackfin/ \
+            -e s/parisc64/parisc/ \
+            -e s/powerpc64.*/powerpc/ \
+            -e s/ppc.*/powerpc/ -e s/mips.*/mips/ \
+            -e s/sh.*/sh/ \
+            -e s/microblazeel/microblaze/)
+    fi
+
+    # Compute the arch path, since i386 and x86_64 are in arch/x86 and not
+    # in arch/$(KERNEL_ARCH). Even if the kernel creates symbolic links
+    # for bzImage, arch/i386 and arch/x86_64 do not exist when copying the
+    # defconfig file.
+    if [[ $LINUX_ARCH = i386 ]] ; then
+        LINUX_ARCH_PATH=arch/x86
+    elif [[ $LINUX_ARCH = x86_64 ]] ; then
+        LINUX_ARCH_PATH=arch/x86
+    else
+        LINUX_ARCH_PATH=arch/${LINUX_ARCH}
+    fi
+    echo "$LINUX_ARCH_PATH" > .arch-path
+
+    # Use plain "defconfig" if we have no specific target. Otherwise check if
+    # defconfig has changed.
+    if [[ ( ! -e ".config" ) && ( ! ${LINUX_CONFIG:+true} ) ]] ; then
+        make -C "$1/linux-${LINUX_VERSION}" O=$PWD defconfig
+    elif [[ ( ! -e ".config" ) || ( "$1/linux-${LINUX_VERSION}/${LINUX_ARCH_PATH}/configs/${LINUX_CONFIG}_defconfig" -nt ".config" ) ]] ; then
+        make -C "$1/linux-${LINUX_VERSION}" O=$PWD "${LINUX_CONFIG}_defconfig"
     fi
 
 multiPackage:
@@ -31,9 +59,10 @@ multiPackage:
             makeParallel bzImage
             make ${LINUX_DTB}.dtb
         packageScript: |
+            read LINUX_ARCH_PATH < .arch-path
             mkdir -p boot
-            cp -au $1/arch/$ARCH/boot/zImage boot/
-            cp -ap $1/arch/$ARCH/boot/dts/${LINUX_DTB}.dtb boot/
+            cp -au $1/arch/$LINUX_ARCH_PATH/boot/zImage boot/
+            cp -ap $1/arch/$LINUX_ARCH_PATH/boot/dts/${LINUX_DTB}.dtb boot/
 
     headers:
         buildScript: |

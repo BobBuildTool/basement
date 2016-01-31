@@ -1,0 +1,26 @@
+inherit: [autotools]
+
+environment:
+    # The latest 0.15 version is not yet compatible with cloog 0.18.3, so
+    # bumping isl is not possible until a new version of cloog is published.
+    ISL_VERSION: "0.14.1"
+
+depends:
+    - gmp
+
+checkoutSCM:
+    scm: url
+    url: http://isl.gforge.inria.fr/isl-${ISL_VERSION}.tar.xz
+    digestSHA256: "8882c9e36549fc757efa267706a9af733bb8d7fe3905cbfde43e17a89eea4675"
+
+buildVars: [ISL_VERSION]
+buildScript: |
+    autotoolsBuild $1/isl-${ISL_VERSION} --disable-shared --enable-static
+
+packageScript: |
+    autotoolsPackage
+
+provideDeps:
+    - gmp
+
+

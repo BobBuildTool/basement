@@ -1,15 +1,16 @@
-inherit: [make]
+inherit: [autotools]
 
-root: True
-depends:
-    - glibc-dev
+environment:
+    PKG_VERSION: "4.1"
 
 checkoutSCM:
     scm: url
-    url: http://ftp.gnu.org/gnu/make/make-4.1.tar.bz2
+    url: ${GNU_MIRROR}/make/make-${PKG_VERSION}.tar.bz2
+    digestSHA1: "0d701882fd6fd61a9652cb8d866ad7fc7de54d58"
 
+buildVars: [PKG_VERSION]
 buildScript: |
-    false
+    autotoolsBuild $1/make-${PKG_VERSION} --without-guile
 
 packageScript: |
-    false
+    autotoolsPackage

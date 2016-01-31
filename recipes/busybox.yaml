@@ -1,0 +1,26 @@
+inherit: [make]
+
+environment:
+    PKG_VERSION: "1.24.1"
+
+checkoutVars: [PKG_VERSION]
+checkoutSCM:
+    scm: url
+    url: https://busybox.net/downloads/busybox-${PKG_VERSION}.tar.bz2
+    digestSHA1: "157d14d24748b4505b1a418535688706a2b81680"
+
+buildTools: [target-toolchain]
+buildVars: [ARCH, CROSS_COMPILE]
+buildScript: |
+    # prevent timestamps in configuration
+    export KCONFIG_NOTIMESTAMP=1
+
+    mkdir -p build install
+    cd build
+    make -C $1/busybox-${PKG_VERSION} O=$PWD defconfig
+    makeParallel
+    make CONFIG_PREFIX=${BOB_CWD}/install install
+
+packageScript: |
+    cp -a $1/install/* .
+

@@ -1,38 +1,66 @@
 inherit: [make]
 
+buildTools: [target-toolchain]
+buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST]
 buildScript: |
     _AUTOTOOLS_DEP_PATHS=( "$@" )
 
     # $1 : source path
     autotoolsBuild()
     {
-        local i CFLAGS LDFLAGS
+        local i CFLAGS="${CFLAGS:+$CFLAGS}" LDFLAGS="${LDFLAGS:+$LDFLAGS}" PKG_CONFIG_PATH
+        local MAKE_TARGET=
+        local MAKE_OPTIONS=( )
+        local INSTALL_TAGET=install
+        local INSTALL_OPTIONS=( )
 
-        # Gather all include and library paths. Add library paths to runtime
-        # path because "configure" might try to link and run a test with one of
-        # these libraries.
+        # parse arguments
+        OPTIND=1
+        local opt
+        while getopts "i:m:o:O:s" opt ; do
+            case "$opt" in
+                i)
+                    INSTALL_TAGET="$OPTARG"
+                    ;;
+                m)
+                    MAKE_TARGET="$OPTARG"
+                    ;;
+                o)
+                    MAKE_OPTIONS+=( "$OPTARG" )
+                    ;;
+                O)
+                    INSTALL_OPTIONS+=( "$OPTARG" )
+                    ;;
+                \?)
+                  echo "Invalid option: -$OPTARG" >&2
+                  exit 1
+                  ;;
+            esac
+        done
+        shift $(( OPTIND -1 ))
+
+        # Gather all include and library paths.
         for i in "${_AUTOTOOLS_DEP_PATHS[@]:1}" ; do
             if [[ -d "$i/usr/include" ]] ; then CFLAGS+=" -I$i/usr/include" ; fi
-            if [[ -d "$i/lib" ]] ; then
-                LDFLAGS+=" -L$i/lib"
-                LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}$i/lib"
-            fi
-            if [[ -d "$i/usr/lib" ]] ; then
-                LDFLAGS+=" -L$i/usr/lib"
-                LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}$i/usr/lib"
+            if [[ -d "$i/lib" ]] ; then LDFLAGS+=" -L$i/lib" ; fi
+            if [[ -d "$i/usr/lib" ]] ; then LDFLAGS+=" -L$i/usr/lib" ; fi
+            if [[ -d "$i/usr/lib/pkgconfig" ]] ; then
+                PKG_CONFIG_PATH="${PKG_CONFIG_PATH:+${PKG_CONFIG_PATH}:}$i/usr/lib/pkgconfig"
             fi
         done
         [ -z "${CFLAGS:+true}" ] || export CFLAGS
         [ -z "${LDFLAGS:+true}" ] || export LDFLAGS
-        [ -z "${LD_LIBRARY_PATH:+true}" ] || export LD_LIBRARY_PATH
+        [ -z "${PKG_CONFIG_PATH:+true}" ] || export PKG_CONFIG_PATH
 
         mkdir -p build install
         pushd build
         $1/configure \
+            ${AUTOCONF_BUILD:+--build=${AUTOCONF_BUILD}} \
+            ${AUTOCONF_HOST:+--host=${AUTOCONF_HOST}} \
+            ${AUTOCONF_TARGET:+--target=${AUTOCONF_TARGET}} \
             --prefix="/usr" \
             --sysconfdir="/etc" \
             --localstatedir="/var" \
-            --enable-shared --disable-static \
             --disable-gtk-doc \
             --disable-gtk-doc-html \
             --disable-doc \
@@ -41,10 +69,9 @@ buildScript: |
             --disable-debug \
             --with-xmlto=no \
             --with-fop=no \
-            --disable-dependency-tracking \
             "${@:2}"
-        makeParallel
-        make install DESTDIR=${PWD}/../install
+        makeParallel $MAKE_TARGET ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"}
+        make $INSTALL_TAGET DESTDIR=${PWD}/../install ${INSTALL_OPTIONS:+"${INSTALL_OPTIONS[@]}"}
         popd
     }
 
@@ -55,6 +82,8 @@ packageScript: |
         cp -a $_AUTOTOOLS_BUILD_PATH/install/* .
 
         # fixup libtool files
-        find -name '*.la' -exec sed -i -e '/^dependency_libs/s/-L[^ ]* //g' {} \;
+        # find -name '*.la' -exec sed -i -e '/^dependency_libs/s/-L[^ ]* //g' {} \;
+        find -name '*.la' -delete
+        find -name '*.pc' -exec sed -i -e '/^Libs/s/-L\/[^ ]* //g' {} \;
     }
 

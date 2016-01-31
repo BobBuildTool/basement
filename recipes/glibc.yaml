@@ -2,27 +2,52 @@ inherit: [make]
 
 depends:
     - linux-headers
+    -
+        name: gcc-stage1
+        use: [tools]
+
 
 checkoutSCM:
     scm: url
     url: http://ftp.gnu.org/gnu/glibc/glibc-2.22.tar.xz
+    digestSHA1: "5be95334f197121d8b351059a1c6518305d88e2a"
 
+buildVars: [AUTOCONF_TARGET]
+buildTools: [binutils, gcc-stage1]
 buildScript: |
     EXTRA=
     [ -e $1/usr/include/selinux/selinux.h ] || EXTRA+=" --without-selinux"
 
     mkdir -p build install
     pushd build
-    $1/glibc-2.22/configure --with-headers=$2/usr/include --prefix=/usr $EXTRA
+    $1/glibc-2.22/configure \
+        --prefix=/usr                    \
+        --host=${AUTOCONF_TARGET}        \
+        --build=$($1/glibc-2.22/scripts/config.guess) \
+        --enable-kernel=2.6.32             \
+        --with-headers=$2/usr/include \
+        --enable-obsolete-rpc \
+        $EXTRA \
+        libc_cv_forced_unwind=yes          \
+        libc_cv_ctors_header=yes           \
+        libc_cv_c_cleanup=yes
     makeParallel
     make install DESTDIR=${PWD}/../install
     popd
-    cp -a $2/usr install/
+    cp -a $2/usr/include install/usr/
 
 multiPackage:
     dev:
         packageScript: |
             cp -a $1/install/* .
+            if [ -d lib64 ] ; then
+                mv lib64 lib
+                ln -sf lib lib64
+            fi
+            if [ -d usr/lib64 ] ; then
+                mv usr/lib64 usr/lib
+                ln -sf lib usr/lib64
+            fi
 
     tgt:
         packageScript: |

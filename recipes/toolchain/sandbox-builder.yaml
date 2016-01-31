@@ -1,0 +1,46 @@
+environment:
+    AUTOCONF_TARGET: "x86_64-bob-linux-gnu"
+    LINUX_ARCH: x86_64
+
+depends:
+    -
+        name: binutils-static
+        use: [result, tools]
+        forward: True
+    - gcc-stage2
+    - glibc-dev
+
+buildVars: [AUTOCONF_TARGET]
+buildScript: |
+    cp -al $2/* $3/* .
+
+    mkdir $AUTOCONF_TARGET
+    cp -al $4/* $AUTOCONF_TARGET
+
+    mkdir -p bin
+    for i in ${AUTOCONF_TARGET}-{gcc,g++,cpp,ld} ; do
+        cat >bin/$i <<EOF
+    #!/bin/sh
+    "\${0%/*}/../tools/bin/$i" --sysroot="\${0%/*}/../$AUTOCONF_TARGET" "\$@"
+    EOF
+        chmod +x bin/$i
+    done
+
+    for i in ${AUTOCONF_TARGET}-{ar,as,c++filt,nm,objcopy,objdump,ranlib,readelf,size,strings,strip} ; do
+        ln -s ../tools/bin/$i bin/$i
+    done
+
+packageScript: |
+    cp -al $1/* .
+
+provideVars:
+    ARCH: "x86_64"
+    LINUX_ARCH: "${LINUX_ARCH}"
+    LINUX_CONFIG: "x86_64"
+    CROSS_COMPILE: "${AUTOCONF_TARGET}-"
+    AUTOCONF_HOST: "${AUTOCONF_TARGET}"
+    TOOLCHAIN_SYSROOT: "../${AUTOCONF_TARGET}"
+
+provideTools:
+    target-toolchain: "bin"
+

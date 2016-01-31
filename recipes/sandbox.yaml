@@ -1,0 +1,25 @@
+root: True
+
+depends:
+    -
+        name: toolchain::sandbox-builder
+        use: [environment, tools]
+        forward: True
+
+    - make
+    - gawk
+    - bash
+    - busybox
+    - perl
+
+buildVars: [TOOLCHAIN_SYSROOT]
+buildTools: [target-toolchain]
+buildScript: |
+    cp -al ${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT/* .
+    for i in "${@:2}" ; do
+        cp -al $i/* .
+    done
+
+packageScript: |
+    cp -al $1/* .
+

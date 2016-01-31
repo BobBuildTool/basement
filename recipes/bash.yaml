@@ -1,0 +1,39 @@
+inherit: [autotools]
+
+environment:
+    BASH_VERSION: "4.3.30"
+
+depends:
+    - ncurses
+    -
+        name: readline
+        use: [result, deps, environment]
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/bash/bash-${BASH_VERSION}.tar.gz
+    digestSHA1: "33b1bcc5dca1b72f28b2baeca6efa0d422097964"
+
+buildVars: [BASH_VERSION, READLINE_VERSION]
+buildScript: |
+    export ac_cv_rl_prefix="${BOB_DEP_PATHS[readline]}"
+    export ac_cv_rl_version="${READLINE_VERSION}"
+    export bash_cv_getcwd_malloc=yes
+    export bash_cv_job_control_missing=present
+    export bash_cv_sys_named_pipes=present
+    export bash_cv_func_sigsetjmp=present
+    export bash_cv_printf_a_format=yes
+    autotoolsBuild $1/bash-${BASH_VERSION} \
+        --with-installed-readline \
+        --with-curses
+
+packageScript: |
+    autotoolsPackage
+
+provideDeps:
+    - ncurses
+    - readline
+
+provideVars:
+    BASH_VERSION: "$BASH_VERSION"
+

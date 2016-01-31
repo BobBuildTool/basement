@@ -1,0 +1,34 @@
+inherit: [autotools]
+
+environment:
+    PKG_VERSION: "6.0"
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/ncurses/ncurses-${PKG_VERSION}.tar.gz
+    digestSHA1: "acd606135a5124905da770803c05f1f20dd3b21c"
+
+buildVars: [PKG_VERSION]
+buildScript: |
+    autotoolsBuild $1/ncurses-${PKG_VERSION} \
+        --with-shared \
+        --with-normal \
+        --without-cxx \
+        --without-cxx-binding \
+        --without-ada \
+        --without-tests \
+        --disable-big-core \
+        --without-profile \
+        --disable-rpath \
+        --disable-rpath-hack \
+        --enable-echo \
+        --enable-const \
+        --enable-overwrite \
+        --enable-pc-files \
+        --without-progs \
+        --without-manpages \
+        --without-gpm
+
+packageScript: |
+    autotoolsPackage
+

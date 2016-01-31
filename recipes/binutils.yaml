@@ -1,0 +1,54 @@
+
+environment:
+    BINUTILS_VERSION: "2.26"
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.bz2
+    digestSHA1: "a637508cffeb2323b14bc8dd65378819768ad4ff"
+
+multiPackage:
+    static:
+        inherit: [make]
+
+        buildVars: [AUTOCONF_TARGET, BINUTILS_VERSION]
+        buildScript: |
+            mkdir -p build install
+            cd build
+
+            $1/binutils-${BINUTILS_VERSION}/configure \
+                ${AUTOCONF_TARGET:+--target=${AUTOCONF_TARGET}} \
+                --prefix=/tools \
+                --with-sysroot=/sysroot \
+                --disable-nls \
+                --disable-werror
+
+            make configure-host
+            makeParallel LDFLAGS="-all-static"
+
+            make install DESTDIR=${PWD}/../install
+
+        packageScript: |
+            cp -a $1/install/* .
+
+        provideTools:
+            binutils: tools/bin
+
+    target:
+        inherit: [autotools]
+
+        buildVars: [AUTOCONF_TARGET, BINUTILS_VERSION]
+        buildScript: |
+            export ac_cv_prog_MAKEINFO=missing
+            autotoolsBuild $1/binutils-${BINUTILS_VERSION} \
+                --disable-multilib \
+                --disable-werror \
+                --disable-shared \
+                --enable-static \
+                --enable-poison-system-directories \
+                --enable-plugins \
+                --enable-lto
+
+        packageScript: |
+            autotoolsPackage
+
