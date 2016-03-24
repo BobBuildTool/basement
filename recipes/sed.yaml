@@ -1,0 +1,17 @@
+inherit: [autotools]
+
+environment:
+    SED_VERSION: "4.2.2"
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/sed/sed-${SED_VERSION}.tar.bz2
+    digestSHA1: "f17ab6b1a7bcb2ad4ed125ef78948092d070de8f"
+
+buildVars: [SED_VERSION]
+buildScript: |
+    autotoolsBuild $1/sed-${SED_VERSION}
+
+packageScript: |
+    autotoolsPackage
+

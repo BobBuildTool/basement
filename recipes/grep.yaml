@@ -1,0 +1,17 @@
+inherit: [autotools]
+
+environment:
+    GREP_VERSION: "2.23"
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/grep/grep-${GREP_VERSION}.tar.xz
+    digestSHA1: "76239b0c7f6d93acc820832b8241227619ff1cdb"
+
+buildVars: [GREP_VERSION]
+buildScript: |
+    autotoolsBuild $1/grep-${GREP_VERSION}
+
+packageScript: |
+    autotoolsPackage
+

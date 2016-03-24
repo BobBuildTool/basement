@@ -1,0 +1,17 @@
+inherit: [autotools]
+
+environment:
+    FILE_VERSION: "5.25"
+
+checkoutSCM:
+    scm: url
+    url: ftp://ftp.astron.com/pub/file/file-${FILE_VERSION}.tar.gz
+    digestSHA1: "fea78106dd0b7a09a61714cdbe545135563e84bd"
+
+buildVars: [FILE_VERSION]
+buildScript: |
+    autotoolsBuild $1/file-${FILE_VERSION}
+
+packageScript: |
+    autotoolsPackage
+

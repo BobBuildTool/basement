@@ -1,0 +1,17 @@
+inherit: [autotools]
+
+environment:
+    FINDUTILS_VERSION: "4.6.0"
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/findutils/findutils-${FINDUTILS_VERSION}.tar.gz
+    digestSHA1: "f18e8aaee3f3d4173a1f598001003be8706d28b0"
+
+buildVars: [FINDUTILS_VERSION]
+buildScript: |
+    autotoolsBuild $1/findutils-${FINDUTILS_VERSION}
+
+packageScript: |
+    autotoolsPackage
+

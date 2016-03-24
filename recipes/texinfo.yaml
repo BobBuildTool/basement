@@ -1,0 +1,17 @@
+inherit: [autotools]
+
+environment:
+    TEXINFO_VERSION: "6.1"
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/texinfo/texinfo-${TEXINFO_VERSION}.tar.xz
+    digestSHA1: "d39c2e35ddb0aff6ebdd323ce53729bd215534fa"
+
+buildVars: [TEXINFO_VERSION]
+buildScript: |
+    autotoolsBuild $1/texinfo-${TEXINFO_VERSION}
+
+packageScript: |
+    autotoolsPackage
+

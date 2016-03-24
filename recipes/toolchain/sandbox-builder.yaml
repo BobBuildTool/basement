@@ -34,6 +34,11 @@ packageScript: |
     cp -al $1/* .
 
 provideVars:
+    # usual compiler variables
+    AR: "${AUTOCONF_TARGET}-ar"
+    CC: "${AUTOCONF_TARGET}-gcc"
+    RANLIB: "${AUTOCONF_TARGET}-ranlib"
+
     ARCH: "x86_64"
     LINUX_ARCH: "${LINUX_ARCH}"
     LINUX_CONFIG: "x86_64"

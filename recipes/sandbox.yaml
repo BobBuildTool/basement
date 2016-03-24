@@ -6,11 +6,25 @@ depends:
         use: [environment, tools]
         forward: True
 
-    - make
-    - gawk
+#    - busybox
     - bash
-    - busybox
+    - bzip2
+    - coreutils
+    - diffutils
+    - file
+    - findutils
+    - gawk
+    - grep
+    - gzip
+    - m4
+    - make
+    - patch
     - perl
+    - sed
+    - tar
+    - texinfo
+    - util-linux
+    - xz-utils
 
 buildVars: [TOOLCHAIN_SYSROOT]
 buildTools: [target-toolchain]
