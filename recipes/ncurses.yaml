@@ -10,6 +10,9 @@ checkoutSCM:
 
 buildVars: [PKG_VERSION]
 buildScript: |
+    # work around build failure with recent gcc
+    # see https://dev.openwrt.org/ticket/19749
+    export CPPFLAGS="-P"
     autotoolsBuild $1/ncurses-${PKG_VERSION} \
         --with-shared \
         --with-normal \
