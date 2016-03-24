@@ -20,6 +20,7 @@ multiPackage:
                 ${AUTOCONF_TARGET:+--target=${AUTOCONF_TARGET}} \
                 --prefix=/tools \
                 --with-sysroot=/sysroot \
+                --enable-deterministic-archives \
                 --disable-nls \
                 --disable-werror
 
