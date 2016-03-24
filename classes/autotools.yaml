@@ -61,14 +61,6 @@ buildScript: |
             --prefix="/usr" \
             --sysconfdir="/etc" \
             --localstatedir="/var" \
-            --disable-gtk-doc \
-            --disable-gtk-doc-html \
-            --disable-doc \
-            --disable-docs \
-            --disable-documentation \
-            --disable-debug \
-            --with-xmlto=no \
-            --with-fop=no \
             "${@:2}"
         makeParallel $MAKE_TARGET ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"}
         make $INSTALL_TAGET DESTDIR=${PWD}/../install ${INSTALL_OPTIONS:+"${INSTALL_OPTIONS[@]}"}

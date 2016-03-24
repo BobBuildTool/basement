@@ -20,6 +20,14 @@ buildScript: |
     buildGcc()
     {
         autotoolsBuild $GCC_SRC/gcc-${GCC_VERSION} "$@" \
+            --disable-gtk-doc \
+            --disable-gtk-doc-html \
+            --disable-doc \
+            --disable-docs \
+            --disable-documentation \
+            --disable-debug \
+            --with-xmlto=no \
+            --with-fop=no \
             --with-gmp=${BOB_DEP_PATHS[gmp]}/usr \
             --with-mpfr=${BOB_DEP_PATHS[mpfr]}/usr \
             --with-mpc=${BOB_DEP_PATHS[mpc]}/usr \
