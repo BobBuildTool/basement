@@ -8,7 +8,7 @@ buildScript: |
     # $1 : source path
     autotoolsBuild()
     {
-        local i CFLAGS="${CFLAGS:+$CFLAGS}" LDFLAGS="${LDFLAGS:+$LDFLAGS}" PKG_CONFIG_PATH
+        local i CPPFLAGS="${CPPFLAGS:+$CPPFLAGS}" LDFLAGS="${LDFLAGS:+$LDFLAGS}" PKG_CONFIG_PATH
         local MAKE_TARGET=
         local MAKE_OPTIONS=( )
         local INSTALL_TAGET=install
@@ -41,14 +41,14 @@ buildScript: |
 
         # Gather all include and library paths.
         for i in "${_AUTOTOOLS_DEP_PATHS[@]:1}" ; do
-            if [[ -d "$i/usr/include" ]] ; then CFLAGS+=" -I$i/usr/include" ; fi
+            if [[ -d "$i/usr/include" ]] ; then CPPFLAGS+=" -I$i/usr/include" ; fi
             if [[ -d "$i/lib" ]] ; then LDFLAGS+=" -L$i/lib" ; fi
             if [[ -d "$i/usr/lib" ]] ; then LDFLAGS+=" -L$i/usr/lib" ; fi
             if [[ -d "$i/usr/lib/pkgconfig" ]] ; then
                 PKG_CONFIG_PATH="${PKG_CONFIG_PATH:+${PKG_CONFIG_PATH}:}$i/usr/lib/pkgconfig"
             fi
         done
-        [ -z "${CFLAGS:+true}" ] || export CFLAGS
+        [ -z "${CPPFLAGS:+true}" ] || export CPPFLAGS
         [ -z "${LDFLAGS:+true}" ] || export LDFLAGS
         [ -z "${PKG_CONFIG_PATH:+true}" ] || export PKG_CONFIG_PATH
 
