@@ -1,3 +1,4 @@
+inherit: [autotools, stddef]
 
 environment:
     BINUTILS_VERSION: "2.26"
@@ -7,49 +8,31 @@ checkoutSCM:
     url: ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.bz2
     digestSHA1: "a637508cffeb2323b14bc8dd65378819768ad4ff"
 
-multiPackage:
-    static:
-        inherit: [make]
+buildTools: [host-toolchain]
+buildVars: [AUTOCONF_TARGET, BINUTILS_VERSION]
+buildScript: |
+    case "$STDDEF_TARGET_ARCH" in
+        x86_64)
+            EXTRA_LIB_PATH=":=/lib64"
+            ;;
+        *)
+            EXTRA_LIB_PATH=""
+            ;;
+    esac
 
-        buildVars: [AUTOCONF_TARGET, BINUTILS_VERSION]
-        buildScript: |
-            mkdir -p build install
-            cd build
+    export ac_cv_prog_MAKEINFO=missing
+    autotoolsBuild $1/binutils-${BINUTILS_VERSION} \
+        --with-sysroot=/sysroot \
+        --enable-deterministic-archives \
+        --disable-nls \
+        --with-lib-path="=/lib/$STDDEF_TARGET_MULTIARCH:=/usr/lib/${STDDEF_TARGET_MULTIARCH}${EXTRA_LIB_PATH}:=/lib:=/usr/lib" \
+        --disable-werror \
+        --enable-plugins \
+        --enable-lto
 
-            $1/binutils-${BINUTILS_VERSION}/configure \
-                ${AUTOCONF_TARGET:+--target=${AUTOCONF_TARGET}} \
-                --prefix=/tools \
-                --with-sysroot=/sysroot \
-                --enable-deterministic-archives \
-                --disable-nls \
-                --disable-werror
+packageScript: |
+    autotoolsPackageTgt
 
-            make configure-host
-            makeParallel LDFLAGS="-all-static"
-
-            make install DESTDIR=${PWD}/../install
-
-        packageScript: |
-            cp -a $1/install/* .
-
-        provideTools:
-            binutils: tools/bin
-
-    target:
-        inherit: [autotools]
-
-        buildVars: [AUTOCONF_TARGET, BINUTILS_VERSION]
-        buildScript: |
-            export ac_cv_prog_MAKEINFO=missing
-            autotoolsBuild $1/binutils-${BINUTILS_VERSION} \
-                --disable-multilib \
-                --disable-werror \
-                --disable-shared \
-                --enable-static \
-                --enable-poison-system-directories \
-                --enable-plugins \
-                --enable-lto
-
-        packageScript: |
-            autotoolsPackage
+provideTools:
+    binutils: usr/bin
 

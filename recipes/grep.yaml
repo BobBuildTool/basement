@@ -13,5 +13,5 @@ buildScript: |
     autotoolsBuild $1/grep-${GREP_VERSION}
 
 packageScript: |
-    autotoolsPackage
+    autotoolsPackageTgt
 

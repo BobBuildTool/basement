@@ -1,0 +1,44 @@
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries()
+    {
+        local i p=1 name=""
+
+        # parse arguments
+        OPTIND=1
+        local opt
+        while getopts "n:p:" opt ; do
+            case "$opt" in
+                n)
+                    name="-$OPTARG"
+                    ;;
+                p)
+                    p="$OPTARG"
+                    ;;
+                \?)
+                  echo "Invalid option: -$OPTARG" >&2
+                  exit 1
+                  ;;
+            esac
+        done
+        shift $(( OPTIND -1 ))
+
+        # Skip if series is already applied. Otherwise try to remove old series if
+        # it does not match.
+        name=".applied$name"
+        if [ -e "$name" ] ; then
+            if cmp <( for (( idx=$# ; idx>0 ; idx-- )) ; do cat "${@:$idx:1}" ; done ) "$name" ; then
+                return
+            fi
+            patch -p $p --reverse < "$name" || true
+            rm "$name"
+        fi
+
+        for i in "$@" ; do
+            patch -p $p < $i
+            touch "$name"
+            cat $i "$name" > "$name".new
+            mv "$name".new "$name"
+        done
+    }
+

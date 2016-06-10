@@ -16,7 +16,7 @@ buildScript: |
     autotoolsBuild $1/mpfr-${PKG_VERSION} --disable-shared --enable-static
 
 packageScript: |
-    autotoolsPackage
+    autotoolsPackageDev
 
 provideDeps:
     - gmp

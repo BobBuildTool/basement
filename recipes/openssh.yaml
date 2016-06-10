@@ -1,0 +1,36 @@
+inherit: [autotools]
+
+environment:
+    PKG_VERSION: "7.2p2"
+
+depends:
+    - zlib-dev
+    - openssl-dev
+
+    -
+        name: zlib-tgt
+        use: []
+    -
+        name: openssl-tgt
+        use: []
+
+checkoutSCM:
+    scm: url
+    url: http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-${PKG_VERSION}.tar.gz
+    digestSHA1: "70e35d7d6386fe08abbd823b3a12a3ca44ac6d38"
+
+buildTools: [target-toolchain]
+buildVars: [PKG_VERSION, AUTOCONF_HOST]
+buildScript: |
+    autotoolsBuild $1/openssh-${PKG_VERSION} \
+        --disable-strip \
+        --with-ssl-dir="${BOB_DEP_PATHS[openssl-dev]}/usr/include" \
+        --without-openssl-header-check
+
+packageScript: |
+    autotoolsPackageTgt
+
+provideDeps:
+    - openssl-tgt
+    - zlib-tgt
+

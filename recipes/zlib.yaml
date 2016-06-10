@@ -1,0 +1,33 @@
+inherit: [make, stddef]
+
+environment:
+   PKG_VERSION: "1.2.8"
+
+checkoutVars: [PKG_VERSION]
+checkoutSCM:
+   scm: url
+   url: http://downloads.sourceforge.net/project/libpng/zlib/1.2.8/zlib-${PKG_VERSION}.tar.gz
+   digestSHA1: "a4d316c404ff54ca545ea71a27af7dbc29817088"
+   extract: False
+
+buildTools: [target-toolchain]
+buildVars: [CROSS_COMPILE, AUTOCONF_HOST]
+buildScript: |
+    export CROSS_PREFIX="${CROSS_COMPILE}"
+    mkdir -p install
+
+    tar -xzf $1/zlib-${PKG_VERSION}.tar.gz
+    pushd zlib-${PKG_VERSION}
+    ./configure --prefix=/usr --libdir=/usr/lib/$STDDEF_HOST_MULTIARCH --sharedlibdir=/usr/lib/$STDDEF_HOST_MULTIARCH
+    make install DESTDIR=${PWD}/../install
+    popd
+
+packageScript: |
+   cp -a $1/install/* .
+
+multiPackage:
+    dev:
+        packageScript: stddefCleanupDev
+    tgt:
+        packageScript: stddefCleanupTgt
+

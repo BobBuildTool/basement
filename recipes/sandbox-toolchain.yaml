@@ -1,0 +1,29 @@
+packageScript: |
+    if [[ -e /bob && -e /toolchain/bin ]] ; then
+        # We are in a sandbox with an accompanying toolchain. Use it...
+        ln -sf /toolchain/bin bin
+    else
+        # Check if gcc is around and that it's a x86_64 compiler
+        GCC_MACHINE="$(gcc -dumpmachine)"
+        if [[ "$GCC_MACHINE" != x86_64-*linux-gnu ]] ; then
+            echo "Expected an x86_64 host compiler!" >&2
+            exit 1
+        fi
+    fi
+
+provideTools:
+    host-toolchain: "bin"
+    target-toolchain: "bin"
+
+provideVars:
+    # usual compiler variables
+    AR: "ar"
+    CC: "gcc"
+    CXX: "g++"
+    RANLIB: "ranlib"
+
+    ARCH: "x86_64"
+    CROSS_COMPILE: ""
+    AUTOCONF_BUILD: "x86_64-bob-linux-gnu"
+    AUTOCONF_HOST: "x86_64-bob-linux-gnu"
+

@@ -13,5 +13,5 @@ buildScript: |
     autotoolsBuild $1/patch-${PATCH_VERSION}
 
 packageScript: |
-    autotoolsPackage
+    autotoolsPackageTgt
 

@@ -1,0 +1,35 @@
+inherit: [make, stddef]
+
+environment:
+    PKG_VERSION: "2.25"
+
+checkoutSCM:
+    scm: url
+    url: https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-${PKG_VERSION}.tar.gz
+    digestSHA1: "0d6e242d70e80c243a7abeb787e007835b3f0d3d"
+    extract: False
+
+buildTools: [target-toolchain]
+buildVars: [AR, CC, RANLIB, PKG_VERSION]
+buildScript: |
+    tar -xzf $1/libcap-${PKG_VERSION}.tar.gz
+    mkdir -p install
+    makeParallel -C libcap-${PKG_VERSION} \
+        lib=lib/$STDDEF_HOST_MULTIARCH \
+        prefix=${PWD}/install/usr \
+        AR=$AR \
+        CC=$CC \
+        RANLIB=$RANLIB \
+        SBINDIR=${PWD}/install/sbin \
+        RAISE_SETFCAP=no \
+        install
+
+packageScript: |
+    cp -a $1/install/* .
+
+multiPackage:
+    dev:
+        packageScript: stddefCleanupDev
+    tgt:
+        packageScript: stddefCleanupTgt
+

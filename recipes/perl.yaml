@@ -1,5 +1,3 @@
-inherit: [make]
-
 environment:
     PERL_VERSION: "5.22.0"
     PERL_CROSS_VERSION: "1.0.1"
@@ -25,8 +23,8 @@ checkoutScript: |
     # fix configure script (remove non-existent entry)
     sed -i -e 's/x2p\/Makefile//' perl-${PERL_VERSION}/configure
 
-buildTools: [target-toolchain]
-buildVars: [AUTOCONF_HOST, CROSS_COMPILE]
+buildTools: [host-toolchain, target-toolchain]
+buildVars: [AUTOCONF_HOST, CROSS_COMPILE, TOOLCHAIN_SYSROOT]
 buildScript: |
     CFLAGS=
     LDFLAGS=
@@ -43,6 +41,7 @@ buildScript: |
         --target=${AUTOCONF_HOST} \
         --target-tools-prefix=${CROSS_COMPILE} \
         --prefix=/usr \
+        --sysroot=${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT \
         -Dld="${CROSS_COMPILE}gcc" \
         -Dccflags="$CFLAGS" \
         -Dldflags="$LDFLAGS -lm" \
@@ -53,7 +52,7 @@ buildScript: |
         -Dosvers=4.1.0 \
         -Dperladmin=root
 
-    makeParallel all
+    make all
     make DESTDIR=$PWD/../install install.perl
 
 packageVars: [PERL_ARCH]
@@ -62,7 +61,7 @@ packageScript: |
 
     rm -rf usr/lib/perl5/${PERL_VERSION}/pod
     rm -rf usr/lib/perl5/${PERL_VERSION}/${PERL_ARCH}/CORE
-    find /usr/lib/perl5/ -name 'extralibs.ld' -print0 | xargs -0 rm -f
-    find /usr/lib/perl5/ -name '*.bs' -print0 | xargs -0 rm -f
-    find /usr/lib/perl5/ -name '.packlist' -print0 | xargs -0 rm -f
+    find usr/lib/perl5/ -name 'extralibs.ld' -print0 | xargs -0 rm -f
+    find usr/lib/perl5/ -name '*.bs' -print0 | xargs -0 rm -f
+    find usr/lib/perl5/ -name '.packlist' -print0 | xargs -0 rm -f
 

@@ -1,39 +1,78 @@
+inherit: [sandbox]
 root: True
 
+filter:
+    environment: [ "*_MIRROR" ]
+    tools: [ "!*" ]
+
 depends:
+    # We try to build the sandbox in a temporary 1st stage sandbox. Though not
+    # strictly necessary it greatly helps to find unclean stuff. If the we
+    # build with '--no-sandbox' the host compiler will be used directly.
     -
-        name: toolchain::sandbox-builder
+        name: bootstrap-sandbox
+        use: [sandbox]
+        forward: True
+    -
+        name: bootstrap-sandbox-toolchain
         use: [environment, tools]
         forward: True
 
-#    - busybox
+    # some required host tools
+    -
+        name: bison
+        use: [tools]
+        forward: True
+    -
+        name: flex
+        use: [tools]
+        forward: True
+
+    # target toolchain
+    -
+        name: cross-toolchain
+        environment:
+            AUTOCONF_TARGET: "x86_64-bob-linux-gnu"
+            ARCH: x86_64
+        use: [environment, tools]
+        forward: True
+
     - bash
+    - bc
     - bzip2
     - coreutils
+    - curl
     - diffutils
+    - fakeroot
     - file
     - findutils
     - gawk
+    - gettext
+    - git
+    - gperf
     - grep
     - gzip
+    # - intltool #-> "configure: error: XML::Parser perl module is required for intltool"
+    - kmod
+    - libtool
     - m4
     - make
+    - makedepend
+    - openssh
     - patch
     - perl
+    - pkg-config
+    # - python
+    - rsync
     - sed
     - tar
     - texinfo
+    - unzip
     - util-linux
+    - which
     - xz-utils
 
-buildVars: [TOOLCHAIN_SYSROOT]
-buildTools: [target-toolchain]
-buildScript: |
-    cp -al ${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT/* .
-    for i in "${@:2}" ; do
-        cp -al $i/* .
-    done
-
-packageScript: |
-    cp -al $1/* .
+    # native toolchain
+    - binutils
+    - gcc-native
 

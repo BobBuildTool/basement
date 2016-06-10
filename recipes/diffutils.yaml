@@ -13,6 +13,6 @@ buildScript: |
     autotoolsBuild $1/diffutils-${DIFFUTILS_VERSION}
 
 packageScript: |
-    autotoolsPackage
+    autotoolsPackageTgt
 
 

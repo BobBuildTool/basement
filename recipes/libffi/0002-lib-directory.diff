@@ -1,0 +1,30 @@
+diff -Nurp libffi-3.2.1-orig/configure libffi-3.2.1-patched/configure
+--- libffi-3.2.1-orig/configure	2014-11-12 12:59:57.000000000 +0100
++++ libffi-3.2.1-patched/configure	2016-05-09 20:50:39.151555029 +0200
+@@ -18725,11 +18725,6 @@ if test "x$GCC" = "xyes"; then
+     toolexecdir="${libdir}"/gcc-lib/'$(target_alias)'
+     toolexeclibdir="${libdir}"
+   fi
+-  multi_os_directory=`$CC $CFLAGS -print-multi-os-directory`
+-  case $multi_os_directory in
+-    .) ;; # Avoid trailing /.
+-    ../*) toolexeclibdir=$toolexeclibdir/$multi_os_directory ;;
+-  esac
+ 
+ else
+   toolexeclibdir="${libdir}"
+diff -Nurp libffi-3.2.1-orig/configure.ac libffi-3.2.1-patched/configure.ac
+--- libffi-3.2.1-orig/configure.ac	2014-11-12 12:56:51.000000000 +0100
++++ libffi-3.2.1-patched/configure.ac	2016-05-09 20:49:37.823552506 +0200
+@@ -601,11 +601,6 @@ if test "x$GCC" = "xyes"; then
+     toolexecdir="${libdir}"/gcc-lib/'$(target_alias)'
+     toolexeclibdir="${libdir}"
+   fi
+-  multi_os_directory=`$CC $CFLAGS -print-multi-os-directory`
+-  case $multi_os_directory in
+-    .) ;; # Avoid trailing /.
+-    ../*) toolexeclibdir=$toolexeclibdir/$multi_os_directory ;;
+-  esac
+   AC_SUBST(toolexecdir)
+ else
+   toolexeclibdir="${libdir}"

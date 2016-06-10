@@ -1,0 +1,21 @@
+inherit: [autotools]
+
+environment:
+    MAKEDEPEND_VERSION: "1.0.5"
+
+depends:
+    - xproto
+
+checkoutSCM:
+    scm: url
+    url: http://xorg.freedesktop.org/releases/individual/util/makedepend-${MAKEDEPEND_VERSION}.tar.bz2
+    digestSHA1: "2599afa039d2070bae9df6ce43da288b3a4adf97"
+
+buildVars: [MAKEDEPEND_VERSION]
+buildScript: |
+    export X_CFLAGS=" "
+    export X_LIBS=" "
+    autotoolsBuild $1/makedepend-${MAKEDEPEND_VERSION}
+
+packageScript: |
+    autotoolsPackageTgt

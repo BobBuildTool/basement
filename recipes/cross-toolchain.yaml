@@ -1,0 +1,44 @@
+inherit: [stddef]
+
+depends:
+    - gcc-stage2
+    - glibc-dev
+
+buildVars: [AUTOCONF_TARGET]
+buildScript: |
+    cp -au ${BOB_DEP_PATHS[gcc-stage2]}/* .
+    mkdir -p sysroot
+    cp -au ${BOB_DEP_PATHS[glibc-dev]}/* sysroot/
+    cp -aul usr/$AUTOCONF_TARGET/lib/* sysroot/usr/lib/$STDDEF_TARGET_MULTIARCH/
+
+    mkdir -p bin
+    for i in gcc g++ cpp ld ; do
+        cat >bin/${AUTOCONF_TARGET}-$i <<EOF
+    #!/bin/sh
+    "\${0%/*}/../usr/bin/${AUTOCONF_TARGET}-$i" --sysroot="\${0%/*}/../sysroot" "\$@"
+    EOF
+        chmod +x bin/${AUTOCONF_TARGET}-$i
+    done
+
+    for i in ar as c++filt nm objcopy objdump ranlib readelf size strings strip  ; do
+        ln -sf ../usr/bin/${AUTOCONF_TARGET}-$i bin/${AUTOCONF_TARGET}-$i
+    done
+
+packageScript: |
+    cp -a $1/* .
+
+provideVars:
+    # usual compiler variables
+    AR: "${AUTOCONF_TARGET}-ar"
+    CC: "${AUTOCONF_TARGET}-gcc"
+    CXX: "${AUTOCONF_TARGET}-g++"
+    RANLIB: "${AUTOCONF_TARGET}-ranlib"
+
+    ARCH: "${ARCH}"
+    CROSS_COMPILE: "${AUTOCONF_TARGET}-"
+    AUTOCONF_HOST: "${AUTOCONF_TARGET}"
+    TOOLCHAIN_SYSROOT: "../sysroot"
+
+provideTools:
+    target-toolchain: "bin"
+

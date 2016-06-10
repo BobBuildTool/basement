@@ -13,5 +13,5 @@ buildScript: |
     autotoolsBuild $1/gzip-${GZIP_VERSION}
 
 packageScript: |
-    autotoolsPackage
+    autotoolsPackageTgt
 

@@ -1,4 +1,4 @@
-inherit: [make]
+inherit: [make, patch, stddef]
 
 depends:
     - linux-headers
@@ -12,8 +12,13 @@ checkoutSCM:
     url: http://ftp.gnu.org/gnu/glibc/glibc-2.22.tar.xz
     digestSHA1: "5be95334f197121d8b351059a1c6518305d88e2a"
 
+checkoutDeterministic: True
+checkoutScript: |
+    cd glibc-2.22
+    patchApplySeries $<<glibc/*.diff>>
+
 buildVars: [AUTOCONF_TARGET]
-buildTools: [binutils, gcc-stage1]
+buildTools: [gcc-stage1, target-toolchain]
 buildScript: |
     EXTRA=
     [ -e $1/usr/include/selinux/selinux.h ] || EXTRA+=" --without-selinux"
@@ -27,6 +32,7 @@ buildScript: |
         --enable-kernel=2.6.32             \
         --with-headers=$2/usr/include \
         --enable-obsolete-rpc \
+        --libdir=/usr/lib/$STDDEF_TARGET_MULTIARCH \
         $EXTRA \
         libc_cv_forced_unwind=yes          \
         libc_cv_ctors_header=yes           \
@@ -40,14 +46,6 @@ multiPackage:
     dev:
         packageScript: |
             cp -a $1/install/* .
-            if [ -d lib64 ] ; then
-                mv lib64 lib
-                ln -sf lib lib64
-            fi
-            if [ -d usr/lib64 ] ; then
-                mv usr/lib64 usr/lib
-                ln -sf lib usr/lib64
-            fi
 
     tgt:
         packageScript: |

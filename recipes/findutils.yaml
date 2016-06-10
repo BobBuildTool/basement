@@ -13,5 +13,5 @@ buildScript: |
     autotoolsBuild $1/findutils-${FINDUTILS_VERSION}
 
 packageScript: |
-    autotoolsPackage
+    autotoolsPackageTgt
 

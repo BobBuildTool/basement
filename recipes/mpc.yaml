@@ -17,7 +17,7 @@ buildScript: |
     autotoolsBuild $1/mpc-${MPC_VERSION} --disable-shared --enable-static
 
 packageScript: |
-    autotoolsPackage
+    autotoolsPackageDev
 
 provideDeps:
     - gmp

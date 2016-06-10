@@ -13,5 +13,5 @@ buildScript: |
     autotoolsBuild $1/sed-${SED_VERSION}
 
 packageScript: |
-    autotoolsPackage
+    autotoolsPackageTgt
 

@@ -20,7 +20,7 @@ buildScript: |
         --with-polylib=no
 
 packageScript: |
-    autotoolsPackage
+    autotoolsPackageDev
 
 provideDeps:
     - gmp

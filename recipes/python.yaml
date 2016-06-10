@@ -1,0 +1,65 @@
+inherit: [autotools, make]
+
+environment:
+    PKG_VERSION: "2.7.11"
+
+depends:
+   - expat-dev
+   - gdbm-dev
+   - libffi-dev
+   - ncurses-dev
+   - openssl-dev
+   - zlib-dev
+
+   -
+      name: expat-tgt
+      use: []
+   -
+      name: gdbm-tgt
+      use: []
+   -
+      name: libffi-tgt
+      use: []
+   -
+      name: ncurses-tgt
+      use: []
+   -
+      name: openssl-tgt
+      use: []
+   -
+      name: zlib-tgt
+      use: []
+
+privateEnvironment:
+    APPLY_LIBTOOL_PATCH: "no"
+
+checkoutSCM:
+    scm: url
+    url: https://www.python.org/ftp/python/2.7.11/Python-${PKG_VERSION}.tgz
+    digestSHA1: "62a0b1b703d42999cc4aa9ee3c55eb7efe35802a"
+
+buildVars: [PKG_VERSION, CXX]
+buildScript: |
+    export ac_cv_file__dev_ptmx=yes
+    export ac_cv_file__dev_ptc=no
+
+    autotoolsBuild $1/Python-${PKG_VERSION} \
+        --build=$($1/Python-${PKG_VERSION}/config.guess) \
+              --enable-shared \
+              --with-threads \
+              --enable-ipv6 \
+              --enable-unicode=ucs4 \
+              --with-dbmliborder=gdbm:ndbm \
+              --without-ensurepip
+
+packageScript: |
+    autotoolsPackageTgt
+
+provideDeps:
+   - expat-tgt
+   - gdbm-tgt
+   - libffi-tgt
+   - ncurses-tgt
+   - openssl-tgt
+   - zlib-tgt
+

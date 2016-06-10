@@ -1,0 +1,16 @@
+inherit: [autotools]
+
+environment:
+    PKG_VERSION: "1.17"
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/wget/wget-${PKG_VERSION}.tar.gz
+    digestSHA1: "ebb8df8ee6a0c2d11be9e250cae55d8502bc1ee6"
+
+buildVars: [PKG_VERSION]
+buildScript: |
+    autotoolsBuild $1/wget-${PKG_VERSION}
+
+packageScript: |
+    autotoolsPackageTgt

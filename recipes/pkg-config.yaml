@@ -1,0 +1,30 @@
+inherit: [autotools]
+
+environment:
+    PKG_VERSION: "0.29.1"
+
+depends:
+    - glib-dev
+
+    -
+        name: glib-tgt
+        use: []
+
+checkoutSCM:
+    scm: url
+    url: https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_VERSION}.tar.gz
+    digestSHA1: "271ce928f6d673cc16cbced2bfd14a5f2e5d3d37"
+
+buildVars: [PKG_VERSION]
+buildScript: |
+    export GLIB_CFLAGS="-I${BOB_DEP_PATHS[glib-dev]}/usr/include/glib-2.0 -I${BOB_DEP_PATHS[glib-dev]}/usr/lib/$STDDEF_HOST_MULTIARCH/glib-2.0/include"
+    export GLIB_LIBS="-lglib-2.0"
+    autotoolsBuild $1/pkg-config-${PKG_VERSION} \
+       --disable-host-tool
+
+packageScript: |
+    autotoolsPackageTgt
+
+provideDeps:
+    - glib-tgt
+

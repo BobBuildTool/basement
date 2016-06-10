@@ -1,0 +1,19 @@
+inherit: [autotools]
+
+environment:
+    PKG_VERSION: "2.3.3"
+
+#depends:
+    #- zlib
+
+checkoutSCM:
+    scm: url
+    url: http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-${PKG_VERSION}.tar.gz
+    digestSHA1: "7b0e36acc9be4efbcd9576e469c43d13d7fbf1f4"
+
+buildVars: [PKG_VERSION]
+buildScript: |
+    autotoolsBuild $1/libressl-${PKG_VERSION}
+
+packageScript: |
+    autotoolsPackage

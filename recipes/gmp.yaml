@@ -3,21 +3,15 @@ inherit: [autotools]
 environment:
     PKG_VERSION: "6.1.0"
 
-depends:
-    -
-        name: m4
-        use: [tools]
-
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gmp/gmp-${PKG_VERSION}.tar.xz
     digestSHA1: "99d691607613e749aa5d7c0c2a89aeab38fec070"
 
 buildVars: [PKG_VERSION]
-buildTools: [m4]
 buildScript: |
     autotoolsBuild $1/gmp-${PKG_VERSION} --disable-shared --enable-static
 
 packageScript: |
-    autotoolsPackage
+    autotoolsPackageDev
 

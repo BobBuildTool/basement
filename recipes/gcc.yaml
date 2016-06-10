@@ -1,4 +1,4 @@
-inherit: [autotools]
+inherit: [make, patch, stddef]
 
 environment:
     GCC_VERSION: "5.3.0"
@@ -14,12 +14,31 @@ checkoutSCM:
     url: ${GNU_MIRROR}/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2
     digestSHA256: "b84f5592e9218b73dbae612b5253035a7b34a9a1f7688d2e1bfaaf7267d5c4db"
 
-buildVars: [AUTOCONF_TARGET, GCC_VERSION]
+checkoutVars: [GCC_VERSION]
+checkoutDeterministic: True
+checkoutScript: |
+    cd gcc-${GCC_VERSION}
+    patchApplySeries -p2 $<<gcc/*.diff>>
+
+buildTools: [target-toolchain]
+buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
+            GCC_VERSION,
+            GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU]
 buildScript: |
     GCC_SRC=$1
     buildGcc()
     {
-        autotoolsBuild $GCC_SRC/gcc-${GCC_VERSION} "$@" \
+        mkdir -p build install
+        pushd build
+        $GCC_SRC/gcc-${GCC_VERSION}/configure \
+            --build=${STDDEF_BUILD_TRIPLE} \
+            --host=${STDDEF_HOST_TRIPLE} \
+            --target=${STDDEF_TARGET_TRIPLE} \
+            --prefix=/usr \
+            ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
+            ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
+            ${GCC_TARGET_FLOAT_ABI:+--with-float=$GCC_TARGET_FLOAT_ABI} \
+            "${@}" \
             --disable-gtk-doc \
             --disable-gtk-doc-html \
             --disable-doc \
@@ -28,27 +47,37 @@ buildScript: |
             --disable-debug \
             --with-xmlto=no \
             --with-fop=no \
-            --with-gmp=${BOB_DEP_PATHS[gmp]}/usr \
-            --with-mpfr=${BOB_DEP_PATHS[mpfr]}/usr \
-            --with-mpc=${BOB_DEP_PATHS[mpc]}/usr \
-            --with-isl=${BOB_DEP_PATHS[isl]}/usr
+            --with-gmp-include=${BOB_DEP_PATHS[gmp]}/usr/include \
+            --with-gmp-lib=${BOB_DEP_PATHS[gmp]}/usr/lib/$STDDEF_HOST_MULTIARCH \
+            --with-mpfr-include=${BOB_DEP_PATHS[mpfr]}/usr/include \
+            --with-mpfr-lib=${BOB_DEP_PATHS[mpfr]}/usr/lib/$STDDEF_HOST_MULTIARCH \
+            --with-mpc-include=${BOB_DEP_PATHS[mpc]}/usr/include \
+            --with-mpc-lib=${BOB_DEP_PATHS[mpc]}/usr/lib/$STDDEF_HOST_MULTIARCH \
+            --with-isl-include=${BOB_DEP_PATHS[isl]}/usr/include \
+            --with-isl-lib=${BOB_DEP_PATHS[isl]}/usr/lib/$STDDEF_HOST_MULTIARCH
+        makeParallel
+        make install DESTDIR=${PWD}/../install
+        popd
     }
 
 packageScript: |
-    autotoolsPackage
+    cp -a $1/install/* .
+    stddefCleanupDev
 
 multiPackage:
     stage1:
+        depends:
+            -
+                name: binutils
+                use: [result, tools]
         buildTools: [binutils]
         buildScript: |
             buildGcc \
-                --prefix=/tools                                \
                 --with-glibc-version=2.11                      \
                 --with-sysroot=/does/not/exist                 \
                 --with-newlib                                  \
                 --without-headers                              \
-                --with-local-prefix=/tools                     \
-                --with-native-system-header-dir=/tools/include \
+                --enable-multiarch                             \
                 --disable-nls                                  \
                 --disable-multilib                             \
                 --disable-decimal-float                        \
@@ -60,22 +89,44 @@ multiPackage:
                 --disable-libvtv                               \
                 --disable-libstdcxx                            \
                 --disable-shared                               \
+                --disable-bootstrap                            \
                 --enable-languages=c,c++
+            cp -a ${BOB_DEP_PATHS[binutils]}/* install/
 
         provideTools:
-            gcc-stage1: tools/bin
+            gcc-stage1: usr/bin
 
     stage2:
         depends:
+            -
+                name: binutils
+                use: [result, tools]
             - glibc-dev
 
         buildTools: [binutils]
         buildScript: |
-            LDFLAGS=-static
             buildGcc \
-                --prefix=/tools                                \
-                --with-sysroot=${BOB_DEP_PATHS[glibc-dev]}     \
-                --with-build-sysroot=${BOB_DEP_PATHS[glibc-dev]} \
-                --disable-multilib                             \
+                --with-sysroot=${BOB_DEP_PATHS[glibc-dev]}                  \
+                --with-build-sysroot=${BOB_DEP_PATHS[glibc-dev]}            \
+                --enable-multiarch                                          \
+                --enable-linker-build-id                                    \
+                --enable-threads=posix                                      \
+                --disable-multilib                                          \
+                --enable-languages=c,c++
+            cp -a ${BOB_DEP_PATHS[binutils]}/* install/
+
+    native:
+        buildTools: [host-toolchain]
+        buildVars: [TOOLCHAIN_SYSROOT]
+        buildScript: |
+            buildGcc \
+                --with-sysroot=${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT       \
+                --with-build-sysroot=${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT \
+                --enable-multiarch                                                          \
+                --enable-linker-build-id                                                    \
+                --enable-threads=posix                                                      \
+                --disable-multilib                                                          \
                 --enable-languages=c,c++
 
+#                --build=$($1/gcc-${GCC_VERSION}/config.guess)                               \
+#                --target=${AUTOCONF_HOST}                                                   \

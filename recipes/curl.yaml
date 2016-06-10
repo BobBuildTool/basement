@@ -1,0 +1,29 @@
+inherit: [autotools]
+
+environment:
+    PKG_VERSION: "7.48.0"
+
+depends:
+    - openssl-dev
+
+    -
+        name: openssl-tgt
+        use: []
+
+checkoutSCM:
+    scm: url
+    url: https://curl.haxx.se/download/curl-${PKG_VERSION}.tar.gz
+    digestSHA1: "eac95625b849408362cf6edb0bc9489da317ba30"
+
+buildVars: [PKG_VERSION]
+buildScript: |
+    autotoolsBuild $1/curl-${PKG_VERSION} \
+       --disable-static \
+       --enable-threaded-resolver \
+       --with-ssl
+
+packageScript: |
+    autotoolsPackageTgt
+
+provideDeps:
+    - openssl-tgt

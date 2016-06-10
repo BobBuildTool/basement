@@ -8,9 +8,10 @@ checkoutSCM:
     url: ${GNU_MIRROR}/make/make-${PKG_VERSION}.tar.bz2
     digestSHA1: "0d701882fd6fd61a9652cb8d866ad7fc7de54d58"
 
-buildVars: [PKG_VERSION]
+buildVars: [AR, PKG_VERSION]
 buildScript: |
+    export ac_cv_prog_AR="$AR"
     autotoolsBuild $1/make-${PKG_VERSION} --without-guile
 
 packageScript: |
-    autotoolsPackage
+    autotoolsPackageTgt

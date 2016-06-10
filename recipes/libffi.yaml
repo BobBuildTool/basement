@@ -1,0 +1,28 @@
+inherit: [autotools, patch]
+
+environment:
+   PKG_VERSION: "3.2.1"
+
+checkoutVars: [PKG_VERSION]
+checkoutSCM:
+   scm: url
+   url: ftp://sourceware.org/pub/libffi/libffi-${PKG_VERSION}.tar.gz
+   digestSHA1: "280c265b789e041c02e5c97815793dfc283fb1e6"
+
+checkoutVars: [PKG_VERSION]
+checkoutDeterministic: True
+checkoutScript: |
+    cd libffi-${PKG_VERSION}
+    patchApplySeries $<<libffi/*.diff>>
+
+buildVars: [PKG_VERSION]
+buildScript: |
+   autotoolsBuild $1/libffi-${PKG_VERSION}
+
+multiPackage:
+    dev:
+        # FIXME: might have to move headers to /usr/include/$MULTIARCH/
+        packageScript: autotoolsPackageDev
+    tgt:
+        packageScript: autotoolsPackageTgt
+

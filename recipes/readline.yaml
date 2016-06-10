@@ -4,7 +4,10 @@ environment:
     READLINE_VERSION: "6.3"
 
 depends:
-    - ncurses
+    - ncurses-dev
+    -
+        name: ncurses-tgt
+        use: []
 
 checkoutSCM:
     scm: url
@@ -17,12 +20,15 @@ buildScript: |
     export bash_cv_wcwidth_broken=no
     autotoolsBuild $1/readline-${READLINE_VERSION}
 
-packageScript: |
-    autotoolsPackage
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
+        provideDeps:
+            - ncurses-dev
+        provideVars:
+            READLINE_VERSION: "${READLINE_VERSION}"
 
-provideDeps:
-    - ncurses
-
-provideVars:
-    READLINE_VERSION: "$READLINE_VERSION"
-
+    tgt:
+        packageScript: autotoolsPackageTgt
+        provideDeps:
+            - ncurses-tgt

@@ -1,4 +1,4 @@
-inherit: [make]
+inherit: [autotools]
 
 environment:
     PKG_VERSION: "1.4.17"
@@ -10,15 +10,8 @@ checkoutSCM:
 
 buildVars: [PKG_VERSION]
 buildScript: |
-    mkdir -p build install
-    cd build
-    $1/m4-${PKG_VERSION}/configure --prefix=/usr
-    makeParallel
-    make install DESTDIR=${PWD}/../install
+    autotoolsBuild $1/m4-${PKG_VERSION}
 
 packageScript: |
-    cp -a $1/install/* .
-
-provideTools:
-    m4: "usr/bin"
+    autotoolsPackageTgt
 

@@ -8,30 +8,22 @@ checkoutSCM:
     url: ${GNU_MIRROR}/ncurses/ncurses-${PKG_VERSION}.tar.gz
     digestSHA1: "acd606135a5124905da770803c05f1f20dd3b21c"
 
+buildTools: [host-toolchain]
 buildVars: [PKG_VERSION]
 buildScript: |
     # work around build failure with recent gcc
     # see https://dev.openwrt.org/ticket/19749
     export CPPFLAGS="-P"
     autotoolsBuild $1/ncurses-${PKG_VERSION} \
-        --with-shared \
-        --with-normal \
-        --without-cxx \
-        --without-cxx-binding \
-        --without-ada \
-        --without-tests \
-        --disable-big-core \
-        --without-profile \
-        --disable-rpath \
-        --disable-rpath-hack \
-        --enable-echo \
-        --enable-const \
-        --enable-overwrite \
-        --enable-pc-files \
-        --without-progs \
-        --without-manpages \
-        --without-gpm
+            --with-shared           \
+            --without-debug         \
+            --without-normal        \
+            --enable-pc-files       \
+            --enable-widec
 
-packageScript: |
-    autotoolsPackage
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
+    tgt:
+        packageScript: autotoolsPackageTgt
 

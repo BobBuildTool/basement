@@ -1,0 +1,25 @@
+inherit: [make, stddef]
+
+environment:
+    PKG_VERSION: "60"
+
+checkoutSCM:
+    scm: url
+    url: https://sourceforge.net/projects/infozip/files/UnZip%206.x%20%28latest%29/UnZip%206.0/unzip${PKG_VERSION}.tar.gz
+    digestSHA1: "abf7de8a4018a983590ed6f5cbd990d4740f8a22"
+    extract: False
+
+buildTools: [target-toolchain]
+buildVars: [CC, PKG_VERSION]
+buildScript: |
+    tar -xzf $1/unzip${PKG_VERSION}.tar.gz
+    mkdir -p install
+    make -C unzip${PKG_VERSION} -f unix/Makefile CC=$CC \
+       prefix=${PWD}/install/usr \
+       MANDIR=${PWD}/install/usr/share/man/man1 \
+       generic install
+
+packageScript: |
+   cp -a $1/install/* .
+   stddefCleanupTgt
+

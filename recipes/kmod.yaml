@@ -1,0 +1,16 @@
+inherit: [autotools]
+
+environment:
+    PKG_VERSION: "22"
+
+checkoutSCM:
+    scm: url
+    url: https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-${PKG_VERSION}.tar.gz
+    digestSHA1: "e07a6245a040e8c18bff39b302d6d09bcbdf57b6"
+
+buildVars: [PKG_VERSION]
+buildScript: |
+    autotoolsBuild $1/kmod-${PKG_VERSION}
+
+packageScript: |
+    autotoolsPackageTgt

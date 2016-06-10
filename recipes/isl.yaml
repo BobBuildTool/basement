@@ -5,6 +5,9 @@ environment:
     # bumping isl is not possible until a new version of cloog is published.
     ISL_VERSION: "0.14.1"
 
+privateEnvironment:
+    APPLY_LIBTOOL_PATCH: "no"
+
 depends:
     - gmp
 
@@ -18,7 +21,7 @@ buildScript: |
     autotoolsBuild $1/isl-${ISL_VERSION} --disable-shared --enable-static
 
 packageScript: |
-    autotoolsPackage
+    autotoolsPackageDev
 
 provideDeps:
     - gmp

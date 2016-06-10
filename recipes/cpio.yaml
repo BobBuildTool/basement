@@ -1,0 +1,19 @@
+inherit: [autotools]
+
+environment:
+    CPIO_VERSION: "2.12"
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/cpio/cpio-${CPIO_VERSION}.tar.bz2
+    digestSHA1: "60358408c76db354f6716724c4bcbcb6e18ab642"
+
+buildVars: [CPIO_VERSION]
+buildScript: |
+    autotoolsBuild $1/cpio-${CPIO_VERSION}
+
+packageScript: |
+    autotoolsPackageTgt
+
+provideTools:
+    cpio: "usr/bin"

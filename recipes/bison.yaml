@@ -1,0 +1,26 @@
+inherit: [autotools]
+
+environment:
+    BISON_VERSION: "3.0.4"
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/bison/bison-${BISON_VERSION}.tar.xz
+    digestSHA1: "8270497aad88c7dd4f2c317298c50513fb0c3c8e"
+
+buildVars: [BISON_VERSION]
+buildScript: |
+    autotoolsBuild $1/bison-${BISON_VERSION}
+
+packageScript: |
+    autotoolsPackageTgt
+    mv usr/bin/bison usr/bin/bison-real
+    cat >usr/bin/bison <<'EOF'
+    export BISON_PKGDATADIR="${0%/*}/../share/bison"
+    bison-real "$@"
+    EOF
+    chmod +x usr/bin/bison
+
+provideTools:
+    bison: usr/bin
+

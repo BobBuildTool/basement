@@ -1,0 +1,76 @@
+inherit: [stddef]
+
+buildTools: [target-toolchain]
+buildVars: [AUTOCONF_HOST, CROSS_COMPILE, TOOLCHAIN_SYSROOT]
+buildScript: |
+    # Remember toolchain stuff and remove from dependencies. Gcc will partially
+    # overwrite the sysroot so it has to be the last.
+    declare -a TOOLCHAIN_PATHS
+    TOOLCHAIN_PATHS+=( "${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT" )
+    TOOLCHAIN_PATHS+=( "${BOB_DEP_PATHS[binutils]}" )
+    TOOLCHAIN_PATHS+=( "${BOB_DEP_PATHS[gcc-native]}" )
+    unset BOB_DEP_PATHS[binutils]
+    unset BOB_DEP_PATHS[gcc-native]
+
+    # copy rootfs
+    cp -au ${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT/* .
+    for dep in "${BOB_DEP_PATHS[@]}" ; do
+       cp -au ${dep}/* .
+    done
+
+    # remove development stuff
+    rm -rf usr/include
+    find -name '*.a' -delete
+    find -executable -type f -exec ${CROSS_COMPILE}strip -g {} \;
+
+    # copy certificates
+    mkdir -p etc/ssl/certs
+    cp $<<sandbox/ca-certificates.crt>> etc/ssl/certs/ca-certificates.crt
+    touch etc/resolv.conf
+
+    # the sandbox uses "nobody" as user
+    echo "nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin" > etc/passwd
+
+    # symlink bash
+    ln -sf ../usr/bin/bash bin/bash
+    ln -sf bash bin/sh
+
+    # Copy native toolchain to "/toolchain". Symlink all executables and make
+    # sure there exist a version with the target triple.
+    mkdir -p toolchain/bin
+    for dep in "${TOOLCHAIN_PATHS[@]}" ; do
+       cp -au ${dep}/* toolchain/
+    done
+    find toolchain/usr/lib -maxdepth 1 -not -type d \
+        -exec mv {} toolchain/usr/lib/$STDDEF_TARGET_MULTIARCH/ \;
+
+    pushd toolchain/usr/bin
+    for i in ${AUTOCONF_HOST}* * ; do
+        if [[ -e ../../bin/$i ]] ; then continue ; fi
+        case $i in
+            *gcc | *g++ | *cpp | *ld)
+                cat >../../bin/$i <<EOF
+    #!/bin/sh
+    "\${0%/*}/../usr/bin/$i" --sysroot="\${0%/*}/.." "\$@"
+    EOF
+                chmod +x ../../bin/$i
+                ;;
+            *)
+                ln -s ../usr/bin/$i ../../bin/$i
+                ;;
+        esac
+        if [[ $i != ${AUTOCONF_HOST}* && ! -e ../../bin/${AUTOCONF_HOST}-$i ]] ; then
+            ln -s ../usr/bin/$i ../../bin/${AUTOCONF_HOST}-$i
+        fi
+    done
+    popd
+
+packageScript: |
+    cp -a $1/* .
+
+provideSandbox:
+    paths: ["/bin", "/usr/bin"]
+    mount:
+        - "/etc/resolv.conf"
+        - "/dev/pts"
+

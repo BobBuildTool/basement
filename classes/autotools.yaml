@@ -1,4 +1,4 @@
-inherit: [make]
+inherit: [libtool, make, stddef]
 
 buildTools: [target-toolchain]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST]
@@ -8,7 +8,7 @@ buildScript: |
     # $1 : source path
     autotoolsBuild()
     {
-        local i CPPFLAGS="${CPPFLAGS:+$CPPFLAGS}" LDFLAGS="${LDFLAGS:+$LDFLAGS}" PKG_CONFIG_PATH
+        local i lib_postfix CPPFLAGS="${CPPFLAGS:+$CPPFLAGS}" LDFLAGS="${LDFLAGS:+$LDFLAGS}" PKG_CONFIG_PATH
         local MAKE_TARGET=
         local MAKE_OPTIONS=( )
         local INSTALL_TAGET=install
@@ -42,10 +42,16 @@ buildScript: |
         # Gather all include and library paths.
         for i in "${_AUTOTOOLS_DEP_PATHS[@]:1}" ; do
             if [[ -d "$i/usr/include" ]] ; then CPPFLAGS+=" -I$i/usr/include" ; fi
-            if [[ -d "$i/lib" ]] ; then LDFLAGS+=" -L$i/lib" ; fi
-            if [[ -d "$i/usr/lib" ]] ; then LDFLAGS+=" -L$i/usr/lib" ; fi
-            if [[ -d "$i/usr/lib/pkgconfig" ]] ; then
-                PKG_CONFIG_PATH="${PKG_CONFIG_PATH:+${PKG_CONFIG_PATH}:}$i/usr/lib/pkgconfig"
+            for j in lib usr/lib lib/$STDDEF_HOST_MULTIARCH usr/lib/$STDDEF_HOST_MULTIARCH ; do
+                if [[ -d "$i/$j" ]] ; then
+                    LDFLAGS+=" -L$i/$j"
+                    if compgen -G "$i/$j/*.so" >/dev/null ; then
+                        LDFLAGS+=" -Wl,-rpath-link=$i/$j"
+                    fi
+                fi
+            done
+            if [[ -d "$i/usr/lib/$STDDEF_HOST_MULTIARCH/pkgconfig" ]] ; then
+                PKG_CONFIG_PATH="${PKG_CONFIG_PATH:+${PKG_CONFIG_PATH}:}$i/usr/lib/$STDDEF_HOST_MULTIARCH/pkgconfig"
             fi
         done
         [ -z "${CPPFLAGS:+true}" ] || export CPPFLAGS
@@ -61,6 +67,7 @@ buildScript: |
             --prefix="/usr" \
             --sysconfdir="/etc" \
             --localstatedir="/var" \
+            --libdir=/usr/lib/$STDDEF_HOST_MULTIARCH \
             "${@:2}"
         makeParallel $MAKE_TARGET ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"}
         make $INSTALL_TAGET DESTDIR=${PWD}/../install ${INSTALL_OPTIONS:+"${INSTALL_OPTIONS[@]}"}
@@ -69,13 +76,15 @@ buildScript: |
 
 packageScript: |
     _AUTOTOOLS_BUILD_PATH=$1
-    autotoolsPackage()
+
+    autotoolsPackageDev()
     {
         cp -a $_AUTOTOOLS_BUILD_PATH/install/* .
-
-        # fixup libtool files
-        # find -name '*.la' -exec sed -i -e '/^dependency_libs/s/-L[^ ]* //g' {} \;
-        find -name '*.la' -delete
-        find -name '*.pc' -exec sed -i -e '/^Libs/s/-L\/[^ ]* //g' {} \;
+        stddefCleanupDev
     }
 
+    autotoolsPackageTgt()
+    {
+        cp -a $_AUTOTOOLS_BUILD_PATH/install/* .
+        stddefCleanupTgt
+    }

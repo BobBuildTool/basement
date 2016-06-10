@@ -1,0 +1,45 @@
+inherit: [make, stddef]
+
+environment:
+    PKG_VERSION: "2.8.0"
+
+depends:
+    - zlib-dev
+    - openssl-dev
+
+    -
+        name: zlib-tgt
+        use: []
+    -
+        name: openssl-tgt
+        use: []
+
+checkoutSCM:
+    scm: url
+    url: https://www.kernel.org/pub/software/scm/git/git-${PKG_VERSION}.tar.gz
+    digestSHA1: "14fcb455094c77e3b7c399a21fedf3e869bd18e2"
+    extract: False
+
+buildTools: [target-toolchain]
+buildVars: [PKG_VERSION, AUTOCONF_HOST]
+buildScript: |
+    export CFLAGS="-I${BOB_DEP_PATHS[zlib-dev]}/usr/include -I${BOB_DEP_PATHS[openssl-dev]}/usr/include"
+    export LDFLAGS="-L${BOB_DEP_PATHS[zlib-dev]}/usr/lib/$STDDEF_HOST_MULTIARCH -L${BOB_DEP_PATHS[openssl-dev]}/usr/lib/$STDDEF_HOST_MULTIARCH"
+
+    mkdir -p install
+    tar -xzf $1/git-${PKG_VERSION}.tar.gz
+
+    pushd git-${PKG_VERSION}
+    ./configure --host=${AUTOCONF_HOST} --prefix=/usr --without-python --without-expat
+    makeParallel
+    make DESTDIR=${PWD}/../install install
+    popd
+
+packageScript: |
+    cp -a $1/install/* .
+    stddefCleanupTgt
+
+provideDeps:
+    - openssl-tgt
+    - zlib-tgt
+
