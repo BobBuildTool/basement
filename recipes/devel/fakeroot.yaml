@@ -4,11 +4,11 @@ environment:
     PKG_VERSION: "1.20.2"
 
 depends:
-    - libcap-dev
+    - libs::libcap-dev
 
-    -
-        name: libcap-tgt
-        use: []
+    - use: []
+      depends:
+        - libs::libcap-tgt
 
 checkoutSCM:
     scm: url
@@ -22,6 +22,4 @@ buildScript: |
 packageScript: |
     autotoolsPackageTgt
 
-provideDeps:
-    - libcap-tgt
-
+provideDeps: [ "*-tgt" ]

@@ -4,11 +4,11 @@ environment:
     PKG_VERSION: "1.0.2g"
 
 depends:
-    - zlib-dev
+    - libs::zlib-dev
 
-    -
-        name: zlib-tgt
-        use: []
+    - use: []
+      depends:
+        - libs::zlib-tgt
 
 checkoutSCM:
     scm: url
@@ -42,7 +42,7 @@ packageScript: |
 multiPackage:
     dev:
         packageScript: stddefCleanupDev
-        provideDeps: [zlib-dev]
+        provideDeps: [ "*-dev" ]
     tgt:
         packageScript: stddefCleanupTgt
-        provideDeps: [zlib-tgt]
+        provideDeps: [ "*-tgt" ]

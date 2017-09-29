@@ -4,31 +4,21 @@ environment:
     PKG_VERSION: "2.7.11"
 
 depends:
-   - expat-dev
-   - gdbm-dev
-   - libffi-dev
-   - ncurses-dev
-   - openssl-dev
-   - zlib-dev
+   - libs::expat-dev
+   - libs::gdbm-dev
+   - libs::libffi-dev
+   - libs::ncurses-dev
+   - libs::openssl-dev
+   - libs::zlib-dev
 
-   -
-      name: expat-tgt
-      use: []
-   -
-      name: gdbm-tgt
-      use: []
-   -
-      name: libffi-tgt
-      use: []
-   -
-      name: ncurses-tgt
-      use: []
-   -
-      name: openssl-tgt
-      use: []
-   -
-      name: zlib-tgt
-      use: []
+   - use: []
+     depends:
+      - libs::expat-tgt
+      - libs::gdbm-tgt
+      - libs::libffi-tgt
+      - libs::ncurses-tgt
+      - libs::openssl-tgt
+      - libs::zlib-tgt
 
 privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"
@@ -55,11 +45,4 @@ buildScript: |
 packageScript: |
     autotoolsPackageTgt
 
-provideDeps:
-   - expat-tgt
-   - gdbm-tgt
-   - libffi-tgt
-   - ncurses-tgt
-   - openssl-tgt
-   - zlib-tgt
-
+provideDeps: [ "*-tgt" ]

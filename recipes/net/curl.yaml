@@ -4,11 +4,11 @@ environment:
     PKG_VERSION: "7.48.0"
 
 depends:
-    - openssl-dev
+    - libs::openssl-dev
 
-    -
-        name: openssl-tgt
-        use: []
+    - use: []
+      depends:
+        - libs::openssl-tgt
 
 checkoutSCM:
     scm: url
@@ -25,5 +25,4 @@ buildScript: |
 packageScript: |
     autotoolsPackageTgt
 
-provideDeps:
-    - openssl-tgt
+provideDeps: [ "*-tgt" ]

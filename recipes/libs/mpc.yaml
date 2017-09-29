@@ -4,8 +4,8 @@ environment:
     MPC_VERSION: "1.0.3"
 
 depends:
-    - gmp
-    - mpfr
+    - libs::gmp
+    - libs::mpfr
 
 checkoutSCM:
     scm: url
@@ -20,6 +20,6 @@ packageScript: |
     autotoolsPackageDev
 
 provideDeps:
-    - gmp
-    - mpfr
+    - libs::gmp
+    - libs::mpfr
 

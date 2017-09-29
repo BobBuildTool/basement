@@ -1,8 +1,8 @@
 inherit: [stddef]
 
 depends:
-    - gcc-stage2
-    - glibc-dev
+    - devel::gcc-stage2
+    - libs::glibc-dev
 
 buildVars: [AUTOCONF_TARGET]
 buildScript: |

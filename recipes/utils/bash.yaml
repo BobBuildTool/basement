@@ -4,16 +4,15 @@ environment:
     BASH_VERSION: "4.3.30"
 
 depends:
-    - ncurses-dev
+    - libs::ncurses-dev
     -
-        name: readline-dev
+        name: libs::readline-dev
         use: [result, deps, environment]
-    -
-        name: ncurses-tgt
-        use: []
-    -
-        name: readline-tgt
-        use: []
+
+    - use: []
+      depends:
+        - libs::ncurses-tgt
+        - libs::readline-tgt
 
 checkoutSCM:
     scm: url
@@ -36,9 +35,7 @@ buildScript: |
 packageScript: |
     autotoolsPackageTgt
 
-provideDeps:
-    - ncurses-tgt
-    - readline-tgt
+provideDeps: [ "*-tgt" ]
 
 provideVars:
     BASH_VERSION: "${BASH_VERSION}"

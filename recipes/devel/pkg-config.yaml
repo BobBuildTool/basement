@@ -4,11 +4,11 @@ environment:
     PKG_VERSION: "0.29.1"
 
 depends:
-    - glib-dev
+    - libs::glib-dev
 
-    -
-        name: glib-tgt
-        use: []
+    - use: []
+      depends:
+        - libs::glib-tgt
 
 checkoutSCM:
     scm: url
@@ -25,6 +25,4 @@ buildScript: |
 packageScript: |
     autotoolsPackageTgt
 
-provideDeps:
-    - glib-tgt
-
+provideDeps: [ "*-tgt" ]

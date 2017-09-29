@@ -4,10 +4,10 @@ environment:
     GCC_VERSION: "5.3.0"
 
 depends:
-    - gmp
-    - mpfr
-    - mpc
-    - isl
+    - libs::gmp
+    - libs::mpfr
+    - libs::mpc
+    - libs::isl
 
 checkoutSCM:
     scm: url
@@ -68,7 +68,7 @@ multiPackage:
     stage1:
         depends:
             -
-                name: binutils
+                name: devel::binutils
                 use: [result, tools]
         buildTools: [binutils]
         buildScript: |
@@ -99,9 +99,9 @@ multiPackage:
     stage2:
         depends:
             -
-                name: binutils
+                name: devel::binutils
                 use: [result, tools]
-            - glibc-dev
+            - libs::glibc-dev
 
         buildTools: [binutils]
         buildScript: |

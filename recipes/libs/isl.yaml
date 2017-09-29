@@ -9,7 +9,7 @@ privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"
 
 depends:
-    - gmp
+    - libs::gmp
 
 checkoutSCM:
     scm: url
@@ -24,6 +24,6 @@ packageScript: |
     autotoolsPackageDev
 
 provideDeps:
-    - gmp
+    - libs::gmp
 
 

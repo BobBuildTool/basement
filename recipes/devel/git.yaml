@@ -4,15 +4,13 @@ environment:
     PKG_VERSION: "2.8.0"
 
 depends:
-    - zlib-dev
-    - openssl-dev
+    - libs::zlib-dev
+    - libs::openssl-dev
 
-    -
-        name: zlib-tgt
-        use: []
-    -
-        name: openssl-tgt
-        use: []
+    - use: []
+      depends:
+        - libs::zlib-tgt
+        - libs::openssl-tgt
 
 checkoutSCM:
     scm: url
@@ -39,7 +37,4 @@ packageScript: |
     cp -a $1/install/* .
     stddefCleanupTgt
 
-provideDeps:
-    - openssl-tgt
-    - zlib-tgt
-
+provideDeps: [ "*-tgt" ]

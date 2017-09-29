@@ -4,15 +4,13 @@ environment:
     PKG_VERSION: "7.2p2"
 
 depends:
-    - zlib-dev
-    - openssl-dev
+    - libs::openssl-dev
+    - libs::zlib-dev
 
-    -
-        name: zlib-tgt
-        use: []
-    -
-        name: openssl-tgt
-        use: []
+    - use: []
+      depends:
+        - libs::openssl-tgt
+        - libs::zlib-tgt
 
 checkoutSCM:
     scm: url
@@ -30,7 +28,5 @@ buildScript: |
 packageScript: |
     autotoolsPackageTgt
 
-provideDeps:
-    - openssl-tgt
-    - zlib-tgt
+provideDeps: [ "*-tgt" ]
 

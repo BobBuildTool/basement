@@ -4,7 +4,7 @@ environment:
     COREUTILS_VERSION: "8.25"
 
 depends:
-    - gmp
+    - libs::gmp
 
 checkoutSCM:
     scm: url

@@ -4,10 +4,10 @@ environment:
     READLINE_VERSION: "6.3"
 
 depends:
-    - ncurses-dev
-    -
-        name: ncurses-tgt
-        use: []
+    - libs::ncurses-dev
+    - use: []
+      depends:
+        - libs::ncurses-tgt
 
 checkoutSCM:
     scm: url
@@ -23,12 +23,10 @@ buildScript: |
 multiPackage:
     dev:
         packageScript: autotoolsPackageDev
-        provideDeps:
-            - ncurses-dev
+        provideDeps: [ "*-dev" ]
         provideVars:
             READLINE_VERSION: "${READLINE_VERSION}"
 
     tgt:
         packageScript: autotoolsPackageTgt
-        provideDeps:
-            - ncurses-tgt
+        provideDeps: [ "*-tgt" ]

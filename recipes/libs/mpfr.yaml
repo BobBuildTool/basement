@@ -4,11 +4,11 @@ environment:
     PKG_VERSION: "3.1.3"
 
 depends:
-    - gmp
+    - libs::gmp
 
 checkoutSCM:
     scm: url
-    url: http://www.mpfr.org/mpfr-${PKG_VERSION}/mpfr-${PKG_VERSION}.tar.xz
+    url: ${GNU_MIRROR}/mpfr/mpfr-${PKG_VERSION}.tar.xz
     digestSHA1: "383303f9de5ebe055b03b94642b03465baf9e6c7"
 
 buildVars: [PKG_VERSION]
@@ -19,5 +19,5 @@ packageScript: |
     autotoolsPackageDev
 
 provideDeps:
-    - gmp
+    - libs::gmp
 

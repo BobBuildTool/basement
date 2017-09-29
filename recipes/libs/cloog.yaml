@@ -4,8 +4,8 @@ environment:
     CLOOG_VERSION: "0.18.4"
 
 depends:
-    - gmp
-    - isl
+    - libs::gmp
+    - libs::isl
 
 checkoutSCM:
     scm: url
@@ -23,6 +23,6 @@ packageScript: |
     autotoolsPackageDev
 
 provideDeps:
-    - gmp
-    - isl
+    - libs::gmp
+    - libs::isl
 

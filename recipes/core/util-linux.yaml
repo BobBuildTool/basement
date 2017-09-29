@@ -5,15 +5,13 @@ environment:
     UTIL_LINUX_VERSION: "2.27.1"
 
 depends:
-    - ncurses-dev
-    - zlib-dev
+    - libs::ncurses-dev
+    - libs::zlib-dev
 
-    -
-        name: ncurses-tgt
-        use: []
-    -
-        name: zlib-tgt
-        use: []
+    - use: []
+      depends:
+        - libs::ncurses-tgt
+        - libs::zlib-tgt
 
 checkoutSCM:
     scm: url
@@ -31,6 +29,4 @@ buildScript: |
 packageScript: |
     autotoolsPackageTgt
 
-provideDeps:
-    - ncurses-tgt
-    - zlib-tgt
+provideDeps: [ "*-tgt" ]

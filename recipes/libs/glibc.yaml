@@ -1,9 +1,9 @@
 inherit: [make, patch, stddef]
 
 depends:
-    - linux-headers
+    - kernel::linux-headers
     -
-        name: gcc-stage1
+        name: devel::gcc-stage1
         use: [tools]
 
 

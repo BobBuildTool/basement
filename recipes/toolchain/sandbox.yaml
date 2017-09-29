@@ -1,0 +1,78 @@
+inherit: [sandbox]
+root: True
+
+filter:
+    environment: [ "*_MIRROR" ]
+    tools: [ "!*" ]
+
+depends:
+    # We try to build the sandbox in a temporary 1st stage sandbox. Though not
+    # strictly necessary it greatly helps to find unclean stuff. If the we
+    # build with '--no-sandbox' the host compiler will be used directly.
+    -
+        name: toolchain::bootstrap-sandbox
+        use: [sandbox]
+        forward: True
+    -
+        name: toolchain::bootstrap-sandbox-toolchain
+        use: [environment, tools]
+        forward: True
+
+    # some required host tools
+    -
+        name: devel::bison
+        use: [tools]
+        forward: True
+    -
+        name: devel::flex
+        use: [tools]
+        forward: True
+
+    # target toolchain
+    -
+        name: toolchain::cross-toolchain
+        environment:
+            AUTOCONF_TARGET: "x86_64-bob-linux-gnu"
+            ARCH: x86_64
+        use: [environment, tools]
+        forward: True
+
+    - core::coreutils
+    - core::util-linux
+    - devel::diffutils
+    - devel::fakeroot
+    - devel::git
+    - devel::gperf
+    # - devel::intltool #-> "configure: error: XML::Parser perl module is required for intltool"
+    - devel::libtool
+    - devel::m4
+    - devel::make
+    - devel::makedepend
+    - devel::patch
+    - devel::pkg-config
+    - devel::texinfo
+    - kernel::kmod
+    - libs::gettext
+    - net::curl
+    - net::openssh
+    - perl::perl
+    # - python::python
+    - utils::bash
+    - utils::bc
+    - utils::bzip2
+    - utils::file
+    - utils::findutils
+    - utils::gawk
+    - utils::grep
+    - utils::gzip
+    - utils::rsync
+    - utils::sed
+    - utils::tar
+    - utils::unzip
+    - utils::which
+    - utils::xz-utils
+
+    # native toolchain
+    - devel::binutils
+    - devel::gcc-native
+

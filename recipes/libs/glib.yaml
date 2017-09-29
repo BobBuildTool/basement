@@ -4,15 +4,13 @@ environment:
     GLIB_VERSION: "2.48.1"
 
 depends:
-    - libffi-dev
-    - zlib-dev
+    - libs::libffi-dev
+    - libs::zlib-dev
 
-    -
-        name: libffi-tgt
-        use: []
-    -
-        name: zlib-tgt
-        use: []
+    - use: []
+      depends:
+        - libs::libffi-tgt
+        - libs::zlib-tgt
 
 checkoutSCM:
     scm: url
@@ -32,12 +30,7 @@ buildScript: |
 multiPackage:
     dev:
         packageScript: autotoolsPackageDev
-        provideDeps:
-            - libffi-dev
-            - zlib-dev
+        provideDeps: [ "*-dev" ]
     tgt:
         packageScript: autotoolsPackageTgt
-        provideDeps:
-            - libffi-tgt
-            - zlib-tgt
-
+        provideDeps: [ "*-tgt" ]
