@@ -1,4 +1,4 @@
 /dev
 /work
-.bob-state.pickle
-.bob-cache.shelve.db
+.bob-*
+user.yaml
