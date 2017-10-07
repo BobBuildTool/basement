@@ -9,7 +9,11 @@ privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"
 
 depends:
-    - libs::gmp
+    - libs::gmp-dev
+
+    - use: []
+      depends:
+        - libs::gmp-tgt
 
 checkoutSCM:
     scm: url
@@ -18,12 +22,12 @@ checkoutSCM:
 
 buildVars: [ISL_VERSION]
 buildScript: |
-    autotoolsBuild $1/isl-${ISL_VERSION} --disable-shared --enable-static
+    autotoolsBuild $1/isl-${ISL_VERSION}
 
-packageScript: |
-    autotoolsPackageDev
-
-provideDeps:
-    - libs::gmp
-
-
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
+        provideDeps: [ "*-dev" ]
+    tgt:
+        packageScript: autotoolsPackageTgt
+        provideDeps: [ "*-tgt" ]

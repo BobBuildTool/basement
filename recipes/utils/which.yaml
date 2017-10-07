@@ -1,4 +1,4 @@
 packageScript: |
-    mkdir -p bin
-    cp $<<which/which>> bin/which
-    chmod 755 bin/which
+    mkdir -p usr/bin
+    cp $<<which/which>> usr/bin/which
+    chmod 755 usr/bin/which

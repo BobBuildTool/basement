@@ -4,7 +4,11 @@ environment:
     PKG_VERSION: "3.1.3"
 
 depends:
-    - libs::gmp
+    - libs::gmp-dev
+
+    - use: []
+      depends:
+        - libs::gmp-tgt
 
 checkoutSCM:
     scm: url
@@ -13,11 +17,12 @@ checkoutSCM:
 
 buildVars: [PKG_VERSION]
 buildScript: |
-    autotoolsBuild $1/mpfr-${PKG_VERSION} --disable-shared --enable-static
+    autotoolsBuild $1/mpfr-${PKG_VERSION}
 
-packageScript: |
-    autotoolsPackageDev
-
-provideDeps:
-    - libs::gmp
-
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
+        provideDeps: [ "*-dev" ]
+    tgt:
+        packageScript: autotoolsPackageTgt
+        provideDeps: [ "*-tgt" ]

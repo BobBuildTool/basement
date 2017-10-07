@@ -4,8 +4,13 @@ environment:
     MPC_VERSION: "1.0.3"
 
 depends:
-    - libs::gmp
-    - libs::mpfr
+    - libs::gmp-dev
+    - libs::mpfr-dev
+
+    - use: []
+      depends:
+        - libs::gmp-tgt
+        - libs::mpfr-tgt
 
 checkoutSCM:
     scm: url
@@ -14,12 +19,12 @@ checkoutSCM:
 
 buildVars: [MPC_VERSION]
 buildScript: |
-    autotoolsBuild $1/mpc-${MPC_VERSION} --disable-shared --enable-static
+    autotoolsBuild $1/mpc-${MPC_VERSION}
 
-packageScript: |
-    autotoolsPackageDev
-
-provideDeps:
-    - libs::gmp
-    - libs::mpfr
-
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
+        provideDeps: [ "*-dev" ]
+    tgt:
+        packageScript: autotoolsPackageTgt
+        provideDeps: [ "*-tgt" ]

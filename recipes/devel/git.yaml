@@ -1,4 +1,4 @@
-inherit: [make, stddef]
+inherit: [make, install]
 
 environment:
     PKG_VERSION: "2.8.0"
@@ -19,10 +19,11 @@ checkoutSCM:
     extract: False
 
 buildTools: [target-toolchain]
-buildVars: [PKG_VERSION, AUTOCONF_HOST]
+buildVars: [PKG_VERSION, AUTOCONF_HOST, MULTIARCH_HOST,
+    CPPFLAGS, CFLAGS, LDFLAGS]
 buildScript: |
-    export CFLAGS="-I${BOB_DEP_PATHS[zlib-dev]}/usr/include -I${BOB_DEP_PATHS[openssl-dev]}/usr/include"
-    export LDFLAGS="-L${BOB_DEP_PATHS[zlib-dev]}/usr/lib/$STDDEF_HOST_MULTIARCH -L${BOB_DEP_PATHS[openssl-dev]}/usr/lib/$STDDEF_HOST_MULTIARCH"
+    export CFLAGS="-I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include -I${BOB_DEP_PATHS[libs::openssl-dev]}/usr/include"
+    export LDFLAGS="-L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib/$MULTIARCH_HOST -L${BOB_DEP_PATHS[libs::openssl-dev]}/usr/lib/$MULTIARCH_HOST"
 
     mkdir -p install
     tar -xzf $1/git-${PKG_VERSION}.tar.gz
@@ -35,6 +36,6 @@ buildScript: |
 
 packageScript: |
     cp -a $1/install/* .
-    stddefCleanupTgt
+    installCleanupTgt
 
 provideDeps: [ "*-tgt" ]

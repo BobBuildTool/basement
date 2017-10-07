@@ -4,7 +4,10 @@ environment:
     PKG_VERSION: "4.1.3"
 
 depends:
-    - libs::mpfr
+    - libs::mpfr-dev
+    - use: []
+      depends:
+        - libs::mpfr-tgt
 
 checkoutSCM:
     scm: url
@@ -18,3 +21,4 @@ buildScript: |
 packageScript: |
     autotoolsPackageTgt
 
+provideDeps: [ "*-tgt" ]

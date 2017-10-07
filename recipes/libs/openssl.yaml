@@ -1,4 +1,4 @@
-inherit: [make, stddef]
+inherit: [make, install]
 
 environment:
     PKG_VERSION: "1.0.2g"
@@ -17,20 +17,20 @@ checkoutSCM:
     extract: False
 
 buildTools: [target-toolchain]
-buildVars: [PKG_VERSION, CC, AR, RANLIB, ARCH, AUTOCONF_HOST]
+buildVars: [PKG_VERSION, CC, AR, RANLIB, ARCH, AUTOCONF_HOST, MULTIARCH_HOST]
 buildScript: |
     export TARGETMACH=${AUTOCONF_HOST}
-    export LDFLAGS="-Wl,-rpath-link=${BOB_DEP_PATHS[zlib-dev]}/usr/lib/$STDDEF_HOST_MULTIARCH"
+    export LDFLAGS="-Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib/$MULTIARCH_HOST"
 
     tar -xzf $1/openssl-${PKG_VERSION}.tar.gz
     pushd openssl-${PKG_VERSION}
     ./Configure \
         --prefix=/usr \
         --openssldir=/etc/ssl \
-        --libdir=lib/$STDDEF_HOST_MULTIARCH \
+        --libdir=lib/$MULTIARCH_HOST \
         shared \
         zlib-dynamic \
-        "-I${BOB_DEP_PATHS[zlib-dev]}/usr/include" \
+        "-I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include" \
         linux-${ARCH}
 
     #make depend
@@ -41,8 +41,8 @@ packageScript: |
 
 multiPackage:
     dev:
-        packageScript: stddefCleanupDev
+        packageScript: installCleanupDev
         provideDeps: [ "*-dev" ]
     tgt:
-        packageScript: stddefCleanupTgt
+        packageScript: installCleanupTgt
         provideDeps: [ "*-tgt" ]

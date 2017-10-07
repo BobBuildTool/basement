@@ -28,17 +28,21 @@ checkoutScript: |
         name=".applied$name"
         if [ -e "$name" ] ; then
             if cmp <( for (( idx=$# ; idx>0 ; idx-- )) ; do cat "${@:$idx:1}" ; done ) "$name" ; then
-                return
+                # The patch is allegedly applied and was not changed. Check if
+                # it is still applied as expected...
+                if patch -p $p --reverse --dry-run --silent -f < "$name" ; then
+                    return
+                fi
+                echo "Patch was (partially) squashed? Trying to recover..." >&2
             fi
-            patch -p $p --reverse < "$name" || true
+            patch -p $p --reverse -f < "$name" || true
             rm "$name"
         fi
 
         for i in "$@" ; do
-            patch -p $p < $i
+            patch -p $p -f < $i
             touch "$name"
             cat $i "$name" > "$name".new
             mv "$name".new "$name"
         done
     }
-

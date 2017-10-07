@@ -2,3 +2,4 @@
 /work
 .bob-*
 user.yaml
+__pycache__/

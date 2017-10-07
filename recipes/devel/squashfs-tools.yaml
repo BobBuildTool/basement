@@ -11,11 +11,11 @@ checkoutSCM:
     url: https://sourceforge.net/projects/squashfs/files/squashfs/squashfs${PKG_VERSION}/squashfs${PKG_VERSION}.tar.gz
     digestSHA1: "a615979db9cee82e4a934a1455577f597d290b41"
 
-buildVars: [PKG_VERSION]
+buildVars: [PKG_VERSION, CPPFLAGS, CFLAGS, LDFLAGS]
 buildScript: |
     # autotoolsBuild $1/bc-${PKG_VERSION}
-    export CFLAGS="-I${BOB_DEP_PATHS[xz-utils]}/usr/include"
-    export LDFLAGS="-L${BOB_DEP_PATHS[xz-utils]}/usr/lib"
+    CFLAGS+=" -I${BOB_DEP_PATHS[utils::xz-utils]}/usr/include"
+    LDFLAGS+=" -L${BOB_DEP_PATHS[utils::xz-utils]}/usr/lib"
     make -C $1/squashfs4.3/squashfs-tools XZ_SUPPORT=1  LZMA_XZ_SUPPORT=1
 
 packageScript: |

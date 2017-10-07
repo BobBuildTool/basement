@@ -53,16 +53,22 @@ buildScript: |
     fi
 
 multiPackage:
-    image:
-        buildVars: [LINUX_DTB]
+    "":
         buildScript: |
-            makeParallel bzImage
-            make ${LINUX_DTB}.dtb
-        packageScript: |
-            read LINUX_ARCH_PATH < $1/.arch-path
-            mkdir -p boot
-            cp -au $1/$LINUX_ARCH_PATH/boot/zImage boot/
-            cp -ap $1/$LINUX_ARCH_PATH/boot/dts/${LINUX_DTB}.dtb boot/
+            makeParallel bzImage modules dtbs
+
+        multiPackage:
+            image:
+                packageScript: |
+                    read LINUX_ARCH_PATH < $1/.arch-path
+                    mkdir -p boot/overlays
+                    cp -a $1/$LINUX_ARCH_PATH/boot/zImage boot/
+                    cp -a $1/$LINUX_ARCH_PATH/boot/dts/*.dtb boot/
+                    #cp -a $1/$LINUX_ARCH_PATH/boot/dts/overlays/*.dtb* boot/overlays/
+
+            modules:
+                packageScript: |
+                    make -C $1 INSTALL_MOD_PATH=$PWD modules_install
 
     headers:
         buildScript: |

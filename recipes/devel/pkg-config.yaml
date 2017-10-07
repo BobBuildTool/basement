@@ -1,4 +1,4 @@
-inherit: [autotools]
+inherit: [autotools, patch]
 
 environment:
     PKG_VERSION: "0.29.1"
@@ -15,14 +15,25 @@ checkoutSCM:
     url: https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_VERSION}.tar.gz
     digestSHA1: "271ce928f6d673cc16cbced2bfd14a5f2e5d3d37"
 
-buildVars: [PKG_VERSION]
+checkoutVars: [PKG_VERSION]
+checkoutDeterministic: True
+checkoutScript: |
+    cd pkg-config-${PKG_VERSION}
+    patchApplySeries $<<pkg-config/*.patch>>
+
+buildVars: [MULTIARCH_HOST]
 buildScript: |
-    export GLIB_CFLAGS="-I${BOB_DEP_PATHS[glib-dev]}/usr/include/glib-2.0 -I${BOB_DEP_PATHS[glib-dev]}/usr/lib/$STDDEF_HOST_MULTIARCH/glib-2.0/include"
-    export GLIB_LIBS="-lglib-2.0"
+    export GLIB_CFLAGS="-I${BOB_DEP_PATHS[libs::glib-dev]}/usr/include/glib-2.0"
+           GLIB_CFLAGS+=" -I${BOB_DEP_PATHS[libs::glib-dev]}/usr/lib/$MULTIARCH_HOST/glib-2.0/include"
+    export GLIB_LIBS="-lglib-2.0 -lpthread"
     autotoolsBuild $1/pkg-config-${PKG_VERSION} \
-       --disable-host-tool
+       --disable-host-tool \
+       --enable-define-prefix
 
 packageScript: |
     autotoolsPackageTgt
 
 provideDeps: [ "*-tgt" ]
+
+provideTools:
+    pkg-config: usr/bin

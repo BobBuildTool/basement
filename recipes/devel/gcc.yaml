@@ -1,18 +1,25 @@
-inherit: [make, patch, stddef]
+inherit: [make, install, patch]
 
 environment:
-    GCC_VERSION: "5.3.0"
+    GCC_VERSION: "6.4.0"
 
 depends:
-    - libs::gmp
-    - libs::mpfr
-    - libs::mpc
-    - libs::isl
+    - libs::gmp-dev
+    - libs::mpfr-dev
+    - libs::mpc-dev
+    - libs::isl-dev
+
+    - use: []
+      depends:
+        - libs::gmp-tgt
+        - libs::mpfr-tgt
+        - libs::mpc-tgt
+        - libs::isl-tgt
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2
-    digestSHA256: "b84f5592e9218b73dbae612b5253035a7b34a9a1f7688d2e1bfaaf7267d5c4db"
+    url: ${GNU_MIRROR}/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz
+    digestSHA256: "850bf21eafdfe5cd5f6827148184c08c4a0852a37ccf36ce69855334d2c914d4"
 
 checkoutVars: [GCC_VERSION]
 checkoutDeterministic: True
@@ -20,8 +27,9 @@ checkoutScript: |
     cd gcc-${GCC_VERSION}
     patchApplySeries -p2 $<<gcc/*.diff>>
 
-buildTools: [target-toolchain]
+buildTools: [host-toolchain]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
+            MULTIARCH_BUILD, MULTIARCH_HOST, MULTIARCH_TARGET,
             GCC_VERSION,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU]
 buildScript: |
@@ -31,13 +39,14 @@ buildScript: |
         mkdir -p build install
         pushd build
         $GCC_SRC/gcc-${GCC_VERSION}/configure \
-            --build=${STDDEF_BUILD_TRIPLE} \
-            --host=${STDDEF_HOST_TRIPLE} \
-            --target=${STDDEF_TARGET_TRIPLE} \
+            --build=${AUTOCONF_BUILD} \
+            --host=${AUTOCONF_HOST} \
+            --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST}} \
             --prefix=/usr \
             ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
             ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
             ${GCC_TARGET_FLOAT_ABI:+--with-float=$GCC_TARGET_FLOAT_ABI} \
+            --enable-initfini-array \
             "${@}" \
             --disable-gtk-doc \
             --disable-gtk-doc-html \
@@ -47,14 +56,14 @@ buildScript: |
             --disable-debug \
             --with-xmlto=no \
             --with-fop=no \
-            --with-gmp-include=${BOB_DEP_PATHS[gmp]}/usr/include \
-            --with-gmp-lib=${BOB_DEP_PATHS[gmp]}/usr/lib/$STDDEF_HOST_MULTIARCH \
-            --with-mpfr-include=${BOB_DEP_PATHS[mpfr]}/usr/include \
-            --with-mpfr-lib=${BOB_DEP_PATHS[mpfr]}/usr/lib/$STDDEF_HOST_MULTIARCH \
-            --with-mpc-include=${BOB_DEP_PATHS[mpc]}/usr/include \
-            --with-mpc-lib=${BOB_DEP_PATHS[mpc]}/usr/lib/$STDDEF_HOST_MULTIARCH \
-            --with-isl-include=${BOB_DEP_PATHS[isl]}/usr/include \
-            --with-isl-lib=${BOB_DEP_PATHS[isl]}/usr/lib/$STDDEF_HOST_MULTIARCH
+            --with-gmp-include=${BOB_DEP_PATHS[libs::gmp-dev]}/usr/include \
+            --with-gmp-lib=${BOB_DEP_PATHS[libs::gmp-dev]}/usr/lib/$MULTIARCH_BUILD \
+            --with-mpfr-include=${BOB_DEP_PATHS[libs::mpfr-dev]}/usr/include \
+            --with-mpfr-lib=${BOB_DEP_PATHS[libs::mpfr-dev]}/usr/lib/$MULTIARCH_BUILD \
+            --with-mpc-include=${BOB_DEP_PATHS[libs::mpc-dev]}/usr/include \
+            --with-mpc-lib=${BOB_DEP_PATHS[libs::mpc-dev]}/usr/lib/$MULTIARCH_BUILD \
+            --with-isl-include=${BOB_DEP_PATHS[libs::isl-dev]}/usr/include \
+            --with-isl-lib=${BOB_DEP_PATHS[libs::isl-dev]}/usr/lib/$MULTIARCH_BUILD
         makeParallel
         make install DESTDIR=${PWD}/../install
         popd
@@ -62,10 +71,12 @@ buildScript: |
 
 packageScript: |
     cp -a $1/install/* .
-    stddefCleanupDev
+    installCleanupDev
+
+provideDeps: [ "*-tgt" ]
 
 multiPackage:
-    stage1:
+    cross-bare:
         depends:
             -
                 name: devel::binutils
@@ -84,6 +95,7 @@ multiPackage:
                 --disable-threads                              \
                 --disable-libatomic                            \
                 --disable-libgomp                              \
+                --disable-libmpx                               \
                 --disable-libquadmath                          \
                 --disable-libssp                               \
                 --disable-libvtv                               \
@@ -91,12 +103,12 @@ multiPackage:
                 --disable-shared                               \
                 --disable-bootstrap                            \
                 --enable-languages=c,c++
-            cp -a ${BOB_DEP_PATHS[binutils]}/* install/
+            cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
 
         provideTools:
-            gcc-stage1: usr/bin
+            gcc-cross-bare: usr/bin
 
-    stage2:
+    cross:
         depends:
             -
                 name: devel::binutils
@@ -106,21 +118,23 @@ multiPackage:
         buildTools: [binutils]
         buildScript: |
             buildGcc \
-                --with-sysroot=${BOB_DEP_PATHS[glibc-dev]}                  \
-                --with-build-sysroot=${BOB_DEP_PATHS[glibc-dev]}            \
+                --with-sysroot=/usr/sysroots/${MULTIARCH_HOST:-${MULTIARCH_TARGET}} \
+                --with-build-sysroot=${BOB_DEP_PATHS[libs::glibc-dev]}      \
                 --enable-multiarch                                          \
                 --enable-linker-build-id                                    \
                 --enable-threads=posix                                      \
                 --disable-multilib                                          \
                 --enable-languages=c,c++
-            cp -a ${BOB_DEP_PATHS[binutils]}/* install/
+            cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
 
     native:
-        buildTools: [host-toolchain]
-        buildVars: [TOOLCHAIN_SYSROOT]
+        buildTools: [target-toolchain]
+        buildVars: [TOOLCHAIN_SYSROOT, GCC_PREFIX]
         buildScript: |
+            TARGET_SYSROOT="${GCC_PREFIX:-/usr}/sysroots/${MULTIARCH_HOST:-${MULTIARCH_TARGET}}"
             buildGcc \
-                --with-sysroot=${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT       \
+                ${GCC_PREFIX:+--prefix=${GCC_PREFIX}} \
+                --with-sysroot="${TARGET_SYSROOT}" \
                 --with-build-sysroot=${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT \
                 --enable-multiarch                                                          \
                 --enable-linker-build-id                                                    \
@@ -128,5 +142,7 @@ multiPackage:
                 --disable-multilib                                                          \
                 --enable-languages=c,c++
 
-#                --build=$($1/gcc-${GCC_VERSION}/config.guess)                               \
-#                --target=${AUTOCONF_HOST}                                                   \
+            # add sysroot
+            mkdir -p "install/${TARGET_SYSROOT}"
+            cp -an ${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT/* "install/${TARGET_SYSROOT}"
+

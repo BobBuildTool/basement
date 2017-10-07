@@ -1,18 +1,42 @@
-inherit: [libtool, make, stddef]
+inherit: [libtool, make, install, pkg-config]
 
 buildTools: [target-toolchain]
-buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST]
+buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, MULTIARCH_HOST,
+    CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS]
 buildScript: |
-    _AUTOTOOLS_DEP_PATHS=( "$@" )
+    # Gather all include and library paths.
+    for i in "${@:2}" ; do
+        for j in usr/include/$MULTIARCH_HOST usr/include ; do
+            if [[ -d "$i/$j" ]] ; then
+                CPPFLAGS+=" -I$i/$j"
+            fi
+        done
+        for j in lib/$MULTIARCH_HOST lib usr/lib/$MULTIARCH_HOST usr/lib ; do
+            if [[ -d "$i/$j" ]] ; then
+                LDFLAGS+=" -L$i/$j"
+                if compgen -G "$i/$j/*.so" >/dev/null ; then
+                    LDFLAGS+=" -Wl,-rpath-link=$i/$j"
+                fi
+            fi
+        done
+    done
+
+    [ -z "${CPPFLAGS:+true}" ] || export CPPFLAGS
+    [ -z "${LDFLAGS:+true}" ] || export LDFLAGS
 
     # $1 : source path
     autotoolsBuild()
     {
-        local i lib_postfix CPPFLAGS="${CPPFLAGS:+$CPPFLAGS}" LDFLAGS="${LDFLAGS:+$LDFLAGS}" PKG_CONFIG_PATH
         local MAKE_TARGET=
         local MAKE_OPTIONS=( )
         local INSTALL_TAGET=install
         local INSTALL_OPTIONS=( )
+        local SHARED_STATIC=( "--enable-shared" "--disable-static" )
+
+        # build everything static on host builds
+        if [[ "${AUTOCONF_BUILD:-unknown}" == "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
+            SHARED_STATIC=( "--disable-shared" "--enable-static" )
+        fi
 
         # parse arguments
         OPTIND=1
@@ -39,25 +63,6 @@ buildScript: |
         done
         shift $(( OPTIND -1 ))
 
-        # Gather all include and library paths.
-        for i in "${_AUTOTOOLS_DEP_PATHS[@]:1}" ; do
-            if [[ -d "$i/usr/include" ]] ; then CPPFLAGS+=" -I$i/usr/include" ; fi
-            for j in lib usr/lib lib/$STDDEF_HOST_MULTIARCH usr/lib/$STDDEF_HOST_MULTIARCH ; do
-                if [[ -d "$i/$j" ]] ; then
-                    LDFLAGS+=" -L$i/$j"
-                    if compgen -G "$i/$j/*.so" >/dev/null ; then
-                        LDFLAGS+=" -Wl,-rpath-link=$i/$j"
-                    fi
-                fi
-            done
-            if [[ -d "$i/usr/lib/$STDDEF_HOST_MULTIARCH/pkgconfig" ]] ; then
-                PKG_CONFIG_PATH="${PKG_CONFIG_PATH:+${PKG_CONFIG_PATH}:}$i/usr/lib/$STDDEF_HOST_MULTIARCH/pkgconfig"
-            fi
-        done
-        [ -z "${CPPFLAGS:+true}" ] || export CPPFLAGS
-        [ -z "${LDFLAGS:+true}" ] || export LDFLAGS
-        [ -z "${PKG_CONFIG_PATH:+true}" ] || export PKG_CONFIG_PATH
-
         mkdir -p build install
         pushd build
         $1/configure \
@@ -67,7 +72,8 @@ buildScript: |
             --prefix="/usr" \
             --sysconfdir="/etc" \
             --localstatedir="/var" \
-            --libdir=/usr/lib/$STDDEF_HOST_MULTIARCH \
+            --libdir=/usr/lib/$MULTIARCH_HOST \
+            "${SHARED_STATIC[@]}" \
             "${@:2}"
         makeParallel $MAKE_TARGET ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"}
         make $INSTALL_TAGET DESTDIR=${PWD}/../install ${INSTALL_OPTIONS:+"${INSTALL_OPTIONS[@]}"}
@@ -79,12 +85,12 @@ packageScript: |
 
     autotoolsPackageDev()
     {
-        cp -a $_AUTOTOOLS_BUILD_PATH/install/* .
-        stddefCleanupDev
+        cp -a ${1:-${_AUTOTOOLS_BUILD_PATH}}/install/* .
+        installCleanupDev
     }
 
     autotoolsPackageTgt()
     {
-        cp -a $_AUTOTOOLS_BUILD_PATH/install/* .
-        stddefCleanupTgt
+        cp -a ${1:-${_AUTOTOOLS_BUILD_PATH}}/install/* .
+        installCleanupTgt
     }

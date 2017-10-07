@@ -8,8 +8,17 @@ checkoutSCM:
     url: ftp://ftp.astron.com/pub/file/file-${FILE_VERSION}.tar.gz
     digestSHA1: "fea78106dd0b7a09a61714cdbe545135563e84bd"
 
-buildVars: [FILE_VERSION]
+buildTools: [host-toolchain]
+buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, FILE_VERSION]
 buildScript: |
+    # need host "file" tool when cross-compiling
+    if [[ ${AUTOCONF_BUILD:-unknown} != ${AUTOCONF_HOST:-unknown} ]] ; then
+        mkdir host
+        pushd host
+        AUTOCONF_HOST="$AUTOCONF_BUILD" autotoolsBuild $1/file-${FILE_VERSION}
+        export PATH="$PWD/install/usr/bin:$PATH"
+        popd
+    fi
     autotoolsBuild $1/file-${FILE_VERSION}
 
 packageScript: |

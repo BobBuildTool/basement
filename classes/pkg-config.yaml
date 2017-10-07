@@ -1,0 +1,13 @@
+buildTools: [pkg-config]
+buildVars: [MULTIARCH_HOST]
+buildScript: |
+    # make sure to not search any system paths
+    export PKG_CONFIG_DIR=
+
+    # gather pkg-config paths
+    export PKG_CONFIG_LIBDIR=
+    for i in "${@:2}" ; do
+        if [[ -d "$i/usr/lib/$MULTIARCH_HOST/pkgconfig" ]] ; then
+            PKG_CONFIG_LIBDIR="${PKG_CONFIG_LIBDIR:+${PKG_CONFIG_LIBDIR}:}$i/usr/lib/$MULTIARCH_HOST/pkgconfig"
+        fi
+    done

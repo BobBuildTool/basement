@@ -1,1 +1,9 @@
-bobMinimumVersion: "0.3"
+bobMinimumVersion: "0.13"
+
+policies:
+    cleanEnvironment: True
+    relativeIncludes: True
+
+plugins:
+    - multiarch
+    - paths

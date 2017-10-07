@@ -1,31 +1,55 @@
-inherit: [autotools, stddef]
+inherit: [autotools, patch]
 
 environment:
-    BINUTILS_VERSION: "2.26"
+    BINUTILS_VERSION: "2.29.1"
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.bz2
-    digestSHA1: "a637508cffeb2323b14bc8dd65378819768ad4ff"
+    url: ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.xz
+    digestSHA1: "172244a349d07ec205c39c0321cbc354c125e78e"
 
+checkoutVars: [BINUTILS_VERSION]
+checkoutDeterministic: True
+checkoutScript: |
+    cd binutils-${BINUTILS_VERSION}
+    patchApplySeries \
+        $<<binutils/129_multiarch_libpath.patch>> \
+        $<<binutils/aarch64-libpath.diff>>
+
+# Some parts are compiled for the host during compilation. Hence we need the
+# host toolchain too.
 buildTools: [host-toolchain]
-buildVars: [AUTOCONF_TARGET, BINUTILS_VERSION]
+
+buildVars: [AUTOCONF_HOST, AUTOCONF_TARGET, BINUTILS_PREFIX, MULTIARCH_HOST,
+            MULTIARCH_TARGET]
 buildScript: |
-    case "$STDDEF_TARGET_ARCH" in
-        x86_64)
-            EXTRA_LIB_PATH=":=/lib64"
+    # handle multiarch the debian way... (taken from binutils rules)
+    MULTIARCH_TARGET="${MULTIARCH_TARGET:-${MULTIARCH_HOST}}"
+    export DEB_TARGET_MULTIARCH="$MULTIARCH_TARGET"
+    case "$DEB_TARGET_MULTIARCH" in
+        aarch64-linux-gnu)
+            export DEB_TARGET_MULTIARCH32=aarch64_ilp32-linux-gnu
             ;;
-        *)
-            EXTRA_LIB_PATH=""
+        i386-linux-gnu)
+            export DEB_TARGET_MULTIARCH64=x86_64-linux-gnu
+            export DEB_TARGET_MULTIARCHX32=x86_64-linux-gnux32
+            ;;
+        x86_64-linux-gnu)
+            export DEB_TARGET_MULTIARCH32=i386-linux-gnu
+            export DEB_TARGET_MULTIARCHX32=x86_64-linux-gnux32
+            ;;
+        x86_64-linux-gnux32)
+            export DEB_TARGET_MULTIARCH32=i386-linux-gnu
+            export DEB_TARGET_MULTIARCH64=x86_64-linux-gnu
             ;;
     esac
 
     export ac_cv_prog_MAKEINFO=missing
     autotoolsBuild $1/binutils-${BINUTILS_VERSION} \
-        --with-sysroot=/sysroot \
+        ${BINUTILS_PREFIX:+--prefix=${BINUTILS_PREFIX}} \
+        --with-sysroot=${BINUTILS_PREFIX:-/usr}/sysroots/$MULTIARCH_TARGET \
         --enable-deterministic-archives \
         --disable-nls \
-        --with-lib-path="=/lib/$STDDEF_TARGET_MULTIARCH:=/usr/lib/${STDDEF_TARGET_MULTIARCH}${EXTRA_LIB_PATH}:=/lib:=/usr/lib" \
         --disable-werror \
         --enable-plugins \
         --enable-lto

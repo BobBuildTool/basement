@@ -21,7 +21,6 @@ buildScript: |
 
 multiPackage:
     dev:
-        # FIXME: might have to move headers to /usr/include/$MULTIARCH/
         packageScript: autotoolsPackageDev
     tgt:
         packageScript: autotoolsPackageTgt

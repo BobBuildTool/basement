@@ -19,12 +19,17 @@ Index: b/src/gcc/config/sh/t-linux
 ===================================================================
 --- a/src/gcc/config/sh/t-linux
 +++ b/src/gcc/config/sh/t-linux
-@@ -1,2 +1,5 @@
+@@ -1,2 +1,10 @@
  MULTILIB_DIRNAMES= 
  MULTILIB_MATCHES = 
 +
++ifneq (,$(findstring sh4,$(target)))
 +MULTILIB_OSDIRNAMES = .:sh4-linux-gnu sh4_nofpu-linux-gnu:sh4-linux-gnu
 +MULTIARCH_DIRNAME = $(call if_multiarch,sh4-linux-gnu)
++else
++MULTILIB_OSDIRNAMES = .:sh3-linux-gnu sh3_nofpu-linux-gnu:sh3-linux-gnu
++MULTIARCH_DIRNAME = $(call if_multiarch,sh3-linux-gnu)
++endif
 Index: b/src/gcc/config/sparc/t-linux64
 ===================================================================
 --- a/src/gcc/config/sparc/t-linux64
@@ -95,25 +100,46 @@ Index: b/src/gcc/config/mips/t-linux64
 ===================================================================
 --- a/src/gcc/config/mips/t-linux64
 +++ b/src/gcc/config/mips/t-linux64
-@@ -24,3 +24,13 @@ MULTILIB_OSDIRNAMES = \
+@@ -18,9 +18,22 @@
+ 
+ MULTILIB_OPTIONS = mabi=n32/mabi=32/mabi=64
+ MULTILIB_DIRNAMES = n32 32 64
++MIPS_R6 = $(if $(findstring r6, $(firstword $(subst -, ,$(target)))),r6)
++MIPS_32 = $(if $(findstring r6, $(firstword $(subst -, ,$(target)))),32)
++MIPS_ISA = $(if $(findstring r6, $(firstword $(subst -, ,$(target)))),isa)
+ MIPS_EL = $(if $(filter %el, $(firstword $(subst -, ,$(target)))),el)
+ MIPS_SOFT = $(if $(strip $(filter MASK_SOFT_FLOAT_ABI, $(target_cpu_default)) $(filter soft, $(with_float))),soft)
+ MULTILIB_OSDIRNAMES = \
  	../lib32$(call if_multiarch,:mips64$(MIPS_EL)-linux-gnuabin32$(MIPS_SOFT)) \
  	../lib$(call if_multiarch,:mips$(MIPS_EL)-linux-gnu$(MIPS_SOFT)) \
  	../lib64$(call if_multiarch,:mips64$(MIPS_EL)-linux-gnuabi64$(MIPS_SOFT))
 +
 +ifneq (,$(findstring abin32,$(target)))
-+MULTIARCH_DIRNAME = $(call if_multiarch,mips64$(MIPS_EL)-linux-gnuabin32$(MIPS_SOFT))
++MULTIARCH_DIRNAME = $(call if_multiarch,mips$(MIPS_ISA)64$(MIPS_R6)$(MIPS_EL)-linux-gnuabin32$(MIPS_SOFT))
 +else
 +ifneq (,$(findstring abi64,$(target)))
-+MULTIARCH_DIRNAME = $(call if_multiarch,mips64$(MIPS_EL)-linux-gnuabi64$(MIPS_SOFT))
++MULTIARCH_DIRNAME = $(call if_multiarch,mips$(MIPS_ISA)64$(MIPS_R6)$(MIPS_EL)-linux-gnuabi64$(MIPS_SOFT))
 +else
-+MULTIARCH_DIRNAME = $(call if_multiarch,mips$(MIPS_EL)-linux-gnu$(MIPS_SOFT))
++MULTIARCH_DIRNAME = $(call if_multiarch,mips$(MIPS_ISA)$(MIPS_32)$(MIPS_R6)$(MIPS_EL)-linux-gnu$(MIPS_SOFT))
 +endif
 +endif
 Index: b/src/gcc/config.gcc
 ===================================================================
 --- a/src/gcc/config.gcc
 +++ b/src/gcc/config.gcc
-@@ -2038,6 +2038,10 @@ mips*-*-linux*)				# Linux MIPS, either
+@@ -2090,6 +2090,11 @@ mips*-*-linux*)				# Linux MIPS, either
+ 			target_cpu_default=MASK_SOFT_FLOAT_ABI
+ 			enable_mips_multilibs="yes"
+ 			;;
++		mipsisa64r6*-*-linux-gnuabi64)
++			default_mips_abi=64
++			default_mips_arch=mips64r6
++			enable_mips_multilibs="yes"
++			;;
+ 		mipsisa64r6*-*-linux*)
+ 			default_mips_abi=n32
+ 			default_mips_arch=mips64r6
+@@ -2100,6 +2105,10 @@ mips*-*-linux*)				# Linux MIPS, either
  			default_mips_arch=mips64r2
  			enable_mips_multilibs="yes"
  			;;
@@ -124,7 +150,7 @@ Index: b/src/gcc/config.gcc
  		mips64*-*-linux* | mipsisa64*-*-linux*)
  			default_mips_abi=n32
  			enable_mips_multilibs="yes"
-@@ -4247,7 +4251,7 @@ case ${target} in
+@@ -4449,7 +4458,7 @@ case ${target} in
  	i[34567]86-*-darwin* | x86_64-*-darwin*)
  		;;
  	i[34567]86-*-linux* | x86_64-*-linux*)
@@ -152,11 +178,10 @@ Index: b/src/gcc/config/mips/mips.h
 ===================================================================
 --- a/src/gcc/config/mips/mips.h
 +++ b/src/gcc/config/mips/mips.h
-@@ -3185,13 +3185,3 @@ extern GTY(()) struct target_globals *mi
-    with arguments ARGS.  */
+@@ -3387,16 +3387,6 @@ struct GTY(())  machine_function {
  #define PMODE_INSN(NAME, ARGS) \
    (Pmode == SImode ? NAME ## _si ARGS : NAME ## _di ARGS)
--
+ 
 -/* If we are *not* using multilibs and the default ABI is not ABI_32 we
 -   need to change these from /lib and /usr/lib.  */
 -#if MIPS_ABI_DEFAULT == ABI_N32
@@ -166,3 +191,20 @@ Index: b/src/gcc/config/mips/mips.h
 -#define STANDARD_STARTFILE_PREFIX_1 "/lib64/"
 -#define STANDARD_STARTFILE_PREFIX_2 "/usr/lib64/"
 -#endif
+-
+ /* Load store bonding is not supported by micromips and fix_24k.  The
+    performance can be degraded for those targets.  Hence, do not bond for
+    micromips or fix_24k.  */
+Index: b/src/gcc/config/tilegx/t-tilegx
+===================================================================
+--- a/src/gcc/config/tilegx/t-tilegx
++++ b/src/gcc/config/tilegx/t-tilegx
+@@ -1,6 +1,7 @@
+ MULTILIB_OPTIONS = m64/m32
+ MULTILIB_DIRNAMES = 64 32
+-MULTILIB_OSDIRNAMES = ../lib ../lib32
++MULTILIB_OSDIRNAMES = ../lib$(call if_multiarch,:tilegx-linux-gnu) ../lib32$(call if_multiarch,:tilegx32-linux-gnu)
++MULTIARCH_DIRNAME = $(call if_multiarch,tilegx-linux-gnu)
+ 
+ LIBGCC = stmp-multilib
+ INSTALL_LIBGCC = install-multilib

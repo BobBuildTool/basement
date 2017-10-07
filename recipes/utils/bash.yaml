@@ -22,7 +22,7 @@ checkoutSCM:
 buildTools: [host-toolchain]
 buildVars: [BASH_VERSION, READLINE_VERSION]
 buildScript: |
-    export ac_cv_rl_prefix="${BOB_DEP_PATHS[readline-dev]}"
+    export ac_cv_rl_prefix="${BOB_DEP_PATHS[libs::readline-dev]}"
     export ac_cv_rl_version="${READLINE_VERSION}"
     export bash_cv_getcwd_malloc=yes
     export bash_cv_job_control_missing=present

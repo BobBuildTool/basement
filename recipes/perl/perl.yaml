@@ -24,16 +24,8 @@ checkoutScript: |
     sed -i -e 's/x2p\/Makefile//' perl-${PERL_VERSION}/configure
 
 buildTools: [host-toolchain, target-toolchain]
-buildVars: [AUTOCONF_HOST, CROSS_COMPILE, TOOLCHAIN_SYSROOT]
+buildVars: [AUTOCONF_HOST, CROSS_COMPILE, TOOLCHAIN_SYSROOT, CPPFLAGS, CFLAGS, LDFLAGS]
 buildScript: |
-    CFLAGS=
-    LDFLAGS=
-    for i in "${BOB_DEP_PATHS[@]:1}" ; do
-        if [[ -d "$i/usr/include" ]] ; then CFLAGS+=" -I$i/usr/include" ; fi
-        if [[ -d "$i/lib" ]] ; then LDFLAGS+=" -L$i/lib" ; fi
-        if [[ -d "$i/usr/lib" ]] ; then LDFLAGS+=" -L$i/usr/lib" ; fi
-    done
-
     mkdir -p build install
     cd build
 

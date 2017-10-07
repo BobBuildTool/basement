@@ -1,0 +1,52 @@
+inherit: [sandbox]
+
+depends:
+    # some required host tools
+    -
+        name: devel::pkg-config
+        use: [tools]
+        forward: True
+
+    # setup target toolchain
+    -
+        name: devel::cross-toolchain
+        environment:
+            AUTOCONF_TARGET: "x86_64-wendy-linux-gnu"
+            ARCH: x86_64
+        use: [environment, tools]
+        forward: True
+
+    # stuff that goes into the sandbox image
+    - core::coreutils
+    - core::util-linux
+    - devel::diffutils
+    - devel::m4
+    - devel::make
+    - devel::makedepend
+    - devel::patch
+    - libs::gettext
+    - net::curl
+    - net::openssh
+    - perl::perl
+    - python::python
+    - utils::bash
+    - utils::bzip2
+    - utils::file
+    - utils::findutils
+    - utils::gawk
+    - utils::grep
+    - utils::gzip
+    - utils::sed
+    - utils::tar
+    - utils::unzip
+    - utils::which
+    - utils::xz-utils
+
+    # native toolchain installed in /toolchain
+    - environment:
+        GCC_PREFIX: "/toolchain"
+        BINUTILS_PREFIX: "/toolchain"
+      depends:
+        - devel::binutils
+        - devel::gcc-native
+

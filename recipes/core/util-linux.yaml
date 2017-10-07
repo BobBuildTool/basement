@@ -24,7 +24,10 @@ buildScript: |
     autotoolsBuild $1/util-linux-${UTIL_LINUX_VERSION} \
         --without-python               \
         --disable-makeinstall-chown    \
-        --without-systemdsystemunitdir
+        --without-systemdsystemunitdir \
+        --enable-usrdir-path \
+        bindir=/usr/bin \
+        sbindir=/usr/sbin
 
 packageScript: |
     autotoolsPackageTgt

@@ -1,27 +1,39 @@
-inherit: [stddef]
-
 buildTools: [target-toolchain]
-buildVars: [AUTOCONF_HOST, CROSS_COMPILE, TOOLCHAIN_SYSROOT]
+buildVars: [AUTOCONF_HOST, CROSS_COMPILE, TOOLCHAIN_SYSROOT, MULTIARCH_HOST]
 buildScript: |
-    # Remember toolchain stuff and remove from dependencies. Gcc will partially
-    # overwrite the sysroot so it has to be the last.
-    declare -a TOOLCHAIN_PATHS
-    TOOLCHAIN_PATHS+=( "${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT" )
-    TOOLCHAIN_PATHS+=( "${BOB_DEP_PATHS[binutils]}" )
-    TOOLCHAIN_PATHS+=( "${BOB_DEP_PATHS[gcc-native]}" )
-    unset BOB_DEP_PATHS[binutils]
-    unset BOB_DEP_PATHS[gcc-native]
+    # start from scratch
+    rm -rf *
 
     # copy rootfs
-    cp -au ${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT/* .
+    cp -an ${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT/* .
     for dep in "${BOB_DEP_PATHS[@]}" ; do
-       cp -au ${dep}/* .
+       cp -an ${dep}/* .
     done
+
+    # symlink sh
+    ln -sf bash usr/bin/sh
+
+    # Everything should be in /usr. The only exception allowed here is the
+    # dynamic linker. Move it if exists.
+    for i in lib lib32 lib64 ; do
+        if [[ -d $i ]] ; then
+            mkdir -p usr/$i
+            for l in $i/* ; do
+                [[ -L $l ]] || { echo "$l is not a symlink! Bailing out..." ; exit 1; }
+                ln -rs "$(readlink -f "$l")" usr/$l
+            done
+            rm -rf $i
+            ln -sf usr/$i $i
+        fi
+    done
+    ln -sT usr/bin bin
+    ln -sf usr/lib lib
+    ln -sT usr/sbin sbin
 
     # remove development stuff
     rm -rf usr/include
-    find -name '*.a' -delete
-    find -executable -type f -exec ${CROSS_COMPILE}strip -g {} \;
+    find usr/lib -name '*.a' -o -name '*.o' -delete
+    find . -not -path ./toolchain/sysroots -executable -type f -exec ${CROSS_COMPILE}strip -g {} \;
 
     # copy certificates
     mkdir -p etc/ssl/certs
@@ -31,39 +43,17 @@ buildScript: |
     # the sandbox uses "nobody" as user
     echo "nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin" > etc/passwd
 
-    # symlink bash
-    ln -sf ../usr/bin/bash bin/bash
-    ln -sf bash bin/sh
-
-    # Copy native toolchain to "/toolchain". Symlink all executables and make
-    # sure there exist a version with the target triple.
-    mkdir -p toolchain/bin
-    for dep in "${TOOLCHAIN_PATHS[@]}" ; do
-       cp -au ${dep}/* toolchain/
-    done
-    find toolchain/usr/lib -maxdepth 1 -not -type d \
-        -exec mv {} toolchain/usr/lib/$STDDEF_TARGET_MULTIARCH/ \;
-
-    pushd toolchain/usr/bin
-    for i in ${AUTOCONF_HOST}* * ; do
-        if [[ -e ../../bin/$i ]] ; then continue ; fi
-        case $i in
-            *gcc | *g++ | *cpp | *ld)
-                cat >../../bin/$i <<EOF
-    #!/bin/sh
-    "\${0%/*}/../usr/bin/$i" --sysroot="\${0%/*}/.." "\$@"
-    EOF
-                chmod +x ../../bin/$i
-                ;;
-            *)
-                ln -s ../usr/bin/$i ../../bin/$i
-                ;;
-        esac
-        if [[ $i != ${AUTOCONF_HOST}* && ! -e ../../bin/${AUTOCONF_HOST}-$i ]] ; then
-            ln -s ../usr/bin/$i ../../bin/${AUTOCONF_HOST}-$i
-        fi
-    done
-    popd
+    # Symlink all toolchain executables and make sure there exist a version
+    # with the target triple.
+    if [[ -d toolchain/bin ]] ; then
+        pushd toolchain/bin
+        for i in * ; do
+            if [[ $i != ${AUTOCONF_HOST}* && ! -e ${AUTOCONF_HOST}-$i ]] ; then
+                ln -s $i ${AUTOCONF_HOST}-$i
+            fi
+        done
+        popd
+    fi
 
 packageScript: |
     cp -a $1/* .

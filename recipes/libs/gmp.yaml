@@ -10,8 +10,10 @@ checkoutSCM:
 
 buildVars: [PKG_VERSION]
 buildScript: |
-    autotoolsBuild $1/gmp-${PKG_VERSION} --disable-shared --enable-static
+    autotoolsBuild $1/gmp-${PKG_VERSION}
 
-packageScript: |
-    autotoolsPackageDev
-
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
+    tgt:
+        packageScript: autotoolsPackageTgt

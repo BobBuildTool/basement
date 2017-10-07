@@ -1,12 +1,8 @@
-
 bsp/ 		-- Anything with links to specific hardware or hardware configuration information
 core/ 		-- Basic files and utilities to administer system resources, manage user accounts, etc.
 db/			-- Database Servers and Clients.
-dev/		-- Development utilities, compilers, development environments, libraries, etc.
+devel/		-- Development utilities, compilers, development environments, libraries, etc.
 graphics/   -- X and other graphically related system libraries
-graphics/fonts/
-graphics/wayland
-graphics/x11
 kernel/		-- Operating System Kernels and related modules.
 libs/		-- Libraries to make other programs work.
 multimedia/ -- Codecs and support utilties for audio, images and video
@@ -14,14 +10,3 @@ net/		-- Daemons and clients to connect your system to the world.
 perl/		-- Everything about Perl, an interpreted scripting language.
 python/		-- Everything about Python, an interpreted, interactive object oriented language.
 utils/		-- Utilities for file/disk manipulation, backup and archive tools, system monitoring, input systems, etc.
-
-
-
-
-
-
-
-
-
-
-images/

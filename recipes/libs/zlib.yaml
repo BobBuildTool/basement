@@ -1,4 +1,4 @@
-inherit: [make, stddef]
+inherit: [make, install]
 
 environment:
    PKG_VERSION: "1.2.8"
@@ -11,14 +11,29 @@ checkoutSCM:
    extract: False
 
 buildTools: [target-toolchain]
-buildVars: [CROSS_COMPILE, AUTOCONF_HOST]
+buildVars: [CROSS_COMPILE, AUTOCONF_BUILD, AUTOCONF_HOST, MULTIARCH_HOST]
 buildScript: |
-    export CROSS_PREFIX="${CROSS_COMPILE}"
-    mkdir -p install
+    # zlib uses CROSS_PREFIX instead of CROSS_COMPILE
+    if [[ ${CROSS_COMPILE:+true} ]] ; then
+        export CROSS_PREFIX="${CROSS_COMPILE}"
+    fi
 
+    # standard options
+    CONFIGURE_OPTS=(
+        --prefix=/usr
+        --libdir=/usr/lib/$MULTIARCH_HOST
+        --sharedlibdir=/usr/lib/$MULTIARCH_HOST
+    )
+
+    # compile static on native builds
+    if [[ ${AUTOCONF_BUILD} == ${AUTOCONF_HOST:-${AUTOCONF_BUILD}} ]] ; then
+        CONFIGURE_OPTS+=( --static )
+    fi
+
+    mkdir -p install
     tar -xzf $1/zlib-${PKG_VERSION}.tar.gz
     pushd zlib-${PKG_VERSION}
-    ./configure --prefix=/usr --libdir=/usr/lib/$STDDEF_HOST_MULTIARCH --sharedlibdir=/usr/lib/$STDDEF_HOST_MULTIARCH
+    ./configure "${CONFIGURE_OPTS[@]}"
     make install DESTDIR=${PWD}/../install
     popd
 
@@ -27,7 +42,7 @@ packageScript: |
 
 multiPackage:
     dev:
-        packageScript: stddefCleanupDev
+        packageScript: installCleanupDev
     tgt:
-        packageScript: stddefCleanupTgt
+        packageScript: installCleanupTgt
 

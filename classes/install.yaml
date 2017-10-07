@@ -1,0 +1,32 @@
+packageScript: |
+    _installCleanup()
+    {
+        # remove documentation
+        rm -rf usr/info usr/share/info
+        rm -rf usr/man usr/share/man
+        rm -rf usr/share/doc
+
+        # Get rid of libtool files. They cause more harm than good.
+        find -name '*.la' -delete
+    }
+
+    installCleanupDev()
+    {
+        _installCleanup
+
+        # fixup pkg-configure files by removing absolute lib dirs
+        find -name '*.pc' -exec sed -i -e '/^Libs/s/-L\/[^ ]* //g' {} \;
+
+    }
+
+    installCleanupTgt()
+    {
+        _installCleanup
+
+        # remove development files
+        rm -rf usr/include
+        rm -rf usr/lib/*/pkgconfig
+        find -name '*.a' -delete
+        find -name '*.o' -delete
+    }
+

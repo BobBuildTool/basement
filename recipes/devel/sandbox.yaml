@@ -1,24 +1,24 @@
 inherit: [sandbox]
 root: True
 
-filter:
-    environment: [ "*_MIRROR" ]
-    tools: [ "!*" ]
-
 depends:
     # We try to build the sandbox in a temporary 1st stage sandbox. Though not
     # strictly necessary it greatly helps to find unclean stuff. If the we
     # build with '--no-sandbox' the host compiler will be used directly.
     -
-        name: toolchain::bootstrap-sandbox
+        name: devel::bootstrap-sandbox
         use: [sandbox]
         forward: True
     -
-        name: toolchain::bootstrap-sandbox-toolchain
+        name: devel::bootstrap-sandbox-toolchain
         use: [environment, tools]
         forward: True
 
     # some required host tools
+    -
+        name: devel::pkg-config
+        use: [tools]
+        forward: True
     -
         name: devel::bison
         use: [tools]
@@ -30,7 +30,7 @@ depends:
 
     # target toolchain
     -
-        name: toolchain::cross-toolchain
+        name: devel::cross-toolchain
         environment:
             AUTOCONF_TARGET: "x86_64-bob-linux-gnu"
             ARCH: x86_64
@@ -72,7 +72,11 @@ depends:
     - utils::which
     - utils::xz-utils
 
-    # native toolchain
-    - devel::binutils
-    - devel::gcc-native
+    # native toolchain installed in /toolchain
+    - environment:
+        GCC_PREFIX: "/toolchain"
+        BINUTILS_PREFIX: "/toolchain"
+      depends:
+        - devel::binutils
+        - devel::gcc-native
 

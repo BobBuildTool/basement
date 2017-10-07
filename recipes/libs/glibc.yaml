@@ -1,44 +1,45 @@
-inherit: [make, patch, stddef]
+inherit: [make, patch]
 
 depends:
     - kernel::linux-headers
     -
-        name: devel::gcc-stage1
+        name: devel::gcc-cross-bare
         use: [tools]
 
+metaEnvironment:
+    GLIBC_VERSION: "2.25"
 
 checkoutSCM:
     scm: url
-    url: http://ftp.gnu.org/gnu/glibc/glibc-2.22.tar.xz
-    digestSHA1: "5be95334f197121d8b351059a1c6518305d88e2a"
+    url: http://ftp.gnu.org/gnu/glibc/glibc-${GLIBC_VERSION}.tar.xz
+    digestSHA1: "5fff5a94ef4470bf48fe1b79093185f19f5c827a"
 
 checkoutDeterministic: True
+checkoutVars: [GLIBC_VERSION]
 checkoutScript: |
-    cd glibc-2.22
+    cd glibc-${GLIBC_VERSION}
     patchApplySeries $<<glibc/*.diff>>
 
-buildVars: [AUTOCONF_TARGET]
-buildTools: [gcc-stage1, target-toolchain]
+buildVars: [AUTOCONF_TARGET, MULTIARCH_TARGET]
+buildTools: [gcc-cross-bare, target-toolchain]
 buildScript: |
     EXTRA=
     [ -e $1/usr/include/selinux/selinux.h ] || EXTRA+=" --without-selinux"
 
     mkdir -p build install
     pushd build
-    $1/glibc-2.22/configure \
+    $1/glibc-${GLIBC_VERSION}/configure \
         --prefix=/usr                    \
         --host=${AUTOCONF_TARGET}        \
-        --build=$($1/glibc-2.22/scripts/config.guess) \
-        --enable-kernel=2.6.32             \
+        --build=$($1/glibc-${GLIBC_VERSION}/scripts/config.guess) \
+        --enable-kernel=4.3.3             \
         --with-headers=$2/usr/include \
         --enable-obsolete-rpc \
-        --libdir=/usr/lib/$STDDEF_TARGET_MULTIARCH \
-        $EXTRA \
-        libc_cv_forced_unwind=yes          \
-        libc_cv_ctors_header=yes           \
-        libc_cv_c_cleanup=yes
-    makeParallel
-    make install DESTDIR=${PWD}/../install
+        --libdir=/usr/lib/$MULTIARCH_TARGET \
+        $EXTRA
+
+    makeParallel rootsbindir=/usr/sbin slibdir=/usr/lib/$MULTIARCH_TARGET
+    make install rootsbindir=/usr/sbin slibdir=/usr/lib/$MULTIARCH_TARGET DESTDIR=${PWD}/../install
     popd
     cp -a $2/usr/include install/usr/
 

@@ -1,4 +1,4 @@
-inherit: [make, stddef]
+inherit: [make, install]
 
 environment:
     PKG_VERSION: "2.25"
@@ -10,18 +10,18 @@ checkoutSCM:
     extract: False
 
 buildTools: [target-toolchain]
-buildVars: [AR, CC, RANLIB, PKG_VERSION]
+buildVars: [AR, CC, RANLIB, PKG_VERSION, MULTIARCH_HOST]
 buildScript: |
     tar -xzf $1/libcap-${PKG_VERSION}.tar.gz
     mkdir -p install
     makeParallel -C libcap-${PKG_VERSION} \
-        lib=lib/$STDDEF_HOST_MULTIARCH \
-        prefix=${PWD}/install/usr \
+        prefix=/usr \
+        lib=lib/$MULTIARCH_HOST \
         AR=$AR \
         CC=$CC \
         RANLIB=$RANLIB \
-        SBINDIR=${PWD}/install/sbin \
         RAISE_SETFCAP=no \
+        DESTDIR="$PWD/install" \
         install
 
 packageScript: |
@@ -29,7 +29,7 @@ packageScript: |
 
 multiPackage:
     dev:
-        packageScript: stddefCleanupDev
+        packageScript: installCleanupDev
     tgt:
-        packageScript: stddefCleanupTgt
+        packageScript: installCleanupTgt
 

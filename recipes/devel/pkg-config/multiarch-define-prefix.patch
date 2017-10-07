@@ -1,0 +1,23 @@
+diff -Nurp pkg-config-0.29.1/parse.c pkg-config-0.29.1.patched/parse.c
+--- pkg-config-0.29.1/parse.c	2016-02-26 17:56:52.000000000 +0100
++++ pkg-config-0.29.1.patched/parse.c	2017-10-08 21:40:22.361543652 +0200
+@@ -1007,7 +1007,7 @@ parse_line (Package *pkg, const char *un
+           if (is_pkgconfigdir)
+             {
+               /* It ends in pkgconfig. Good. */
+-              gchar *q;
++              gchar *q, *r;
+               gchar *prefix;
+ 	      
+               /* Keep track of the original prefix value. */
+@@ -1015,7 +1015,9 @@ parse_line (Package *pkg, const char *un
+ 
+               /* Get grandparent directory for new prefix. */
+               q = g_path_get_dirname (pkg->pcfiledir);
+-              prefix = g_path_get_dirname (q);
++              r = g_path_get_dirname (q);
++              prefix = g_path_get_dirname (r);
++              g_free (r);
+               g_free (q);
+ 	      
+ 	      /* Turn backslashes into slashes or

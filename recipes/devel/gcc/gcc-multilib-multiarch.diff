@@ -84,30 +84,33 @@ Index: b/src/gcc/config/mips/t-linux64
 ===================================================================
 --- a/src/gcc/config/mips/t-linux64
 +++ b/src/gcc/config/mips/t-linux64
-@@ -20,10 +20,23 @@ MULTILIB_OPTIONS = mabi=n32/mabi=32/mabi
- MULTILIB_DIRNAMES = n32 32 64
+@@ -23,10 +23,23 @@ MIPS_32 = $(if $(findstring r6, $(firstw
+ MIPS_ISA = $(if $(findstring r6, $(firstword $(subst -, ,$(target)))),isa)
  MIPS_EL = $(if $(filter %el, $(firstword $(subst -, ,$(target)))),el)
  MIPS_SOFT = $(if $(strip $(filter MASK_SOFT_FLOAT_ABI, $(target_cpu_default)) $(filter soft, $(with_float))),soft)
 +
 +ifneq (,$(findstring gnuabi64,$(target)))
 +MULTILIB_OSDIRNAMES = \
-+	../lib32$(call if_multiarch,:mips64$(MIPS_EL)-linux-gnuabin32$(MIPS_SOFT)) \
-+	../libo32$(call if_multiarch,:mips$(MIPS_EL)-linux-gnu$(MIPS_SOFT)) \
-+	../lib$(call if_multiarch,:mips64$(MIPS_EL)-linux-gnuabi64$(MIPS_SOFT))
++        ../lib32$(call if_multiarch,:mips$(MIPS_ISA)64$(MIPS_R6)$(MIPS_EL)-linux-gnuabin32$(MIPS_SOFT)) \
++        ../libo32$(call if_multiarch,:mips$(MIPS_ISA)$(MIPS_32)$(MIPS_R6)$(MIPS_EL)-linux-gnu$(MIPS_SOFT)) \
++        ../lib$(call if_multiarch,:mips$(MIPS_ISA)64$(MIPS_R6)$(MIPS_EL)-linux-gnuabi64$(MIPS_SOFT))
 +else ifneq (,$(findstring gnuabin32,$(target)))
 +MULTILIB_OSDIRNAMES = \
-+	../lib$(call if_multiarch,:mips64$(MIPS_EL)-linux-gnuabin32$(MIPS_SOFT)) \
-+	../libo32$(call if_multiarch,:mips$(MIPS_EL)-linux-gnu$(MIPS_SOFT)) \
-+	../lib64$(call if_multiarch,:mips64$(MIPS_EL)-linux-gnuabi64$(MIPS_SOFT))
++        ../lib$(call if_multiarch,:mips$(MIPS_ISA)64$(MIPS_R6)$(MIPS_EL)-linux-gnuabin32$(MIPS_SOFT)) \
++        ../libo32$(call if_multiarch,:mips$(MIPS_ISA)$(MIPS_32)$(MIPS_R6)$(MIPS_EL)-linux-gnu$(MIPS_SOFT)) \
++        ../lib64$(call if_multiarch,:mips$(MIPS_ISA)64$(MIPS_R6)$(MIPS_EL)-linux-gnuabi64$(MIPS_SOFT))
 +else
  MULTILIB_OSDIRNAMES = \
- 	../lib32$(call if_multiarch,:mips64$(MIPS_EL)-linux-gnuabin32$(MIPS_SOFT)) \
- 	../lib$(call if_multiarch,:mips$(MIPS_EL)-linux-gnu$(MIPS_SOFT)) \
- 	../lib64$(call if_multiarch,:mips64$(MIPS_EL)-linux-gnuabi64$(MIPS_SOFT))
+-	../lib32$(call if_multiarch,:mips64$(MIPS_EL)-linux-gnuabin32$(MIPS_SOFT)) \
+-	../lib$(call if_multiarch,:mips$(MIPS_EL)-linux-gnu$(MIPS_SOFT)) \
+-	../lib64$(call if_multiarch,:mips64$(MIPS_EL)-linux-gnuabi64$(MIPS_SOFT))
++        ../lib32$(call if_multiarch,:mips$(MIPS_ISA)64$(MIPS_R6)$(MIPS_EL)-linux-gnuabin32$(MIPS_SOFT)) \
++        ../lib$(call if_multiarch,:mips$(MIPS_ISA)$(MIPS_32)$(MIPS_R6)$(MIPS_EL)-linux-gnu$(MIPS_SOFT)) \
++        ../lib64$(call if_multiarch,:mips$(MIPS_ISA)64$(MIPS_R6)$(MIPS_EL)-linux-gnuabi64$(MIPS_SOFT))
 +endif
  
  ifneq (,$(findstring abin32,$(target)))
- MULTIARCH_DIRNAME = $(call if_multiarch,mips64$(MIPS_EL)-linux-gnuabin32$(MIPS_SOFT))
+ MULTIARCH_DIRNAME = $(call if_multiarch,mips$(MIPS_ISA)64$(MIPS_R6)$(MIPS_EL)-linux-gnuabin32$(MIPS_SOFT))
 Index: b/src/gcc/config/rs6000/t-linux
 ===================================================================
 --- a/src/gcc/config/rs6000/t-linux

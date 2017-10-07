@@ -1,4 +1,4 @@
-buildVars: [MAKE_JOBS]
+buildVarsWeak: [MAKE_JOBS]
 buildScript: |
     makeParallel()
     {

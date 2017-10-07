@@ -1,4 +1,4 @@
-inherit: [make, stddef]
+inherit: [make, install]
 
 environment:
     BZIP2_VERSION: "1.0.6"
@@ -19,12 +19,7 @@ buildScript: |
     make install PREFIX=$PWD/../install/usr AR=$AR CC=$CC RANLIB=$RANLIB
     popd
 
-    pushd install/usr/lib
-    mkdir $STDDEF_HOST_MULTIARCH
-    mv *.a $STDDEF_HOST_MULTIARCH
-    popd
-
 packageScript: |
     cp -a $1/install/* .
-    stddefCleanupTgt
+    installCleanupTgt
 

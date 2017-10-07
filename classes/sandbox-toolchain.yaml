@@ -1,0 +1,71 @@
+packageVars: [AUTOCONF_BUILD, SANDBOX_AUTOCONF_BUILD]
+packageScript: |
+    if [[ -e /bob && -e /toolchain/bin ]] ; then
+        # We are in a sandbox with an accompanying toolchain. Use it...
+        ln -sf /toolchain/bin bin
+    else
+        # Check if gcc is around and that it's a compatible compiler
+        GCC_MACHINE="$(gcc -dumpmachine)"
+        case "$AUTOCONF_BUILD" in
+            "$GCC_MACHINE")
+                ;;
+            i[34567]86-*linux-gnu)
+                if [[ $GCC_MACHINE != i[34567]86-*linux-gnu ]] ; then
+                    echo "Expected a compatible i386 host compiler!" >&2
+                    exit 1
+                fi
+                ;;
+            x86_86-*linux-gnu)
+                if [[ $GCC_MACHINE != x86_64-*linux-gnu ]] ; then
+                    echo "Expected a compatible x86_64 host compiler!" >&2
+                    exit 1
+                fi
+                ;;
+            *)
+                echo "Expected a compatible ($AUTOCONF_BUILD) host compiler!" >&2
+                exit 1
+        esac
+
+        # Are all tools available under their native name?
+        mkdir -p bin
+        for i in ar as gcc cpp g++ gdb ld nm objcopy objdump ranlib strip ; do
+            if type -p "${AUTOCONF_BUILD}-$i" >/dev/null ; then
+                ln -s "$(type -p ${AUTOCONF_BUILD}-$i)" "bin/${SANDBOX_AUTOCONF_BUILD}-$i"
+            elif type -p $i >/dev/null ; then
+                ln -s "$(type -p $i)" "bin/${SANDBOX_AUTOCONF_BUILD}-$i"
+            else
+                echo "$i not found."
+            fi
+        done
+    fi
+
+provideTools:
+    host-toolchain: "bin"
+    target-toolchain: "bin"
+
+provideVars:
+    # usual compiler variables
+    AR: "ar"
+    AS: "as"
+    CC: "gcc"
+    CPP: "cpp"
+    CXX: "g++"
+    GDB: "gdb"
+    LD: "ld"
+    NM: "nm"
+    OBJCOPY: "objcopy"
+    OBJDUMP: "objdump"
+    RANLIB: "ranlib"
+    STRIP: "strip"
+
+    # Some meta variables do not change: ARCH, MULTIARCH_BUILD, MULTIARCH_HOST
+    AUTOCONF_BUILD: "${SANDBOX_AUTOCONF_BUILD}"
+    AUTOCONF_HOST:  "${SANDBOX_AUTOCONF_HOST}"
+    CROSS_COMPILE: ""
+    TOOLCHAIN_SYSROOT: ""
+
+    # compiler flags
+    CPPFLAGS:   "-Wdate-time"
+    CFLAGS:     "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
+    CXXFLAGS:   "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
+    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"

@@ -4,7 +4,7 @@ Index: b/src/gcc/config.gcc
 ===================================================================
 --- a/src/gcc/config.gcc
 +++ b/src/gcc/config.gcc
-@@ -3634,10 +3634,18 @@ case "${target}" in
+@@ -3743,10 +3743,18 @@ case "${target}" in
  		fi
  
  		case "$with_float" in
@@ -25,7 +25,7 @@ Index: b/src/gcc/config.gcc
  		*)
  			echo "Unknown floating point type used in --with-float=$with_float" 1>&2
  			exit 1
-@@ -3671,6 +3679,9 @@ case "${target}" in
+@@ -3780,6 +3788,9 @@ case "${target}" in
  		"" \
  		| arm | thumb )
  			#OK
@@ -61,9 +61,9 @@ Index: b/src/gcc/config/arm/linux-eabi.h
  
  /* We default to the "aapcs-linux" ABI so that enums are int-sized by
     default.  */
-@@ -86,6 +100,28 @@
-     %{mfloat-abi=soft*:" GLIBC_DYNAMIC_LINKER_SOFT_FLOAT "} \
-     %{!mfloat-abi=*:" GLIBC_DYNAMIC_LINKER_DEFAULT "}"
+@@ -103,6 +117,28 @@
+ #define MUSL_DYNAMIC_LINKER \
+   "/lib/ld-musl-arm" MUSL_DYNAMIC_LINKER_E "%{mfloat-abi=hard:hf}.so.1"
  
 +/* Set the multilib defaults according the configuration, needed to
 +   let gcc -print-multi-dir do the right thing.  */

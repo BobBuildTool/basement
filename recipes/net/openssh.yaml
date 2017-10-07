@@ -18,11 +18,11 @@ checkoutSCM:
     digestSHA1: "70e35d7d6386fe08abbd823b3a12a3ca44ac6d38"
 
 buildTools: [target-toolchain]
-buildVars: [PKG_VERSION, AUTOCONF_HOST]
+buildVars: [PKG_VERSION]
 buildScript: |
     autotoolsBuild $1/openssh-${PKG_VERSION} \
         --disable-strip \
-        --with-ssl-dir="${BOB_DEP_PATHS[openssl-dev]}/usr/include" \
+        --with-ssl-dir="${BOB_DEP_PATHS[libs::openssl-dev]}/usr" \
         --without-openssl-header-check
 
 packageScript: |
