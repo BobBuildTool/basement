@@ -1,3 +1,5 @@
+shared: True
+
 depends:
     - devel::gcc-cross
     - libs::glibc-dev

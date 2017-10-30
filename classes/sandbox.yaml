@@ -1,3 +1,5 @@
+shared: True
+
 buildTools: [target-toolchain]
 buildVars: [AUTOCONF_HOST, CROSS_COMPILE, TOOLCHAIN_SYSROOT, MULTIARCH_HOST]
 buildScript: |
