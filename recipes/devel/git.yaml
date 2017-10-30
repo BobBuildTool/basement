@@ -35,7 +35,6 @@ buildScript: |
     popd
 
 packageScript: |
-    cp -a $1/install/* .
-    installCleanupTgt
+    installPackageTgt "$1/install/"
 
 provideDeps: [ "*-tgt" ]

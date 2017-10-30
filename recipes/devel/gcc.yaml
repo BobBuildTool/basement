@@ -70,8 +70,9 @@ buildScript: |
     }
 
 packageScript: |
-    cp -a $1/install/* .
-    installCleanupDev
+    # copy everything
+    installPackageDev "$1/install/" "*"
+    installStripAll usr/bin
 
 provideDeps: [ "*-tgt" ]
 
@@ -118,7 +119,7 @@ multiPackage:
         buildTools: [binutils]
         buildScript: |
             buildGcc \
-                --with-sysroot=/usr/sysroots/${MULTIARCH_HOST:-${MULTIARCH_TARGET}} \
+                --with-sysroot=/usr/sysroots/${MULTIARCH_TARGET} \
                 --with-build-sysroot=${BOB_DEP_PATHS[libs::glibc-dev]}      \
                 --enable-multiarch                                          \
                 --enable-linker-build-id                                    \
@@ -131,7 +132,7 @@ multiPackage:
         buildTools: [target-toolchain]
         buildVars: [TOOLCHAIN_SYSROOT, GCC_PREFIX]
         buildScript: |
-            TARGET_SYSROOT="${GCC_PREFIX:-/usr}/sysroots/${MULTIARCH_HOST:-${MULTIARCH_TARGET}}"
+            TARGET_SYSROOT="${GCC_PREFIX:-/usr}/sysroots/${MULTIARCH_HOST}"
             buildGcc \
                 ${GCC_PREFIX:+--prefix=${GCC_PREFIX}} \
                 --with-sysroot="${TARGET_SYSROOT}" \

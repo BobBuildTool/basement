@@ -37,12 +37,9 @@ buildScript: |
     make install DESTDIR=${PWD}/../install
     popd
 
-packageScript: |
-   cp -a $1/install/* .
-
 multiPackage:
     dev:
-        packageScript: installCleanupDev
+        packageScript: installPackageDev "$1/install/"
     tgt:
-        packageScript: installCleanupTgt
+        packageScript: installPackageTgt "$1/install/"
 

@@ -1,32 +1,83 @@
-packageScript: |
-    _installCleanup()
-    {
-        # remove documentation
-        rm -rf usr/info usr/share/info
-        rm -rf usr/man usr/share/man
-        rm -rf usr/share/doc
+inherit: [strip]
 
-        # Get rid of libtool files. They cause more harm than good.
-        find -name '*.la' -delete
+packageVars: [MULTIARCH_HOST]
+packageScript: |
+    installStripFile()
+    {
+        stripFile "$1"
     }
 
-    installCleanupDev()
+    installStripAll()
     {
-        _installCleanup
+        stripAll "$1"
+    }
+
+    # Copy files matching the given patterns, 
+    installCopy()
+    {
+        declare -a OPTS=(
+            # default options
+            "-aHSK"
+
+            # remove documentation
+            "--exclude=/usr/info"
+            "--exclude=/usr/share/info"
+            "--exclude=/usr/man"
+            "--exclude=/usr/share/man"
+            "--exclude=/usr/share/doc"
+
+            # Get rid of libtool files. They cause more harm than good.
+            "--exclude=*.la"
+        )
+        local i
+
+        for i in "${@:2}" ; do
+            if [[ $i == !* ]] ; then
+                OPTS+=( "--exclude=${i:1}" )
+            else
+                OPTS+=( "--include=$i" )
+            fi
+        done
+
+        rsync "${OPTS[@]}" "$1" .
+    }
+
+    # Only copy over headers, libs directly in multiarch library dir,
+    # pkg-config and cmake files.
+    installPackageDev()
+    {
+        installCopy "$@" /usr/ "/usr/include/***" \
+            /usr/lib/ "/usr/lib/$MULTIARCH_HOST/" \
+            "/usr/lib/$MULTIARCH_HOST/*.a" "/usr/lib/$MULTIARCH_HOST/*.so*" \
+            "/usr/lib/$MULTIARCH_HOST/pkgconfig/***" \
+            "/usr/lib/$MULTIARCH_HOST/cmake/***" \
+            "!*"
 
         # fixup pkg-configure files by removing absolute lib dirs
         find -name '*.pc' -exec sed -i -e '/^Libs/s/-L\/[^ ]* //g' {} \;
-
     }
 
-    installCleanupTgt()
+    # Only copy shared libraries.
+    installPackageLib()
     {
-        _installCleanup
-
-        # remove development files
-        rm -rf usr/include
-        rm -rf usr/lib/*/pkgconfig
-        find -name '*.a' -delete
-        find -name '*.o' -delete
+        installCopy "$@" /usr/ /usr/lib/ "/usr/lib/$MULTIARCH_HOST/" \
+            "/usr/lib/$MULTIARCH_HOST/*.so.*" \
+            "!*"
+        installStripAll .
     }
 
+    # Everything except shared or static libraries or header files.
+    installPackageBin()
+    {
+        installCopy "$@" '!/usr/include/' \
+            "!/usr/lib/$MULTIARCH_HOST/*.a" "!/usr/lib/$MULTIARCH_HOST/*.so*"  \
+            "!/usr/lib/$MULTIARCH_HOST/pkgconfig" \
+            "!/usr/lib/$MULTIARCH_HOST/cmake"
+        installStripAll .
+    }
+
+    installPackageTgt()
+    {
+        installPackageBin "$@"
+        installPackageLib "$@"
+    }

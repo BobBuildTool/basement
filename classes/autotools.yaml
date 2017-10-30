@@ -83,14 +83,22 @@ buildScript: |
 packageScript: |
     _AUTOTOOLS_BUILD_PATH=$1
 
+    autotoolsPackageBin()
+    {
+        installPackageBin "${1:-${_AUTOTOOLS_BUILD_PATH}}/install/" "${@:2}"
+    }
+
     autotoolsPackageDev()
     {
-        cp -a ${1:-${_AUTOTOOLS_BUILD_PATH}}/install/* .
-        installCleanupDev
+        installPackageDev "${1:-${_AUTOTOOLS_BUILD_PATH}}/install/" "${@:2}"
+    }
+
+    autotoolsPackageLib()
+    {
+        installPackageLib "${1:-${_AUTOTOOLS_BUILD_PATH}}/install/" "${@:2}"
     }
 
     autotoolsPackageTgt()
     {
-        cp -a ${1:-${_AUTOTOOLS_BUILD_PATH}}/install/* .
-        installCleanupTgt
+        installPackageTgt "${1:-${_AUTOTOOLS_BUILD_PATH}}/install/" "${@:2}"
     }

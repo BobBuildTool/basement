@@ -22,6 +22,7 @@ buildScript: |
     export TARGETMACH=${AUTOCONF_HOST}
     export LDFLAGS="-Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib/$MULTIARCH_HOST"
 
+    mkdir -p install
     tar -xzf $1/openssl-${PKG_VERSION}.tar.gz
     pushd openssl-${PKG_VERSION}
     ./Configure \
@@ -35,14 +36,14 @@ buildScript: |
 
     #make depend
     makeParallel
+    make INSTALL_PREFIX="${PWD}/.." install_sw
 
-packageScript: |
-    make -C $1/openssl-${PKG_VERSION} INSTALL_PREFIX=${PWD} install_sw
+    popd
 
 multiPackage:
     dev:
-        packageScript: installCleanupDev
+        packageScript: installPackageDev "$1/install/"
         provideDeps: [ "*-dev" ]
     tgt:
-        packageScript: installCleanupTgt
+        packageScript: installPackageTgt "$1/install/"
         provideDeps: [ "*-tgt" ]

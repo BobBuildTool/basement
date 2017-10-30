@@ -1,0 +1,36 @@
+packageVars: [OBJCOPY, STRIP]
+packageScript: |
+    # $1: binary file
+    stripBinary()
+    {
+        local type="$(file -b "$1")"
+        if [[ $type == ELF*not\ stripped ]] ; then
+            echo "Stripping ${1} ..."
+
+            local dir="${1%/*}/.debug" file="${1##*/}"
+
+            # Split off the debug symbols into separete file. Doesn't need to
+            # stay executable...
+            mkdir -p "$dir"
+            $OBJCOPY --only-keep-debug --compress-debug-sections "$1" "${dir}/${file}"
+            chmod 0644 "${dir}/${file}"
+
+            # shared libraries need to be treated with care
+            if [[ $1 == *.so* && $type == ELF*shared ]] ; then
+                $STRIP --remove-section=.comment --remove-section=.note \
+                    --strip-unneeded "$1"
+            else
+                $STRIP --remove-section=.comment --remove-section=.note "$1"
+            fi
+            $OBJCOPY --add-gnu-debuglink="${dir}/${file}" "$1"
+        fi
+    }
+
+    # $1: directory to process
+    stripAll()
+    {
+        find "$1" -type f -not -path '*/.debug/*' -print0 \
+        | while IFS= read -r -d $'\0' f ; do
+            stripBinary "$f"
+        done
+    }
