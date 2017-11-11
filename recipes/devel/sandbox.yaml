@@ -49,7 +49,6 @@ depends:
     - devel::make
     - devel::makedepend
     - devel::patch
-    - devel::pkg-config
     - devel::texinfo
     - kernel::kmod
     - libs::gettext
