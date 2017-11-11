@@ -1,14 +1,30 @@
 environment:
     GNU_MIRROR: "http://ftp.gnu.org/pub/gnu"
 
+    # usual compiler variables
+    AR: "ar"
+    AS: "as"
+    CC: "gcc"
+    CPP: "cpp"
+    CXX: "g++"
+    GDB: "gdb"
+    LD: "ld"
+    NM: "nm"
+    OBJCOPY: "objcopy"
+    OBJDUMP: "objdump"
+    RANLIB: "ranlib"
+    STRIP: "strip"
     ARCH:            "$(host-arch)"
+
+    # host/build environment
     AUTOCONF_BUILD:  "$(host-autoconf)"
     AUTOCONF_HOST:   "$(host-autoconf)"
     MULTIARCH_BUILD: "$(multiarch,$(host-autoconf))"
     MULTIARCH_HOST:  "$(multiarch,$(host-autoconf))"
 
-    BASEMENT_OPTIMIZE: "s"
-    BASEMENT_DEBUG: "1"
+    # default compile flags
+    BASEMENT_OPTIMIZE: "s" # compiler optimization level (0/1/2/s)
+    BASEMENT_DEBUG: "1"    # generate debug symbols (0/1)
 
 include:
     - user
