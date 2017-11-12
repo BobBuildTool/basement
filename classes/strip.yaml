@@ -15,6 +15,9 @@ packageScript: |
             $OBJCOPY --only-keep-debug --compress-debug-sections "$1" "${dir}/${file}"
             chmod 0644 "${dir}/${file}"
 
+            # make sure the file is writable to the owner
+            chmod u+w "$1"
+
             # shared libraries need to be treated with care
             if [[ $1 == *.so* && $type == ELF*shared ]] ; then
                 $STRIP --remove-section=.comment --remove-section=.note \
