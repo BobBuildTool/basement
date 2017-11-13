@@ -72,7 +72,6 @@ buildScript: |
 packageScript: |
     # copy everything
     installPackageDev "$1/install/" "*"
-    installStripAll usr/bin
 
 provideDeps: [ "*-tgt" ]
 
@@ -106,6 +105,9 @@ multiPackage:
                 --enable-languages=c,c++
             cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
 
+        packageScript: |
+            installStripAll usr/bin
+
         provideTools:
             gcc-cross-bare: usr/bin
 
@@ -128,6 +130,9 @@ multiPackage:
                 --enable-languages=c,c++
             cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
 
+        packageScript: |
+            installStripAll usr/bin
+
     native:
         buildTools: [target-toolchain]
         buildVars: [TOOLCHAIN_SYSROOT, GCC_PREFIX]
@@ -147,3 +152,5 @@ multiPackage:
             mkdir -p "install/${TARGET_SYSROOT}"
             cp -an ${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT/* "install/${TARGET_SYSROOT}"
 
+        packageScript: |
+            installStripAll toolchain/bin
