@@ -36,7 +36,7 @@ buildScript: |
 
     #make depend
     makeParallel
-    make INSTALL_PREFIX="${PWD}/.." install_sw
+    make INSTALL_PREFIX="${PWD}/../install" install_sw
 
     popd
 
