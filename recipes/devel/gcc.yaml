@@ -25,7 +25,10 @@ checkoutVars: [GCC_VERSION]
 checkoutDeterministic: True
 checkoutScript: |
     cd gcc-${GCC_VERSION}
-    patchApplySeries -p2 $<<gcc/*.diff>>
+    patchApplySeries -p2 \
+        $<<gcc/arm-multilib-defaults.diff>> \
+        $<<gcc/gcc-multiarch.diff>> \
+        $<<gcc/gcc-multilib-multiarch.diff>>
 
 buildTools: [host-toolchain]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
