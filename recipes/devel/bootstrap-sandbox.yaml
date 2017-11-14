@@ -37,6 +37,7 @@ depends:
     - utils::gawk
     - utils::grep
     - utils::gzip
+    - utils::rsync
     - utils::sed
     - utils::tar
     - utils::unzip
