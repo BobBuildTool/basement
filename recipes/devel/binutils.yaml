@@ -55,7 +55,8 @@ buildScript: |
         --enable-lto
 
 packageScript: |
-    autotoolsPackageTgt
+    # mind the unusual so-versioning
+    autotoolsPackageTgt "$1" "/usr/lib/$MULTIARCH_HOST/lib*-${BINUTILS_VERSION}.so"
 
 provideTools:
     binutils: usr/bin
