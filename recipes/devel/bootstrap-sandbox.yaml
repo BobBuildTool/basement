@@ -26,6 +26,7 @@ depends:
     - devel::patch
     - libs::gettext
     - net::curl
+    - net::make-ca
     - net::openssh
     - perl::perl
     - python::python

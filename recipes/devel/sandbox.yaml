@@ -53,6 +53,7 @@ depends:
     - kernel::kmod
     - libs::gettext
     - net::curl
+    - net::make-ca
     - net::openssh
     - perl::perl
     # - python::python
