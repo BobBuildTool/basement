@@ -20,7 +20,8 @@ buildScript: |
     autotoolsBuild $1/curl-${PKG_VERSION} \
        --disable-static \
        --enable-threaded-resolver \
-       --with-ssl
+       --with-ssl \
+       --with-ca-path=/etc/ssl/certs
 
 packageScript: |
     autotoolsPackageTgt
