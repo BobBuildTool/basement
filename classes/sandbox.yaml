@@ -38,8 +38,6 @@ buildScript: |
     find . -not -path ./toolchain/sysroots -executable -type f -exec ${CROSS_COMPILE}strip -g {} \;
 
     # copy certificates
-    mkdir -p etc/ssl/certs
-    cp $<<sandbox/ca-certificates.crt>> etc/ssl/certs/ca-certificates.crt
     touch etc/resolv.conf
 
     # the sandbox uses "nobody" as user
