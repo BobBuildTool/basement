@@ -62,6 +62,7 @@ packageScript: |
     {
         installCopy "$@" /usr/ /usr/lib/ "/usr/lib/$MULTIARCH_HOST/" \
             "/usr/lib/$MULTIARCH_HOST/*.so.*" \
+            "/usr/lib/$MULTIARCH_HOST/lib*-*.so" \
             "!*"
         installStripAll .
     }
