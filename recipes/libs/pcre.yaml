@@ -1,0 +1,22 @@
+inherit: [autotools]
+
+metaEnvironment:
+    LICENSE: BSD-3-Clause
+    PCRE_VERSION: "8.41"
+
+checkoutSCM:
+    scm: url
+    url: https://ftp.pcre.org/pub/pcre/pcre-${PCRE_VERSION}.tar.bz2
+    digestSHA256: e62c7eac5ae7c0e7286db61ff82912e1c0b7a0c13706616e94a7dd729321b530
+
+buildVars: [PCRE_VERSION]
+buildScript: |
+    autotoolsBuild $1/pcre-${PCRE_VERSION} \
+        --enable-utf8 \
+        --enable-unicode-properties
+
+multiPackage:
+    lib-1-dev:
+        packageScript: autotoolsPackageDev
+    lib-1-tgt:
+        packageScript: autotoolsPackageLib
