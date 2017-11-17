@@ -46,10 +46,14 @@ buildScript: |
 
     # Use plain "defconfig" if we have no specific target. Otherwise check if
     # defconfig has changed.
-    if [[ ( ! -e ".config" ) && ( ! ${LINUX_CONFIG:+true} ) ]] ; then
-        make -C "$1/linux-${LINUX_VERSION}" O=$PWD defconfig
-    elif [[ ( ! -e ".config" ) || ( "$1/linux-${LINUX_VERSION}/${LINUX_ARCH_PATH}/configs/${LINUX_CONFIG}_defconfig" -nt ".config" ) ]] ; then
-        make -C "$1/linux-${LINUX_VERSION}" O=$PWD "${LINUX_CONFIG}_defconfig"
+    if [[ ${LINUX_CONFIG:+true} ]] ; then
+        if [[ ( ! -e ".config" ) || ( "$1/linux-${LINUX_VERSION}/${LINUX_ARCH_PATH}/configs/${LINUX_CONFIG}_defconfig" -nt ".config" ) ]] ; then
+            make -C "$1/linux-${LINUX_VERSION}" O=$PWD "${LINUX_CONFIG}_defconfig"
+        fi
+    else
+        if [[ ! -e ".config" ]] ; then
+            make -C "$1/linux-${LINUX_VERSION}" O=$PWD defconfig
+        fi
     fi
 
 multiPackage:
