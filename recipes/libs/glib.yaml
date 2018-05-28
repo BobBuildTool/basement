@@ -19,6 +19,7 @@ checkoutSCM:
 
 buildVars: [GLIB_VERSION]
 buildScript: |
+    export PYTHONDONTWRITEBYTECODE=1
     export LIBFFI_CFLAGS=" "
     export LIBFFI_LIBS="-lffi"
     export glib_cv_long_long_format=ll
