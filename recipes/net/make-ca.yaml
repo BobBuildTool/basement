@@ -3,15 +3,18 @@ checkoutSCM:
         scm: url
         url: https://github.com/djlucas/make-ca/archive/v0.6.tar.gz
         digestSHA1: 5f909366eca66c6c2caa8e44ca531d198b18a69d
+        dir: make-ca
+        stripComponents: 1
     -
         # security/nss/lib/ckfw/builtins/certdata.txt@100e006a2730
         scm: url
         url: https://hg.mozilla.org/mozilla-central/raw-file/100e006a2730/security/nss/lib/ckfw/builtins/certdata.txt
         digestSHA1: b7be1905a9ca11c0c42d0270ce54132f354244b3
+        dir: nss
 
 buildScript: |
-    cp $1/make-ca-0.6/make-ca .
-    cp $1/certdata.txt .
+    cp $1/make-ca/make-ca .
+    cp $1/nss/certdata.txt .
 
 packageScript: |
     bash $1/make-ca -C $1/certdata.txt -D "$PWD"
