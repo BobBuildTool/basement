@@ -8,20 +8,22 @@ checkoutSCM:
         scm: url
         url: "http://www.cpan.org/src/5.0/perl-${PERL_VERSION}.tar.bz2"
         digestSHA1: "400338c91c56420d98142cbfcb84d418cae2c98c"
+        dir: perl
+        stripComponents: 1
     -
         scm: url
         url: "https://raw.githubusercontent.com/arsv/perl-cross/releases/perl-${PERL_VERSION}-cross-${PERL_CROSS_VERSION}.tar.gz"
         digestSHA1: "94f8504000d637850f31243974b894c27f30b094"
         extract: False
+        dir: perl-cross
+        fileName: perl-cross.tar.gz
 
-checkoutVars: [PERL_VERSION, PERL_CROSS_VERSION]
 checkoutDeterministic: True
 checkoutScript: |
-    tar --strip-components=1 -C perl-${PERL_VERSION} -xf \
-        perl-${PERL_VERSION}-cross-${PERL_CROSS_VERSION}.tar.gz
+    tar --strip-components=1 -C perl -xf perl-cross/perl-cross.tar.gz
 
     # fix configure script (remove non-existent entry)
-    sed -i -e 's/x2p\/Makefile//' perl-${PERL_VERSION}/configure
+    sed -i -e 's/x2p\/Makefile//' perl/configure
 
 buildTools: [host-toolchain, target-toolchain]
 buildVars: [AUTOCONF_HOST, CROSS_COMPILE, TOOLCHAIN_SYSROOT, CPPFLAGS, CFLAGS, LDFLAGS]
@@ -29,7 +31,7 @@ buildScript: |
     mkdir -p build install
     cd build
 
-    $1/perl-${PERL_VERSION}/configure \
+    $1/perl/configure \
         --target=${AUTOCONF_HOST} \
         --target-tools-prefix=${CROSS_COMPILE} \
         --prefix=/usr \
@@ -47,7 +49,7 @@ buildScript: |
     make all
     make DESTDIR=$PWD/../install install.perl
 
-packageVars: [PERL_ARCH]
+packageVars: [PERL_ARCH, PERL_VERSION]
 packageScript: |
     cp -a $1/install/* .
 
