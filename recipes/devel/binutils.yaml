@@ -57,6 +57,15 @@ buildScript: |
 packageScript: |
     autotoolsPackageTgt
 
+    # make sure that prefixed versions are available on native build
+    if [[ $AUTOCONF_HOST = ${AUTOCONF_TARGET:-$AUTOCONF_HOST} ]] ; then
+        pushd ./${BINUTILS_PREFIX:-/usr}/bin
+        for i in *; do
+            ln -s "$i" "${AUTOCONF_HOST}-$i"
+        done
+        popd
+    fi
+
 provideTools:
     binutils: usr/bin
 

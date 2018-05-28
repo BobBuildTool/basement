@@ -1,10 +1,10 @@
 packageVars: [AUTOCONF_BUILD, SANDBOX_AUTOCONF_BUILD]
 packageScript: |
-    if [[ -e /bob && -e /toolchain/bin ]] ; then
-        # We are in a sandbox with an accompanying toolchain. Use it...
-        ln -sf /toolchain/bin bin
-    else
-        # Check if gcc is around and that it's a compatible compiler
+    # If we are not in a sandbox do a quich check if gcc is around and that
+    # it's a compatible compiler. This will only do its job if the user builds
+    # on his machine and does not download this as an artifact. Still better
+    # than nothing...
+    if [[ ! -e /bob || ! -e /toolchain/bin ]] ; then
         GCC_MACHINE="$(gcc -dumpmachine)"
         case "$AUTOCONF_BUILD" in
             "$GCC_MACHINE")
@@ -25,23 +25,27 @@ packageScript: |
                 echo "Expected a compatible ($AUTOCONF_BUILD) host compiler!" >&2
                 exit 1
         esac
-
-        # Are all tools available under their native name?
-        mkdir -p bin
-        for i in ar as gcc cpp g++ gdb ld nm objcopy objdump ranlib strip ; do
-            if type -p "${AUTOCONF_BUILD}-$i" >/dev/null ; then
-                ln -s "$(type -p ${AUTOCONF_BUILD}-$i)" "bin/${SANDBOX_AUTOCONF_BUILD}-$i"
-            elif type -p $i >/dev/null ; then
-                ln -s "$(type -p $i)" "bin/${SANDBOX_AUTOCONF_BUILD}-$i"
-            else
-                echo "$i not found."
-            fi
-        done
     fi
 
+    # Create a wrapper scripts that prefer the right executable in /toolchain
+    # and (if we are outside of a sandbox) fall back to globally installed
+    # versions.
+    for i in addr2line ar as c++ c++filt cpp elfedit g++ gcc gcov gdb gprof ld nm objcopy objdump ranlib readelf size strings strip ; do
+        ln -sf /toolchain/bin/$i
+        cat >${SANDBOX_AUTOCONF_BUILD}-$i <<EOF
+    #!/bin/bash
+    [[ -x "/toolchain/bin/${SANDBOX_AUTOCONF_BUILD}-$i" ]] && exec "/toolchain/bin/${SANDBOX_AUTOCONF_BUILD}-$i" "\$@"
+    type -p "${AUTOCONF_BUILD}-$i" >/dev/null && exec "${AUTOCONF_BUILD}-$i" "\$@"
+    exec $i "\$@"
+    EOF
+    done
+
+    # make all scripts executable
+    chmod +x ${SANDBOX_AUTOCONF_BUILD}-*
+
 provideTools:
-    host-toolchain: "bin"
-    target-toolchain: "bin"
+    host-toolchain: "."
+    target-toolchain: "."
 
 provideVars:
     # usual compiler variables

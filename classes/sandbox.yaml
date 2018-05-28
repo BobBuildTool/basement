@@ -1,7 +1,7 @@
 shared: True
 
 buildTools: [target-toolchain]
-buildVars: [AUTOCONF_HOST, CROSS_COMPILE, TOOLCHAIN_SYSROOT, MULTIARCH_HOST]
+buildVars: [CROSS_COMPILE, TOOLCHAIN_SYSROOT]
 buildScript: |
     # start from scratch
     rm -rf *
@@ -42,18 +42,6 @@ buildScript: |
 
     # the sandbox uses "nobody" as user
     echo "nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin" > etc/passwd
-
-    # Symlink all toolchain executables and make sure there exist a version
-    # with the target triple.
-    if [[ -d toolchain/bin ]] ; then
-        pushd toolchain/bin
-        for i in * ; do
-            if [[ $i != ${AUTOCONF_HOST}* && ! -e ${AUTOCONF_HOST}-$i ]] ; then
-                ln -s $i ${AUTOCONF_HOST}-$i
-            fi
-        done
-        popd
-    fi
 
 packageScript: |
     cp -a $1/* .
