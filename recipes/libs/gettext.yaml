@@ -1,16 +1,16 @@
 inherit: [autotools]
 
-environment:
+metaEnvironment:
     PKG_VERSION: "0.19.7"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gettext/gettext-${PKG_VERSION}.tar.gz
     digestSHA1: "d8fc932196cc78b83ca1b63c8687ec3d513b40b6"
+    stripComponents: 1
 
-buildVars: [PKG_VERSION]
 buildScript: |
-    autotoolsBuild $1/gettext-${PKG_VERSION}
+    autotoolsBuild $1
 
 packageScript: |
     autotoolsPackageTgt

@@ -1,17 +1,19 @@
 inherit: [autotools]
 
-environment:
+metaEnvironment:
     PKG_VERSION: "2.4.6"
+
+privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/libtool/libtool-${PKG_VERSION}.tar.gz
     digestSHA1: "25b6931265230a06f0fc2146df64c04e5ae6ec33"
+    stripComponents: 1
 
-buildVars: [PKG_VERSION]
 buildScript: |
-    autotoolsBuild $1/libtool-${PKG_VERSION}
+    autotoolsBuild $1
 
 packageScript: |
     autotoolsPackageTgt

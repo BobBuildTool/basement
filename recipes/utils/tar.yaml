@@ -1,16 +1,16 @@
 inherit: [autotools]
 
-environment:
-    TAR_VERSION: "1.28"
+metaEnvironment:
+    PKG_VERSION: "1.28"
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/tar/tar-${TAR_VERSION}.tar.xz
+    url: ${GNU_MIRROR}/tar/tar-${PKG_VERSION}.tar.xz
     digestSHA1: "40f3470a96b80749531fe48dbba99e43b6dfa7d3"
+    stripComponents: 1
 
-buildVars: [TAR_VERSION]
 buildScript: |
-    autotoolsBuild $1/tar-${TAR_VERSION}
+    autotoolsBuild $1
 
 packageScript: |
     autotoolsPackageTgt

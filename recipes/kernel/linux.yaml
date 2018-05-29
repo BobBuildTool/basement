@@ -1,15 +1,16 @@
 inherit: [make]
 
-environment:
-    LINUX_VERSION: "4.3.3"
+metaEnvironment:
+    PKG_VERSION: "4.3.3"
 
 checkoutSCM:
     scm: url
-    url: https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-${LINUX_VERSION}.tar.xz
+    url: https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-${PKG_VERSION}.tar.xz
     digestSHA1: "ac25bed0b9f084c7234fd2add361ee20d14f8310"
+    stripComponents: 1
 
 buildTools: [host-toolchain, target-toolchain]
-buildVars: [CROSS_COMPILE, ARCH, LINUX_CONFIG, LINUX_VERSION]
+buildVars: [CROSS_COMPILE, ARCH, LINUX_CONFIG]
 buildScript: |
     # prevent timestamps in configuration
     export KCONFIG_NOTIMESTAMP=1
@@ -47,12 +48,12 @@ buildScript: |
     # Use plain "defconfig" if we have no specific target. Otherwise check if
     # defconfig has changed.
     if [[ ${LINUX_CONFIG:+true} ]] ; then
-        if [[ ( ! -e ".config" ) || ( "$1/linux-${LINUX_VERSION}/${LINUX_ARCH_PATH}/configs/${LINUX_CONFIG}_defconfig" -nt ".config" ) ]] ; then
-            make -C "$1/linux-${LINUX_VERSION}" O=$PWD "${LINUX_CONFIG}_defconfig"
+        if [[ ( ! -e ".config" ) || ( "$1/${LINUX_ARCH_PATH}/configs/${LINUX_CONFIG}_defconfig" -nt ".config" ) ]] ; then
+            make -C "$1" O=$PWD "${LINUX_CONFIG}_defconfig"
         fi
     else
         if [[ ! -e ".config" ]] ; then
-            make -C "$1/linux-${LINUX_VERSION}" O=$PWD defconfig
+            make -C "$1" O=$PWD defconfig
         fi
     fi
 

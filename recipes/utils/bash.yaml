@@ -1,7 +1,7 @@
 inherit: [autotools]
 
-environment:
-    BASH_VERSION: "4.3.30"
+metaEnvironment:
+    PKG_VERSION: "4.3.30"
 
 depends:
     - libs::ncurses-dev
@@ -16,11 +16,12 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/bash/bash-${BASH_VERSION}.tar.gz
+    url: ${GNU_MIRROR}/bash/bash-${PKG_VERSION}.tar.gz
     digestSHA1: "33b1bcc5dca1b72f28b2baeca6efa0d422097964"
+    stripComponents: 1
 
 buildTools: [host-toolchain]
-buildVars: [BASH_VERSION, READLINE_VERSION]
+buildVars: [READLINE_VERSION]
 buildScript: |
     export ac_cv_rl_prefix="${BOB_DEP_PATHS[libs::readline-dev]}"
     export ac_cv_rl_version="${READLINE_VERSION}"
@@ -29,7 +30,7 @@ buildScript: |
     export bash_cv_sys_named_pipes=present
     export bash_cv_func_sigsetjmp=present
     export bash_cv_printf_a_format=yes
-    autotoolsBuild $1/bash-${BASH_VERSION} \
+    autotoolsBuild $1 \
         --with-installed-readline 
 
 packageScript: |
@@ -38,5 +39,5 @@ packageScript: |
 provideDeps: [ "*-tgt" ]
 
 provideVars:
-    BASH_VERSION: "${BASH_VERSION}"
+    BASH_VERSION: "${PKG_VERSION}"
 

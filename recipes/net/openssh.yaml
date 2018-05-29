@@ -1,6 +1,6 @@
 inherit: [autotools]
 
-environment:
+metaEnvironment:
     PKG_VERSION: "7.2p2"
 
 depends:
@@ -16,11 +16,11 @@ checkoutSCM:
     scm: url
     url: http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-${PKG_VERSION}.tar.gz
     digestSHA1: "70e35d7d6386fe08abbd823b3a12a3ca44ac6d38"
+    stripComponents: 1
 
 buildTools: [target-toolchain]
-buildVars: [PKG_VERSION]
 buildScript: |
-    autotoolsBuild $1/openssh-${PKG_VERSION} \
+    autotoolsBuild $1 \
         --disable-strip \
         --with-ssl-dir="${BOB_DEP_PATHS[libs::openssl-dev]}/usr" \
         --without-openssl-header-check

@@ -1,16 +1,16 @@
 inherit: [autotools]
 
-environment:
-    GZIP_VERSION: "1.6"
+metaEnvironment:
+    PKG_VERSION: "1.6"
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/gzip/gzip-${GZIP_VERSION}.tar.xz
+    url: ${GNU_MIRROR}/gzip/gzip-${PKG_VERSION}.tar.xz
     digestSHA1: "05bd01fc90178b806e0c13f9526e2ad392084085"
+    stripComponents: 1
 
-buildVars: [GZIP_VERSION]
 buildScript: |
-    autotoolsBuild $1/gzip-${GZIP_VERSION}
+    autotoolsBuild $1
 
 packageScript: |
     autotoolsPackageTgt

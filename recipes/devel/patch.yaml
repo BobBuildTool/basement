@@ -1,16 +1,16 @@
 inherit: [autotools]
 
-environment:
-    PATCH_VERSION: "2.7.5"
+metaEnvironment:
+    PKG_VERSION: "2.7.5"
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/patch/patch-${PATCH_VERSION}.tar.xz
+    url: ${GNU_MIRROR}/patch/patch-${PKG_VERSION}.tar.xz
     digestSHA1: "8fd8f8f8ba640d871bce1bd33c7fd5e2ebe03a1e"
+    stripComponents: 1
 
-buildVars: [PATCH_VERSION]
 buildScript: |
-    autotoolsBuild $1/patch-${PATCH_VERSION}
+    autotoolsBuild $1
 
 packageScript: |
     autotoolsPackageTgt

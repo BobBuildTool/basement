@@ -1,7 +1,7 @@
 inherit: [autotools]
 
-environment:
-    COREUTILS_VERSION: "8.25"
+metaEnvironment:
+    PKG_VERSION: "8.25"
 
 depends:
     - libs::gmp-dev
@@ -11,12 +11,12 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/coreutils/coreutils-${COREUTILS_VERSION}.tar.xz
+    url: ${GNU_MIRROR}/coreutils/coreutils-${PKG_VERSION}.tar.xz
     digestSHA1: "301f186c24afb882a3ca73d19a102a2ce6f456c3"
+    stripComponents: 1
 
-buildVars: [COREUTILS_VERSION]
 buildScript: |
-    autotoolsBuild $1/coreutils-${COREUTILS_VERSION} \
+    autotoolsBuild $1 \
         --enable-install-program=hostname
 
 packageScript: |

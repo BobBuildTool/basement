@@ -1,17 +1,16 @@
 inherit: [autotools]
 
-environment:
+metaEnvironment:
    PKG_VERSION: "2.1.0"
 
-checkoutVars: [PKG_VERSION]
 checkoutSCM:
    scm: url
    url: http://downloads.sourceforge.net/project/expat/expat/${PKG_VERSION}/expat-${PKG_VERSION}.tar.gz
    digestSHA1: "b08197d146930a5543a7b99e871cba3da614f6f0"
+   stripComponents: 1
 
-buildVars: [PKG_VERSION]
 buildScript: |
-   autotoolsBuild $1/expat-${PKG_VERSION}
+   autotoolsBuild $1
 
 multiPackage:
     dev:

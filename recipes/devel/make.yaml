@@ -1,17 +1,18 @@
 inherit: [autotools]
 
-environment:
+metaEnvironment:
     PKG_VERSION: "4.1"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/make/make-${PKG_VERSION}.tar.bz2
     digestSHA1: "0d701882fd6fd61a9652cb8d866ad7fc7de54d58"
+    stripComponents: 1
 
-buildVars: [AR, PKG_VERSION]
+buildVars: [AR]
 buildScript: |
     export ac_cv_prog_AR="$AR"
-    autotoolsBuild $1/make-${PKG_VERSION} --without-guile
+    autotoolsBuild $1 --without-guile
 
 packageScript: |
     autotoolsPackageTgt

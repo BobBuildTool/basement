@@ -1,7 +1,7 @@
 inherit: [autotools]
 
-environment:
-    GLIB_VERSION: "2.48.1"
+metaEnvironment:
+    PKG_VERSION: "2.48.1"
 
 depends:
     - libs::libffi-dev
@@ -14,10 +14,10 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: http://ftp.gnome.org/pub/gnome/sources/glib/2.48/glib-${GLIB_VERSION}.tar.xz
+    url: http://ftp.gnome.org/pub/gnome/sources/glib/2.48/glib-${PKG_VERSION}.tar.xz
     digestSHA256: "74411bff489cb2a3527bac743a51018841a56a4d896cc1e0d0d54f8166a14612"
+    stripComponents: 1
 
-buildVars: [GLIB_VERSION]
 buildScript: |
     export PYTHONDONTWRITEBYTECODE=1
     export LIBFFI_CFLAGS=" "
@@ -25,7 +25,7 @@ buildScript: |
     export glib_cv_long_long_format=ll
     export glib_cv_stack_grows=no
     export glib_cv_uscore=no
-    autotoolsBuild $1/glib-${GLIB_VERSION} \
+    autotoolsBuild $1 \
         --without-pcre
 
 multiPackage:

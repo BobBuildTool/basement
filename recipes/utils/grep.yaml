@@ -6,17 +6,17 @@ depends:
       depends:
         - libs::pcre-lib-1-tgt
 
-environment:
-    GREP_VERSION: "3.1"
+metaEnvironment:
+    PKG_VERSION: "3.1"
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/grep/grep-${GREP_VERSION}.tar.xz
+    url: ${GNU_MIRROR}/grep/grep-${PKG_VERSION}.tar.xz
     digestSHA1: "d1d677e959c7d874e18e7e3839f26a0f0c1733d5"
+    stripComponents: 1
 
-buildVars: [GREP_VERSION]
 buildScript: |
-    autotoolsBuild $1/grep-${GREP_VERSION} \
+    autotoolsBuild $1 \
         --without-included-regex
 
 packageScript: |

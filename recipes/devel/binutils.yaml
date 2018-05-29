@@ -1,17 +1,16 @@
 inherit: [autotools, patch]
 
-environment:
-    BINUTILS_VERSION: "2.29.1"
+metaEnvironment:
+    PKG_VERSION: "2.29.1"
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/binutils/binutils-${BINUTILS_VERSION}.tar.xz
+    url: ${GNU_MIRROR}/binutils/binutils-${PKG_VERSION}.tar.xz
     digestSHA1: "172244a349d07ec205c39c0321cbc354c125e78e"
+    stripComponents: 1
 
-checkoutVars: [BINUTILS_VERSION]
 checkoutDeterministic: True
 checkoutScript: |
-    cd binutils-${BINUTILS_VERSION}
     patchApplySeries \
         $<<binutils/129_multiarch_libpath.patch>> \
         $<<binutils/aarch64-libpath.diff>>
@@ -45,7 +44,7 @@ buildScript: |
     esac
 
     export ac_cv_prog_MAKEINFO=missing
-    autotoolsBuild $1/binutils-${BINUTILS_VERSION} \
+    autotoolsBuild $1 \
         ${BINUTILS_PREFIX:+--prefix=${BINUTILS_PREFIX}} \
         --with-sysroot=${BINUTILS_PREFIX:-/usr}/sysroots/$MULTIARCH_TARGET \
         --enable-deterministic-archives \

@@ -1,16 +1,16 @@
 inherit: [autotools]
 
-environment:
-    XZUTILS_VERSION: "5.2.2"
+metaEnvironment:
+    PKG_VERSION: "5.2.2"
 
 checkoutSCM:
     scm: url
-    url: http://tukaani.org/xz/xz-${XZUTILS_VERSION}.tar.xz
+    url: http://tukaani.org/xz/xz-${PKG_VERSION}.tar.xz
     digestSHA1: "72c567d3263345844191a7e618779b179d1f49e0"
+    stripComponents: 1
 
-buildVars: [XZUTILS_VERSION]
 buildScript: |
-    autotoolsBuild $1/xz-${XZUTILS_VERSION}
+    autotoolsBuild $1
 
 packageScript: |
     autotoolsPackageTgt

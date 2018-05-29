@@ -1,7 +1,7 @@
 inherit: [autotools]
 
-environment:
-    READLINE_VERSION: "6.3"
+metaEnvironment:
+    PKG_VERSION: "6.3"
 
 depends:
     - libs::ncurses-dev
@@ -11,21 +11,21 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/readline/readline-${READLINE_VERSION}.tar.gz
+    url: ${GNU_MIRROR}/readline/readline-${PKG_VERSION}.tar.gz
     digestSHA1: "017b92dc7fd4e636a2b5c9265a77ccc05798c9e1"
+    stripComponents: 1
 
-buildVars: [READLINE_VERSION]
 buildScript: |
     export bash_cv_func_sigsetjmp=yes
     export bash_cv_wcwidth_broken=no
-    autotoolsBuild $1/readline-${READLINE_VERSION}
+    autotoolsBuild $1
 
 multiPackage:
     dev:
         packageScript: autotoolsPackageDev
         provideDeps: [ "*-dev" ]
         provideVars:
-            READLINE_VERSION: "${READLINE_VERSION}"
+            READLINE_VERSION: "${PKG_VERSION}"
 
     tgt:
         packageScript: autotoolsPackageTgt

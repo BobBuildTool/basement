@@ -1,16 +1,16 @@
 inherit: [autotools]
 
-environment:
+metaEnvironment:
     PKG_VERSION: "0.50.2"
 
 checkoutSCM:
     scm: url
     url: http://launchpad.net/intltool/trunk/${PKG_VERSION}/+download/intltool-${PKG_VERSION}.tar.gz
     digestSHA1: "7fddbd8e1bf94adbf1bc947cbf3b8ddc2453f8ad"
+    stripComponents: 1
 
-buildVars: [PKG_VERSION]
 buildScript: |
-    autotoolsBuild $1/intltool-${PKG_VERSION}
+    autotoolsBuild $1
 
 packageScript: |
     autotoolsPackageTgt

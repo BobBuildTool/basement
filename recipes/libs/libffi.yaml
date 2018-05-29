@@ -1,23 +1,20 @@
 inherit: [autotools, patch]
 
-environment:
+metaEnvironment:
    PKG_VERSION: "3.2.1"
 
-checkoutVars: [PKG_VERSION]
 checkoutSCM:
    scm: url
    url: ftp://sourceware.org/pub/libffi/libffi-${PKG_VERSION}.tar.gz
    digestSHA1: "280c265b789e041c02e5c97815793dfc283fb1e6"
+   stripComponents: 1
 
-checkoutVars: [PKG_VERSION]
 checkoutDeterministic: True
 checkoutScript: |
-    cd libffi-${PKG_VERSION}
     patchApplySeries $<<libffi/*.diff>>
 
-buildVars: [PKG_VERSION]
 buildScript: |
-   autotoolsBuild $1/libffi-${PKG_VERSION}
+   autotoolsBuild $1
 
 multiPackage:
     dev:

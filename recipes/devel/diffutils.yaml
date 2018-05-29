@@ -1,16 +1,16 @@
 inherit: [autotools]
 
-environment:
-    DIFFUTILS_VERSION: "3.3"
+metaEnvironment:
+    PKG_VERSION: "3.3"
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/diffutils/diffutils-${DIFFUTILS_VERSION}.tar.xz
+    url: ${GNU_MIRROR}/diffutils/diffutils-${PKG_VERSION}.tar.xz
     digestSHA1: "6463cce7d3eb73489996baefd0e4425928ecd61e"
+    stripComponents: 1
 
-buildVars: [DIFFUTILS_VERSION]
 buildScript: |
-    autotoolsBuild $1/diffutils-${DIFFUTILS_VERSION}
+    autotoolsBuild $1
 
 packageScript: |
     autotoolsPackageTgt

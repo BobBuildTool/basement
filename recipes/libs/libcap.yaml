@@ -1,6 +1,6 @@
 inherit: [make, install]
 
-environment:
+metaEnvironment:
     PKG_VERSION: "2.25"
 
 checkoutSCM:

@@ -7,17 +7,16 @@ depends:
         use: [tools]
 
 metaEnvironment:
-    GLIBC_VERSION: "2.25"
+    PKG_VERSION: "2.25"
 
 checkoutSCM:
     scm: url
-    url: http://ftp.gnu.org/gnu/glibc/glibc-${GLIBC_VERSION}.tar.xz
+    url: http://ftp.gnu.org/gnu/glibc/glibc-${PKG_VERSION}.tar.xz
     digestSHA1: "5fff5a94ef4470bf48fe1b79093185f19f5c827a"
+    stripComponents: 1
 
 checkoutDeterministic: True
-checkoutVars: [GLIBC_VERSION]
 checkoutScript: |
-    cd glibc-${GLIBC_VERSION}
     patchApplySeries $<<glibc/*.diff>>
 
 buildVars: [AUTOCONF_TARGET, MULTIARCH_TARGET]
@@ -28,10 +27,10 @@ buildScript: |
 
     mkdir -p build install
     pushd build
-    $1/glibc-${GLIBC_VERSION}/configure \
+    $1/configure \
         --prefix=/usr                    \
         --host=${AUTOCONF_TARGET}        \
-        --build=$($1/glibc-${GLIBC_VERSION}/scripts/config.guess) \
+        --build=$($1/scripts/config.guess) \
         --enable-kernel=4.3.3             \
         --with-headers=$2/usr/include \
         --enable-obsolete-rpc \

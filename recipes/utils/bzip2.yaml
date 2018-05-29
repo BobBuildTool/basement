@@ -1,21 +1,21 @@
 inherit: [make, install]
 
-environment:
-    BZIP2_VERSION: "1.0.6"
+metaEnvironment:
+    PKG_VERSION: "1.0.6"
 
 checkoutSCM:
     scm: url
-    url: http://www.bzip.org/${BZIP2_VERSION}/bzip2-${BZIP2_VERSION}.tar.gz
+    url: http://www.bzip.org/${PKG_VERSION}/bzip2-${PKG_VERSION}.tar.gz
     digestSHA1: "3f89f861209ce81a6bab1fd1998c0ef311712002"
     extract: False
 
 buildTools: [target-toolchain]
-buildVars: [AR, CC, RANLIB, BZIP2_VERSION, AUTOCONF_HOST]
+buildVars: [AR, CC, RANLIB, AUTOCONF_HOST]
 buildScript: |
     mkdir -p build install
 
     pushd build
-    tar xf $1/bzip2-${BZIP2_VERSION}.tar.gz --strip-components=1
+    tar xf $1/bzip2-*.tar.gz --strip-components=1
     make install PREFIX=$PWD/../install/usr AR=$AR CC=$CC RANLIB=$RANLIB
     popd
 

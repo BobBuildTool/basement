@@ -1,20 +1,20 @@
 inherit: [autotools]
 
-environment:
+metaEnvironment:
     PKG_VERSION: "6.0"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/ncurses/ncurses-${PKG_VERSION}.tar.gz
     digestSHA1: "acd606135a5124905da770803c05f1f20dd3b21c"
+    stripComponents: 1
 
 buildTools: [host-toolchain]
-buildVars: [PKG_VERSION]
 buildScript: |
     # work around build failure with recent gcc
     # see https://dev.openwrt.org/ticket/19749
     export CPPFLAGS="-P"
-    autotoolsBuild $1/ncurses-${PKG_VERSION} \
+    autotoolsBuild $1 \
             --with-shared           \
             --without-debug         \
             --without-normal        \

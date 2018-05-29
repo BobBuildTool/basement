@@ -1,16 +1,16 @@
 inherit: [autotools]
 
-environment:
+metaEnvironment:
     PKG_VERSION: "6.1.0"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gmp/gmp-${PKG_VERSION}.tar.xz
     digestSHA1: "99d691607613e749aa5d7c0c2a89aeab38fec070"
+    stripComponents: 1
 
-buildVars: [PKG_VERSION]
 buildScript: |
-    autotoolsBuild $1/gmp-${PKG_VERSION}
+    autotoolsBuild $1
 
 multiPackage:
     dev:

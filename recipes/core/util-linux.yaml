@@ -1,8 +1,8 @@
 inherit: [autotools]
 
-environment:
-    UTIL_LINUX_MAJOR: "2.27"
-    UTIL_LINUX_VERSION: "2.27.1"
+metaEnvironment:
+    PKG_VERSION_MAJOR: "2.27"
+    PKG_VERSION: "2.27.1"
 
 depends:
     - libs::ncurses-dev
@@ -15,15 +15,15 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: https://www.kernel.org/pub/linux/utils/util-linux/v${UTIL_LINUX_MAJOR}/util-linux-${UTIL_LINUX_VERSION}.tar.xz
+    url: https://www.kernel.org/pub/linux/utils/util-linux/v${PKG_VERSION_MAJOR}/util-linux-${PKG_VERSION}.tar.xz
     digestSHA1: "462bca6320535d39b62216d8609da5531bfef0bb"
+    stripComponents: 1
 
-buildVars: [UTIL_LINUX_VERSION]
 buildScript: |
     export PKG_CONFIG=""
-    autotoolsBuild $1/util-linux-${UTIL_LINUX_VERSION} \
-        --without-python               \
-        --disable-makeinstall-chown    \
+    autotoolsBuild $1 \
+        --without-python \
+        --disable-makeinstall-chown \
         --without-systemdsystemunitdir \
         --enable-usrdir-path \
         bindir=/usr/bin \

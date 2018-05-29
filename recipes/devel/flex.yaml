@@ -1,17 +1,17 @@
 inherit: [autotools]
 
-environment:
-    FLEX_VERSION: "2.6.0"
+metaEnvironment:
+    PKG_VERSION: "2.6.0"
 
 checkoutSCM:
     scm: url
-    url: https://sourceforge.net/projects/flex/files/flex-${FLEX_VERSION}.tar.gz
+    url: https://sourceforge.net/projects/flex/files/flex-${PKG_VERSION}.tar.gz
     digestSHA1: "cfe10b5de4893ced356adc437e78018e715818c3"
+    stripComponents: 1
 
-buildVars: [FLEX_VERSION]
 buildTools: [bison]
 buildScript: |
-    autotoolsBuild $1/flex-${FLEX_VERSION} \
+    autotoolsBuild $1 \
         --disable-nls 
 
 packageScript: |

@@ -1,18 +1,19 @@
 inherit: [autotools]
 
-environment:
+metaEnvironment:
     PKG_VERSION: "3.0.4"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gperf/gperf-${PKG_VERSION}.tar.gz
     digestSHA1: "e32d4aff8f0c730c9a56554377b2c6d82d0951b8"
+    stripComponents: 1
 
 # Must override AR on make invocation because the Makefile does not take it
 # from autoconf
-buildVars: [AR, PKG_VERSION]
+buildVars: [AR]
 buildScript: |
-    autotoolsBuild -o "AR=$AR" $1/gperf-${PKG_VERSION}
+    autotoolsBuild -o "AR=$AR" $1
 
 packageScript: |
     autotoolsPackageTgt

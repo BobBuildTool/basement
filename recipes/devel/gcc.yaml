@@ -1,7 +1,7 @@
 inherit: [make, install, patch]
 
-environment:
-    GCC_VERSION: "6.4.0"
+metaEnvironment:
+    PKG_VERSION: "6.4.0"
 
 depends:
     - libs::gmp-dev
@@ -18,13 +18,12 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz
+    url: ${GNU_MIRROR}/gcc/gcc-${PKG_VERSION}/gcc-${PKG_VERSION}.tar.xz
     digestSHA256: "850bf21eafdfe5cd5f6827148184c08c4a0852a37ccf36ce69855334d2c914d4"
+    stripComponents: 1
 
-checkoutVars: [GCC_VERSION]
 checkoutDeterministic: True
 checkoutScript: |
-    cd gcc-${GCC_VERSION}
     patchApplySeries -p2 \
         $<<gcc/arm-multilib-defaults.diff>> \
         $<<gcc/gcc-multiarch.diff>> \
@@ -33,7 +32,6 @@ checkoutScript: |
 buildTools: [host-toolchain]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
             MULTIARCH_BUILD, MULTIARCH_HOST, MULTIARCH_TARGET,
-            GCC_VERSION,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU]
 buildScript: |
     GCC_SRC=$1
@@ -41,7 +39,7 @@ buildScript: |
     {
         mkdir -p build install
         pushd build
-        $GCC_SRC/gcc-${GCC_VERSION}/configure \
+        $GCC_SRC/configure \
             --build=${AUTOCONF_BUILD} \
             --host=${AUTOCONF_HOST} \
             --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST}} \

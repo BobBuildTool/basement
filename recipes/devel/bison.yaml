@@ -1,16 +1,16 @@
 inherit: [autotools]
 
-environment:
-    BISON_VERSION: "3.0.4"
+metaEnvironment:
+    PKG_VERSION: "3.0.4"
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/bison/bison-${BISON_VERSION}.tar.xz
+    url: ${GNU_MIRROR}/bison/bison-${PKG_VERSION}.tar.xz
     digestSHA1: "8270497aad88c7dd4f2c317298c50513fb0c3c8e"
+    stripComponents: 1
 
-buildVars: [BISON_VERSION]
 buildScript: |
-    autotoolsBuild $1/bison-${BISON_VERSION}
+    autotoolsBuild $1
 
 packageScript: |
     autotoolsPackageTgt

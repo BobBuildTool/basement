@@ -1,16 +1,16 @@
 inherit: [autotools]
 
-environment:
-    XPROTO_VERSION: "7.0.28"
+metaEnvironment:
+    PKG_VERSION: "7.0.28"
 
 checkoutSCM:
     scm: url
-    url: http://xorg.freedesktop.org/releases/individual/proto/xproto-${XPROTO_VERSION}.tar.bz2
+    url: http://xorg.freedesktop.org/releases/individual/proto/xproto-${PKG_VERSION}.tar.bz2
     digestSHA1: "d62c43e1b3619ab85732e0113eaa2104920730ac"
+    stripComponents: 1
 
-buildVars: [XPROTO_VERSION]
 buildScript: |
-    autotoolsBuild $1/xproto-${XPROTO_VERSION}
+    autotoolsBuild $1
 
 packageScript: |
     autotoolsPackageDev

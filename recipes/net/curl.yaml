@@ -1,6 +1,6 @@
 inherit: [autotools]
 
-environment:
+metaEnvironment:
     PKG_VERSION: "7.48.0"
 
 depends:
@@ -14,10 +14,10 @@ checkoutSCM:
     scm: url
     url: https://curl.haxx.se/download/curl-${PKG_VERSION}.tar.gz
     digestSHA1: "eac95625b849408362cf6edb0bc9489da317ba30"
+    stripComponents: 1
 
-buildVars: [PKG_VERSION]
 buildScript: |
-    autotoolsBuild $1/curl-${PKG_VERSION} \
+    autotoolsBuild $1 \
        --disable-static \
        --enable-threaded-resolver \
        --with-ssl \

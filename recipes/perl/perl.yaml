@@ -1,18 +1,20 @@
-environment:
-    PERL_VERSION: "5.22.0"
+metaEnvironment:
+    PKG_VERSION: "5.22.0"
+
+privateEnvironment:
     PERL_CROSS_VERSION: "1.0.1"
     PERL_ARCH: "${ARCH}-linux"
 
 checkoutSCM:
     -
         scm: url
-        url: "http://www.cpan.org/src/5.0/perl-${PERL_VERSION}.tar.bz2"
+        url: "http://www.cpan.org/src/5.0/perl-${PKG_VERSION}.tar.bz2"
         digestSHA1: "400338c91c56420d98142cbfcb84d418cae2c98c"
         dir: perl
         stripComponents: 1
     -
         scm: url
-        url: "https://raw.githubusercontent.com/arsv/perl-cross/releases/perl-${PERL_VERSION}-cross-${PERL_CROSS_VERSION}.tar.gz"
+        url: "https://raw.githubusercontent.com/arsv/perl-cross/releases/perl-${PKG_VERSION}-cross-${PERL_CROSS_VERSION}.tar.gz"
         digestSHA1: "94f8504000d637850f31243974b894c27f30b094"
         extract: False
         dir: perl-cross
@@ -49,12 +51,12 @@ buildScript: |
     make all
     make DESTDIR=$PWD/../install install.perl
 
-packageVars: [PERL_ARCH, PERL_VERSION]
+packageVars: [PERL_ARCH, PKG_VERSION]
 packageScript: |
     cp -a $1/install/* .
 
-    rm -rf usr/lib/perl5/${PERL_VERSION}/pod
-    rm -rf usr/lib/perl5/${PERL_VERSION}/${PERL_ARCH}/CORE
+    rm -rf usr/lib/perl5/${PKG_VERSION}/pod
+    rm -rf usr/lib/perl5/${PKG_VERSION}/${PERL_ARCH}/CORE
     find usr/lib/perl5/ -name 'extralibs.ld' -print0 | xargs -0 rm -f
     find usr/lib/perl5/ -name '*.bs' -print0 | xargs -0 rm -f
     find usr/lib/perl5/ -name '.packlist' -print0 | xargs -0 rm -f

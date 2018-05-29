@@ -1,17 +1,18 @@
 inherit: [autotools]
 
-environment:
+metaEnvironment:
     PKG_VERSION: "1.06"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/bc/bc-${PKG_VERSION}.tar.gz
     digestSHA1: "c8f258a7355b40a485007c40865480349c157292"
+    stripComponents: 1
 
 buildTools: [flex]
-buildVars: [AR, CC, PKG_VERSION]
+buildVars: [AR, CC]
 buildScript: |
-    autotoolsBuild -o "AR=$AR" $1/bc-${PKG_VERSION}
+    autotoolsBuild -o "AR=$AR" $1
 
 packageScript: |
     autotoolsPackageTgt

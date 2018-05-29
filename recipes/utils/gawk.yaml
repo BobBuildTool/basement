@@ -1,6 +1,6 @@
 inherit: [autotools]
 
-environment:
+metaEnvironment:
     PKG_VERSION: "4.1.3"
 
 depends:
@@ -13,10 +13,10 @@ checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gawk/gawk-${PKG_VERSION}.tar.xz
     digestSHA1: "76b0acbbdeaa0e58466675c5faf68895eedd8306"
+    stripComponents: 1
 
-buildVars: [PKG_VERSION]
 buildScript: |
-    autotoolsBuild $1/gawk-${PKG_VERSION}
+    autotoolsBuild $1
 
 packageScript: |
     autotoolsPackageTgt

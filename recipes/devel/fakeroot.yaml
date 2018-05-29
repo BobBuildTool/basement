@@ -1,6 +1,6 @@
 inherit: [autotools]
 
-environment:
+metaEnvironment:
     PKG_VERSION: "1.20.2"
 
 depends:
@@ -14,10 +14,10 @@ checkoutSCM:
     scm: url
     url: http://ftp.debian.org/debian/pool/main/f/fakeroot/fakeroot_${PKG_VERSION}.orig.tar.bz2
     digestSHA1: "367040df07043edb630942b21939e493f3fad888"
+    stripComponents: 1
 
-buildVars: [PKG_VERSION]
 buildScript: |
-    autotoolsBuild $1/fakeroot-${PKG_VERSION}
+    autotoolsBuild $1
 
 packageScript: |
     autotoolsPackageTgt

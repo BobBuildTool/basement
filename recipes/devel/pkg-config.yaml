@@ -1,6 +1,6 @@
 inherit: [autotools, patch]
 
-environment:
+metaEnvironment:
     PKG_VERSION: "0.29.1"
 
 depends:
@@ -14,11 +14,10 @@ checkoutSCM:
     scm: url
     url: https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_VERSION}.tar.gz
     digestSHA1: "271ce928f6d673cc16cbced2bfd14a5f2e5d3d37"
+    stripComponents: 1
 
-checkoutVars: [PKG_VERSION]
 checkoutDeterministic: True
 checkoutScript: |
-    cd pkg-config-${PKG_VERSION}
     patchApplySeries $<<pkg-config/*.patch>>
 
 buildVars: [MULTIARCH_HOST]
@@ -26,7 +25,7 @@ buildScript: |
     export GLIB_CFLAGS="-I${BOB_DEP_PATHS[libs::glib-dev]}/usr/include/glib-2.0"
            GLIB_CFLAGS+=" -I${BOB_DEP_PATHS[libs::glib-dev]}/usr/lib/$MULTIARCH_HOST/glib-2.0/include"
     export GLIB_LIBS="-lglib-2.0 -lpthread"
-    autotoolsBuild $1/pkg-config-${PKG_VERSION} \
+    autotoolsBuild $1 \
        --disable-host-tool \
        --enable-define-prefix
 

@@ -1,25 +1,26 @@
 inherit: [autotools]
 
-environment:
-    FILE_VERSION: "5.25"
+metaEnvironment:
+    PKG_VERSION: "5.25"
 
 checkoutSCM:
     scm: url
-    url: ftp://ftp.astron.com/pub/file/file-${FILE_VERSION}.tar.gz
+    url: ftp://ftp.astron.com/pub/file/file-${PKG_VERSION}.tar.gz
     digestSHA1: "fea78106dd0b7a09a61714cdbe545135563e84bd"
+    stripComponents: 1
 
 buildTools: [host-toolchain]
-buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, FILE_VERSION]
+buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST]
 buildScript: |
     # need host "file" tool when cross-compiling
     if [[ ${AUTOCONF_BUILD:-unknown} != ${AUTOCONF_HOST:-unknown} ]] ; then
         mkdir -p host
         pushd host
-        AUTOCONF_HOST="$AUTOCONF_BUILD" autotoolsBuild $1/file-${FILE_VERSION}
+        AUTOCONF_HOST="$AUTOCONF_BUILD" autotoolsBuild $1
         export PATH="$PWD/install/usr/bin:$PATH"
         popd
     fi
-    autotoolsBuild $1/file-${FILE_VERSION}
+    autotoolsBuild $1
 
 packageScript: |
     autotoolsPackageTgt
