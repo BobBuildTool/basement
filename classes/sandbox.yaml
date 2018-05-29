@@ -37,11 +37,15 @@ buildScript: |
     find usr/lib -name '*.a' -o -name '*.o' -delete
     find . -not -path ./toolchain/sysroots -executable -type f -exec ${CROSS_COMPILE}strip -g {} \;
 
-    # copy certificates
+    # Create an empty resolv.conf. The host version is mounted over this one
+    # when entering the sandbox.
     touch etc/resolv.conf
 
     # the sandbox uses "nobody" as user
-    echo "nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin" > etc/passwd
+    cat >etc/passwd <<EOF
+    root:x:0:0:root:/root:/bin/bash
+    nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+    EOF
 
 packageScript: |
     cp -a $1/* .
