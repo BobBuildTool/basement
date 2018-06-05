@@ -71,6 +71,7 @@ packageScript: |
     installPackageBin()
     {
         installCopy "$@" '!/usr/include/' \
+            "!/usr/lib/*.a" "!/usr/lib/*.so*"  \
             "!/usr/lib/$MULTIARCH_HOST/*.a" "!/usr/lib/$MULTIARCH_HOST/*.so*"  \
             "!/usr/lib/$MULTIARCH_HOST/pkgconfig" \
             "!/usr/lib/$MULTIARCH_HOST/cmake"
