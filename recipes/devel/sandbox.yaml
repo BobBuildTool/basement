@@ -56,7 +56,7 @@ depends:
     - net::make-ca
     - net::openssh
     - perl::perl
-    # - python::python
+    - python::python
     - utils::bash
     - utils::bc
     - utils::bzip2
