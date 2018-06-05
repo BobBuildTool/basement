@@ -1,0 +1,29 @@
+--- pcre/pcre-config.in	2014-01-31 15:32:51.000000000 +0100
++++ pcre/pcre-config.in.patched	2018-06-04 21:48:33.206346076 +0200
+@@ -43,9 +43,6 @@
+ esac
+ 
+ libS=
+-if test @libdir@ != /usr/lib ; then
+-  libS=-L@libdir@
+-fi
+ 
+ while test $# -gt 0; do
+   case "$1" in
+@@ -74,16 +71,10 @@
+       echo @PACKAGE_VERSION@
+       ;;
+     --cflags)
+-      if test @includedir@ != /usr/include ; then
+-        includes=-I@includedir@
+-      fi
+       echo $includes @PCRE_STATIC_CFLAG@
+       ;;
+     --cflags-posix)
+       if test @enable_pcre8@ = yes ; then
+-        if test @includedir@ != /usr/include ; then
+-          includes=-I@includedir@
+-        fi
+         echo $includes @PCRE_STATIC_CFLAG@
+       else
+         echo "${usage}" 1>&2
