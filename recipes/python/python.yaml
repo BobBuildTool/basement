@@ -1,49 +1,93 @@
-inherit: [autotools, make]
+inherit: [autotools, make, patch]
 
 metaEnvironment:
-    PKG_VERSION: "2.7.11"
-
-depends:
-   - libs::expat-dev
-   - libs::gdbm-dev
-   - libs::libffi-dev
-   - libs::ncurses-dev
-   - libs::openssl-dev
-   - libs::zlib-dev
-
-   - use: []
-     depends:
-      - libs::expat-tgt
-      - libs::gdbm-tgt
-      - libs::libffi-tgt
-      - libs::ncurses-tgt
-      - libs::openssl-tgt
-      - libs::zlib-tgt
+    PKG_VERSION: "2.7.15"
 
 privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"
 
 checkoutSCM:
     scm: url
-    url: https://www.python.org/ftp/python/2.7.11/Python-${PKG_VERSION}.tgz
-    digestSHA1: "62a0b1b703d42999cc4aa9ee3c55eb7efe35802a"
+    url: https://www.python.org/ftp/python/${PKG_VERSION}/Python-${PKG_VERSION}.tar.xz
+    digestSHA1: "f99348a095ec4a6411c84c0d15343d11920c9724"
     stripComponents: 1
 
-buildVars: [CXX]
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<<python/*>>
+
 buildScript: |
-    export ac_cv_file__dev_ptmx=yes
-    export ac_cv_file__dev_ptc=no
+    mkdir -p src
+    rsync -aH --delete $1/ src/
 
-    autotoolsBuild $1 \
-        --build=$($1/config.guess) \
-              --enable-shared \
-              --with-threads \
-              --enable-ipv6 \
-              --enable-unicode=ucs4 \
-              --with-dbmliborder=gdbm:ndbm \
-              --without-ensurepip
+multiPackage:
+    "":
+        depends:
+           - libs::expat-dev
+           - libs::gdbm-dev
+           - libs::libffi-dev
+           - libs::ncurses-dev
+           - libs::openssl-dev
+           - libs::zlib-dev
 
-packageScript: |
-    autotoolsPackageTgt
+           - use: []
+             depends:
+              - libs::expat-tgt
+              - libs::gdbm-tgt
+              - libs::libffi-tgt
+              - libs::ncurses-tgt
+              - libs::openssl-tgt
+              - libs::zlib-tgt
 
-provideDeps: [ "*-tgt" ]
+           - name: python::python-host-static
+             use: [tools]
+
+        buildTools: [python]
+        buildScript: |
+            export ac_cv_file__dev_ptmx=yes
+            export ac_cv_file__dev_ptc=no
+
+            autotoolsBuild $PWD/src \
+                --with-threads \
+                --enable-ipv6 \
+                --enable-unicode=ucs4 \
+                --with-dbmliborder=gdbm:ndbm \
+                --without-ensurepip
+
+        packageScript: |
+            autotoolsPackageTgt
+
+            # we did not fully patched for multiarch yet
+            mv usr/lib/$MULTIARCH_HOST/python2.7/lib-dynload usr/lib/python2.7
+            rm -rf usr/lib/$MULTIARCH_HOST/python2.7
+
+        provideDeps: [ "*-tgt" ]
+
+    host-static:
+        buildTools: [host-toolchain]
+        buildScript: |
+            unset AUTOCONF_BUILD
+            unset AUTOCONF_HOST
+            autotoolsBuild $PWD/src \
+                --libdir=/usr/lib \
+                --without-cxx-main \
+                --disable-sqlite3 \
+                --disable-tk \
+                --with-expat=system \
+                --disable-curses \
+                --disable-codecs-cjk \
+                --disable-nis \
+                --enable-unicodedata \
+                --disable-dbm \
+                --disable-gdbm \
+                --disable-bsddb \
+                --disable-test-modules \
+                --disable-bz2 \
+                --disable-ssl \
+                --disable-ossaudiodev \
+                --disable-pyo-build
+        packageScript: |
+            autotoolsPackageTgt
+
+        provideTools:
+            python: usr/bin
