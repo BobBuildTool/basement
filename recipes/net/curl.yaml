@@ -16,6 +16,13 @@ checkoutSCM:
     digestSHA1: "eac95625b849408362cf6edb0bc9489da317ba30"
     stripComponents: 1
 
+# ./configure will delete curlbuild.h
+checkoutDeterministic: True
+checkoutScript: |
+    if [[ -f include/curl/curlbuild.h ]] ; then
+        rm -f include/curl/curlbuild.h
+    fi
+
 buildScript: |
     autotoolsBuild $1 \
        --disable-static \
