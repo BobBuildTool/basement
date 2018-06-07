@@ -1,12 +1,12 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "5.25"
+    PKG_VERSION: "5.33"
 
 checkoutSCM:
     scm: url
     url: ftp://ftp.astron.com/pub/file/file-${PKG_VERSION}.tar.gz
-    digestSHA1: "fea78106dd0b7a09a61714cdbe545135563e84bd"
+    digestSHA1: "31a67e4dc0a3d7a8d1b850429c3f625314700240"
     stripComponents: 1
 
 buildTools: [host-toolchain]
