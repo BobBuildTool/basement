@@ -1,0 +1,62 @@
+root: True
+
+depends:
+    # define host environment
+    -
+        name: devel::sandbox
+        use: [sandbox]
+        forward: True
+    -
+        name: devel::sandbox-toolchain
+        use: [environment, tools]
+        forward: True
+
+    # some required host tools
+    -
+        name: devel::pkg-config
+        use: [tools]
+        forward: True
+
+    # target toolchain
+    -
+        name: devel::cross-toolchain
+        environment:
+            AUTOCONF_TARGET: "x86_64-container-linux-gnu"
+            ARCH: x86_64
+        use: [environment, tools]
+        forward: True
+
+    - libs::libc-tgt
+    - net::lighttpd
+
+
+buildScript: |
+    # start from scratch
+    rm -rf *
+
+    # copy rootfs
+    for dep in "${BOB_DEP_PATHS[@]}" ; do
+       cp -an ${dep}/* .
+    done
+
+    # some setup is needed
+    mkdir -p run var var/log
+    install -d -m 1777 var/tmp
+    install -d -m 0777  var/log/lighttpd
+    ln -sT ../run var/run
+
+    # install our version of lighttpd.conf
+    install -m 644 $<<lighttpd/lighttpd.conf>> etc/lighttpd/lighttpd.conf
+
+    # need a lighttpd user and group
+    cat >etc/passwd <<EOF
+    root:x:0:0:root:/root:/bin/bash
+    lighttpd:x:33:33:www-data:/var/www:/usr/sbin/nologin
+    EOF
+    cat >etc/group <<EOF
+    root:x:0:
+    lighttpd:x:33:
+    EOF
+
+packageScript: |
+    cp -a $1/* .

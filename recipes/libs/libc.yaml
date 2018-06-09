@@ -1,0 +1,97 @@
+inherit: [strip]
+
+buildTools: [target-toolchain]
+buildVars: [TOOLCHAIN_SYSROOT, MULTIARCH_HOST]
+buildScript: |
+    if [[ -z ${TOOLCHAIN_SYSROOT:-} ]] ; then
+        exit 0
+    fi
+
+    copyFiles()
+    {
+        declare -a OPTS=(
+            # default options
+            "-aHSK"
+
+            # No static libraries ever
+            "--exclude=*.a"
+        )
+        local i
+
+        for i in "${@:2}" ; do
+            if [[ $i == !* ]] ; then
+                OPTS+=( "--exclude=${i:1}" )
+            else
+                OPTS+=( "--include=$i" )
+            fi
+        done
+
+        rsync "${OPTS[@]}" "${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT/" .
+    }
+
+multiPackage:
+    tgt:
+        buildScript: |
+            copyFiles /lib/ /lib64/ /lib32/ /usr/ /usr/lib/ "/usr/lib/$MULTIARCH_HOST/" \
+                "/usr/lib/$MULTIARCH_HOST/gconv/***" \
+                "ld*.so*" \
+                "libanl*.so*" \
+                "libatomic*.so*" \
+                "libc*.so*" \
+                "libcrypt*.so*" \
+                "libdl*.so*" \
+                "libgcc_s.so.1" \
+                "libm*.so*" \
+                "libmvec*.so*" \
+                "libnsl*.so*" \
+                "libnss_*.so*" \
+                "libpthread*.so*" \
+                "libresolv*.so*" \
+                "librt*.so*" \
+                "libutil*.so*" \
+                "!*"
+
+    threaddb-tgt:
+        buildScript: |
+            copyFiles /usr/ /usr/lib/ "/usr/lib/$MULTIARCH_HOST/" \
+                "libthread_db*.so*" \
+                "!*"
+
+    stdc++-tgt:
+        buildScript: |
+            copyFiles /usr/ /usr/lib/ "/usr/lib/$MULTIARCH_HOST/" \
+                "!*.py" \
+                "libstdc++.so.*" \
+                "!*"
+
+    bin:
+        depends:
+            - use: []
+              name: libs::libc-tgt
+        buildScript: |
+            copyFiles /usr/ /usr/bin/ "/usr/bin/***" \
+                /usr/sbin/ "/usr/sbin/***" \
+                "!*"
+        provideDeps: [ "*-tgt" ]
+
+    l10n:
+        buildScript: |
+            copyFiles /usr/ /usr/share/ \
+                "/usr/share/locale/***" \
+                "!*"
+
+    locales:
+        depends:
+            - use: []
+              depends:
+                - libs::libc-bin
+                - libs::libc-l10n
+        buildScript: |
+            copyFiles /usr/ /usr/share/ \
+                "/usr/share/i18n/***" \
+                "!*"
+        provideDeps: [ "*" ]
+
+packageScript: |
+    cp -a $1/* .
+    stripAll .
