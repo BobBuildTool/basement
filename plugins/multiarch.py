@@ -53,7 +53,7 @@ def genAutoconf(args, **options):
     return u.machine + '-' + args[0] + '-linux-gnu'
 
 manifest = {
-    'apiVersion' : "0.2",
+    'apiVersion' : "0.15",
     'stringFunctions' : {
         "gen-autoconf" : genAutoconf,
         "host-arch" : hostArch,

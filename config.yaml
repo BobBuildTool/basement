@@ -1,12 +1,4 @@
-bobMinimumVersion: "0.13"
-
-policies:
-    allRelocatable: True
-    cleanEnvironment: True
-    offlineBuild: True
-    relativeIncludes: True
-    sandboxInvariant: True
-    tidyUrlScm: True
+bobMinimumVersion: "0.15"
 
 plugins:
     - multiarch
