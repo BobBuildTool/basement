@@ -15,7 +15,7 @@ packageScript: |
                     exit 1
                 fi
                 ;;
-            x86_86-*linux-gnu)
+            x86_64-*linux-gnu)
                 if [[ $GCC_MACHINE != x86_64-*linux-gnu ]] ; then
                     echo "Expected a compatible x86_64 host compiler!" >&2
                     exit 1
