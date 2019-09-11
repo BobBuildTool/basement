@@ -5,7 +5,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: http://www.bzip.org/${PKG_VERSION}/bzip2-${PKG_VERSION}.tar.gz
+    url: https://downloads.sourceforge.net/project/bzip2/bzip2-${PKG_VERSION}.tar.gz
     digestSHA1: "3f89f861209ce81a6bab1fd1998c0ef311712002"
     extract: False
 
