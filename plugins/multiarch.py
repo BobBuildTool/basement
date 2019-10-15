@@ -4,25 +4,6 @@ import os
 
 # TODO: support more architectures; support musl/dietlibc
 
-# Convert autoconf triple to multiarch name
-def multiarch(args, **options):
-    if len(args) != 1:
-        raise ParseError("$(multiarch) expects one argument")
-    triple = args[0]
-
-    if fnmatch.fnmatchcase(triple, "arm*-linux-gnueabi"):
-        return "arm-linux-gnueabi"
-    elif fnmatch.fnmatchcase(triple, "arm*-linux-gnueabihf"):
-        return "arm-linux-gnueabihf"
-    elif fnmatch.fnmatchcase(triple, "aarch64*-linux-gnu"):
-        return "aarch64-linux-gnu"
-    elif fnmatch.fnmatchcase(triple, "i[34567]86*-linux-gnu"):
-        return "i386-linux-gnu"
-    elif fnmatch.fnmatchcase(triple, "x86_64*-linux-gnu"):
-        return "x86_64-linux-gnu"
-    else:
-        raise ParseError("multiarch: unknown triple: " + triple)
-
 # get host architecture
 def hostArch(args, **options):
     m = os.uname().machine
@@ -58,6 +39,5 @@ manifest = {
         "gen-autoconf" : genAutoconf,
         "host-arch" : hostArch,
         "host-autoconf" : hostAutoconf,
-        "multiarch" : multiarch,
     }
 }

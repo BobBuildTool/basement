@@ -11,7 +11,7 @@ checkoutSCM:
    extract: False
 
 buildTools: [target-toolchain]
-buildVars: [CROSS_COMPILE, AUTOCONF_BUILD, AUTOCONF_HOST, MULTIARCH_HOST]
+buildVars: [CROSS_COMPILE, AUTOCONF_BUILD, AUTOCONF_HOST]
 buildScript: |
     # zlib uses CROSS_PREFIX instead of CROSS_COMPILE
     if [[ ${CROSS_COMPILE:+true} ]] ; then
@@ -21,8 +21,6 @@ buildScript: |
     # standard options
     CONFIGURE_OPTS=(
         --prefix=/usr
-        --libdir=/usr/lib/$MULTIARCH_HOST
-        --sharedlibdir=/usr/lib/$MULTIARCH_HOST
     )
 
     # compile static on native builds

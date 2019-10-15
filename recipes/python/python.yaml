@@ -57,10 +57,6 @@ multiPackage:
         packageScript: |
             autotoolsPackageTgt
 
-            # we did not fully patched for multiarch yet
-            mv usr/lib/$MULTIARCH_HOST/python2.7/lib-dynload usr/lib/python2.7
-            rm -rf usr/lib/$MULTIARCH_HOST/python2.7
-
         provideDeps: [ "*-tgt" ]
 
     host-static:

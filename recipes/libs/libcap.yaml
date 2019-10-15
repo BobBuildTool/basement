@@ -10,13 +10,12 @@ checkoutSCM:
     extract: False
 
 buildTools: [target-toolchain]
-buildVars: [AR, CC, RANLIB, PKG_VERSION, MULTIARCH_HOST]
+buildVars: [AR, CC, RANLIB, PKG_VERSION]
 buildScript: |
     tar -xzf $1/libcap-${PKG_VERSION}.tar.gz
     mkdir -p install
     makeParallel -C libcap-${PKG_VERSION} \
         prefix=/usr \
-        lib=lib/$MULTIARCH_HOST \
         AR=$AR \
         CC=$CC \
         RANLIB=$RANLIB \

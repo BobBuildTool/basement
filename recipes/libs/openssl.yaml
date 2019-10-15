@@ -17,10 +17,10 @@ checkoutSCM:
     extract: False
 
 buildTools: [target-toolchain]
-buildVars: [PKG_VERSION, CC, AR, RANLIB, ARCH, AUTOCONF_HOST, MULTIARCH_HOST]
+buildVars: [PKG_VERSION, CC, AR, RANLIB, ARCH, AUTOCONF_HOST]
 buildScript: |
     export TARGETMACH=${AUTOCONF_HOST}
-    export LDFLAGS="-Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib/$MULTIARCH_HOST"
+    export LDFLAGS="-Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib"
 
     mkdir -p install
     tar -xzf $1/openssl-${PKG_VERSION}.tar.gz
@@ -28,7 +28,7 @@ buildScript: |
     ./Configure \
         --prefix=/usr \
         --openssldir=/etc/ssl \
-        --libdir=lib/$MULTIARCH_HOST \
+        --libdir=lib \
         shared \
         zlib-dynamic \
         "-I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include" \

@@ -1,6 +1,5 @@
 inherit: [strip]
 
-packageVars: [MULTIARCH_HOST]
 packageScript: |
     installStripFile()
     {
@@ -42,15 +41,15 @@ packageScript: |
         rsync "${OPTS[@]}" "$1" .
     }
 
-    # Only copy over headers, libs directly in multiarch library dir,
+    # Only copy over headers, libs directly in library dir,
     # pkg-config and cmake files.
     installPackageDev()
     {
         installCopy "$@" /usr/ "/usr/include/***" \
-            /usr/lib/ "/usr/lib/$MULTIARCH_HOST/" \
-            "/usr/lib/$MULTIARCH_HOST/*.a" "/usr/lib/$MULTIARCH_HOST/*.so*" \
-            "/usr/lib/$MULTIARCH_HOST/pkgconfig/***" \
-            "/usr/lib/$MULTIARCH_HOST/cmake/***" \
+            /usr/lib/ \
+            "/usr/lib/*.a" "/usr/lib/*.so*" \
+            "/usr/lib/pkgconfig/***" \
+            "/usr/lib/cmake/***" \
             "!*"
 
         # fixup pkg-configure files by removing absolute lib dirs
@@ -60,9 +59,9 @@ packageScript: |
     # Only copy shared libraries.
     installPackageLib()
     {
-        installCopy "$@" /usr/ /usr/lib/ "/usr/lib/$MULTIARCH_HOST/" \
-            "/usr/lib/$MULTIARCH_HOST/*.so.*" \
-            "/usr/lib/$MULTIARCH_HOST/lib*-*.so" \
+        installCopy "$@" /usr/ /usr/lib/ \
+            "/usr/lib/*.so.*" \
+            "/usr/lib/lib*-*.so" \
             "!*"
         installStripAll .
     }
@@ -72,9 +71,8 @@ packageScript: |
     {
         installCopy "$@" '!/usr/include/' \
             "!/usr/lib/*.a" "!/usr/lib/*.so*"  \
-            "!/usr/lib/$MULTIARCH_HOST/*.a" "!/usr/lib/$MULTIARCH_HOST/*.so*"  \
-            "!/usr/lib/$MULTIARCH_HOST/pkgconfig" \
-            "!/usr/lib/$MULTIARCH_HOST/cmake"
+            "!/usr/lib/pkgconfig" \
+            "!/usr/lib/cmake"
         installStripAll .
     }
 

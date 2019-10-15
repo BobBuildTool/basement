@@ -19,7 +19,7 @@ checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<<glibc/*.diff>>
 
-buildVars: [AUTOCONF_TARGET, MULTIARCH_TARGET]
+buildVars: [AUTOCONF_TARGET]
 buildTools: [gcc-cross-bare, target-toolchain]
 buildScript: |
     EXTRA=
@@ -34,11 +34,11 @@ buildScript: |
         --enable-kernel=4.3.3             \
         --with-headers=$2/usr/include \
         --enable-obsolete-rpc \
-        --libdir=/usr/lib/$MULTIARCH_TARGET \
+        --libdir=/usr/lib \
         $EXTRA
 
-    makeParallel rootsbindir=/usr/sbin slibdir=/usr/lib/$MULTIARCH_TARGET
-    make install rootsbindir=/usr/sbin slibdir=/usr/lib/$MULTIARCH_TARGET DESTDIR=${PWD}/../install
+    makeParallel rootsbindir=/usr/sbin slibdir=/usr/lib
+    make install rootsbindir=/usr/sbin slibdir=/usr/lib DESTDIR=${PWD}/../install
     popd
     cp -a $2/usr/include install/usr/
 

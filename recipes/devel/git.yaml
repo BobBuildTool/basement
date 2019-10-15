@@ -19,11 +19,11 @@ checkoutSCM:
     extract: False
 
 buildTools: [target-toolchain]
-buildVars: [PKG_VERSION, AUTOCONF_HOST, MULTIARCH_HOST,
+buildVars: [PKG_VERSION, AUTOCONF_HOST,
     CPPFLAGS, CFLAGS, LDFLAGS]
 buildScript: |
     export CFLAGS="-I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include -I${BOB_DEP_PATHS[libs::openssl-dev]}/usr/include"
-    export LDFLAGS="-L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib/$MULTIARCH_HOST -L${BOB_DEP_PATHS[libs::openssl-dev]}/usr/lib/$MULTIARCH_HOST"
+    export LDFLAGS="-L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib -L${BOB_DEP_PATHS[libs::openssl-dev]}/usr/lib"
 
     mkdir -p install
     tar -xzf $1/git-${PKG_VERSION}.tar.gz

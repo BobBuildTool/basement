@@ -21,12 +21,9 @@ checkoutSCM:
     stripComponents: 1
 
 buildTools: [host-toolchain]
-buildVars: [MULTIARCH_HOST]
 buildScript: |
     export PCRECONFIG=${BOB_DEP_PATHS[libs::pcre-lib-1-dev]}/usr/bin/pcre-config
     autotoolsBuild $1 \
-        --libdir=/usr/lib/${MULTIARCH_HOST}/lighttpd \
-        --libexecdir=/usr/lib/${MULTIARCH_HOST} \
         --with-openssl \
         --without-bzip2
 

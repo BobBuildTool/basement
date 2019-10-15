@@ -1,7 +1,7 @@
 inherit: [strip]
 
 buildTools: [target-toolchain]
-buildVars: [TOOLCHAIN_SYSROOT, MULTIARCH_HOST]
+buildVars: [TOOLCHAIN_SYSROOT]
 buildScript: |
     if [[ -z ${TOOLCHAIN_SYSROOT:-} ]] ; then
         exit 0
@@ -32,8 +32,8 @@ buildScript: |
 multiPackage:
     tgt:
         buildScript: |
-            copyFiles /lib/ /lib64/ /lib32/ /usr/ /usr/lib/ "/usr/lib/$MULTIARCH_HOST/" \
-                "/usr/lib/$MULTIARCH_HOST/gconv/***" \
+            copyFiles /lib/ /lib64/ /lib32/ /usr/ /usr/lib/ \
+                "/usr/lib/gconv/***" \
                 "ld*.so*" \
                 "libanl*.so*" \
                 "libatomic*.so*" \
@@ -53,13 +53,13 @@ multiPackage:
 
     threaddb-tgt:
         buildScript: |
-            copyFiles /usr/ /usr/lib/ "/usr/lib/$MULTIARCH_HOST/" \
+            copyFiles /usr/ /usr/lib/ \
                 "libthread_db*.so*" \
                 "!*"
 
     stdc++-tgt:
         buildScript: |
-            copyFiles /usr/ /usr/lib/ "/usr/lib/$MULTIARCH_HOST/" \
+            copyFiles /usr/ /usr/lib/ \
                 "!*.py" \
                 "libstdc++.so.*" \
                 "!*"

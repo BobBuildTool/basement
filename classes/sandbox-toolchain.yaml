@@ -62,7 +62,7 @@ provideVars:
     RANLIB: "ranlib"
     STRIP: "strip"
 
-    # Some meta variables do not change: ARCH, MULTIARCH_BUILD, MULTIARCH_HOST
+    # Some meta variables do not change: ARCH, AUTOCONF_BUILD, AUTOCONF_HOST
     AUTOCONF_BUILD: "${SANDBOX_AUTOCONF_BUILD}"
     AUTOCONF_HOST:  "${SANDBOX_AUTOCONF_HOST}"
     CROSS_COMPILE: ""

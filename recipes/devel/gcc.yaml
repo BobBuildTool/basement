@@ -1,4 +1,4 @@
-inherit: [make, install, patch]
+inherit: [make, install]
 
 metaEnvironment:
     PKG_VERSION: "6.4.0"
@@ -22,16 +22,8 @@ checkoutSCM:
     digestSHA256: "850bf21eafdfe5cd5f6827148184c08c4a0852a37ccf36ce69855334d2c914d4"
     stripComponents: 1
 
-checkoutDeterministic: True
-checkoutScript: |
-    patchApplySeries -p2 \
-        $<<gcc/arm-multilib-defaults.diff>> \
-        $<<gcc/gcc-multiarch.diff>> \
-        $<<gcc/gcc-multilib-multiarch.diff>>
-
 buildTools: [host-toolchain]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
-            MULTIARCH_BUILD, MULTIARCH_HOST, MULTIARCH_TARGET,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU]
 buildScript: |
     GCC_SRC=$1
@@ -58,13 +50,13 @@ buildScript: |
             --with-xmlto=no \
             --with-fop=no \
             --with-gmp-include=${BOB_DEP_PATHS[libs::gmp-dev]}/usr/include \
-            --with-gmp-lib=${BOB_DEP_PATHS[libs::gmp-dev]}/usr/lib/$MULTIARCH_BUILD \
+            --with-gmp-lib=${BOB_DEP_PATHS[libs::gmp-dev]}/usr/lib \
             --with-mpfr-include=${BOB_DEP_PATHS[libs::mpfr-dev]}/usr/include \
-            --with-mpfr-lib=${BOB_DEP_PATHS[libs::mpfr-dev]}/usr/lib/$MULTIARCH_BUILD \
+            --with-mpfr-lib=${BOB_DEP_PATHS[libs::mpfr-dev]}/usr/lib \
             --with-mpc-include=${BOB_DEP_PATHS[libs::mpc-dev]}/usr/include \
-            --with-mpc-lib=${BOB_DEP_PATHS[libs::mpc-dev]}/usr/lib/$MULTIARCH_BUILD \
+            --with-mpc-lib=${BOB_DEP_PATHS[libs::mpc-dev]}/usr/lib \
             --with-isl-include=${BOB_DEP_PATHS[libs::isl-dev]}/usr/include \
-            --with-isl-lib=${BOB_DEP_PATHS[libs::isl-dev]}/usr/lib/$MULTIARCH_BUILD
+            --with-isl-lib=${BOB_DEP_PATHS[libs::isl-dev]}/usr/lib
         makeParallel
         make install DESTDIR=${PWD}/../install
         popd
@@ -89,7 +81,6 @@ multiPackage:
                 --with-sysroot=/does/not/exist                 \
                 --with-newlib                                  \
                 --without-headers                              \
-                --enable-multiarch                             \
                 --disable-nls                                  \
                 --disable-multilib                             \
                 --disable-decimal-float                        \
@@ -122,9 +113,8 @@ multiPackage:
         buildTools: [binutils]
         buildScript: |
             buildGcc \
-                --with-sysroot=/usr/sysroots/${MULTIARCH_TARGET} \
+                --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET} \
                 --with-build-sysroot=${BOB_DEP_PATHS[libs::glibc-dev]}      \
-                --enable-multiarch                                          \
                 --enable-linker-build-id                                    \
                 --enable-threads=posix                                      \
                 --disable-multilib                                          \
@@ -138,12 +128,11 @@ multiPackage:
         buildTools: [target-toolchain]
         buildVars: [TOOLCHAIN_SYSROOT, GCC_PREFIX]
         buildScript: |
-            TARGET_SYSROOT="${GCC_PREFIX:-/usr}/sysroots/${MULTIARCH_HOST}"
+            TARGET_SYSROOT="${GCC_PREFIX:-/usr}/sysroots/${AUTOCONF_HOST}"
             buildGcc \
                 ${GCC_PREFIX:+--prefix=${GCC_PREFIX}} \
                 --with-sysroot="${TARGET_SYSROOT}" \
                 --with-build-sysroot=${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT \
-                --enable-multiarch                                                          \
                 --enable-linker-build-id                                                    \
                 --enable-threads=posix                                                      \
                 --disable-multilib                                                          \

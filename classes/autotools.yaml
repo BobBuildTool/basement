@@ -1,17 +1,14 @@
 inherit: [libtool, make, install, pkg-config]
 
 buildTools: [target-toolchain]
-buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, MULTIARCH_HOST,
-    CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS]
+buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS]
 buildScript: |
     # Gather all include and library paths.
     for i in "${@:2}" ; do
-        for j in usr/include/$MULTIARCH_HOST usr/include ; do
-            if [[ -d "$i/$j" ]] ; then
-                CPPFLAGS+=" -I$i/$j"
-            fi
-        done
-        for j in lib/$MULTIARCH_HOST lib usr/lib/$MULTIARCH_HOST usr/lib ; do
+        if [[ -d "$i/usr/include" ]] ; then
+            CPPFLAGS+=" -I$i/usr/include"
+        fi
+        for j in lib usr/lib ; do
             if [[ -d "$i/$j" ]] ; then
                 LDFLAGS+=" -L$i/$j"
                 if compgen -G "$i/$j/*.so" >/dev/null ; then
@@ -72,7 +69,7 @@ buildScript: |
             --prefix="/usr" \
             --sysconfdir="/etc" \
             --localstatedir="/var" \
-            --libdir=/usr/lib/$MULTIARCH_HOST \
+            --libdir=/usr/lib \
             "${SHARED_STATIC[@]}" \
             "${@:2}"
         makeParallel $MAKE_TARGET ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"}

@@ -19,8 +19,6 @@ environment:
     # host/build environment
     AUTOCONF_BUILD:  "$(host-autoconf)"
     AUTOCONF_HOST:   "$(host-autoconf)"
-    MULTIARCH_BUILD: "$(multiarch,$(host-autoconf))"
-    MULTIARCH_HOST:  "$(multiarch,$(host-autoconf))"
 
     # default compile flags
     BASEMENT_OPTIMIZE: "s" # compiler optimization level (0/1/2/s)
