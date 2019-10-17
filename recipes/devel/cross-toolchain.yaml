@@ -52,3 +52,33 @@ provideVars:
 provideTools:
     target-toolchain: "usr/bin"
 
+multiPackage:
+    # Keep an unconfigured package that can be tweaked by the consumer. This is
+    # available for special use cases.
+    "": {}
+
+    # x86_64 "cross" compiling toolchain. Ships its own glibc.
+    x86_64-linux-gnu:
+        environment:
+            AUTOCONF_TARGET: "x86_64-cross-linux-gnu"
+            ARCH: "x86_64"
+            GCC_LIBC: "glibc"
+
+    # ARMv7 Linux CortexA toolchain with hard floating point
+    arm-linux-gnueabihf:
+        environment:
+            AUTOCONF_TARGET: "arm-linux-gnueabihf"
+            ARCH: "arm"
+            GCC_TARGET_ARCH: "armv7-a"
+            GCC_TARGET_FLOAT_ABI: "hard"
+            GCC_TARGET_FPU: "vfpv4"
+            GCC_LIBC: "glibc"
+
+    # ARMv7 bare metal toolchain with newlib libc
+    arm-none-eabi:
+        environment:
+            AUTOCONF_TARGET: "arm-none-eabi"
+            ARCH: "arm"
+            GCC_ENABLE_LANGUAGES: "c"
+            GCC_LIBC: "newlib"
+
