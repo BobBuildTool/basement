@@ -24,5 +24,10 @@ environment:
     BASEMENT_OPTIMIZE: "s" # compiler optimization level (0/1/2/s)
     BASEMENT_DEBUG: "1"    # generate debug symbols (0/1)
 
+archive:
+    backend: http
+    url: http://ci.bobbuildtool.dev/artifacts/
+    flags: [download]
+
 include:
     - user
