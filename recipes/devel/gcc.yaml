@@ -111,6 +111,7 @@ multiPackage:
             - libs::glibc-dev
 
         buildTools: [binutils]
+        buildVars: [GCC_ENABLE_LANGUAGES]
         buildScript: |
             buildGcc \
                 --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET} \
@@ -118,7 +119,7 @@ multiPackage:
                 --enable-linker-build-id                                    \
                 --enable-threads=posix                                      \
                 --disable-multilib                                          \
-                --enable-languages=c,c++
+                --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
             cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
 
         packageScript: |
@@ -126,7 +127,7 @@ multiPackage:
 
     native:
         buildTools: [target-toolchain]
-        buildVars: [TOOLCHAIN_SYSROOT, GCC_PREFIX]
+        buildVars: [TOOLCHAIN_SYSROOT, GCC_PREFIX, GCC_ENABLE_LANGUAGES]
         buildScript: |
             TARGET_SYSROOT="${GCC_PREFIX:-/usr}/sysroots/${AUTOCONF_HOST}"
             buildGcc \
@@ -136,7 +137,7 @@ multiPackage:
                 --enable-linker-build-id                                                    \
                 --enable-threads=posix                                                      \
                 --disable-multilib                                                          \
-                --enable-languages=c,c++
+                --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
 
             # add sysroot
             mkdir -p "install/${TARGET_SYSROOT}"
