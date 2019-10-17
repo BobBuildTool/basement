@@ -117,7 +117,6 @@ multiPackage:
                 --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET} \
                 --with-build-sysroot=${BOB_DEP_PATHS[libs::${GCC_LIBC}-dev]} \
                 --enable-linker-build-id                                    \
-                --enable-threads=posix                                      \
                 --disable-multilib                                          \
                 --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
             cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
