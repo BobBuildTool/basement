@@ -1,5 +1,4 @@
 inherit: [sandbox]
-root: True
 
 depends:
     # We try to build the sandbox in a temporary 1st stage sandbox. Though not
