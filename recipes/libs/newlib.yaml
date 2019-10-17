@@ -1,0 +1,45 @@
+inherit: [make]
+
+depends:
+    -
+        name: devel::gcc-cross-bare
+        use: [tools]
+
+metaEnvironment:
+    PKG_VERSION: "3.1.0"
+
+checkoutSCM:
+    scm: url
+    url: ftp://sourceware.org/pub/newlib/newlib-${PKG_VERSION}.tar.gz
+    digestSHA1: "6c0e467345ca6832eff6add85124c6e81e11d174"
+    stripComponents: 1
+
+buildTools: [gcc-cross-bare, target-toolchain]
+buildVars: [AUTOCONF_TARGET]
+buildScript: |
+    mkdir -p build install
+    pushd build
+    $1/configure \
+        --prefix=/usr \
+        --target=${AUTOCONF_TARGET} \
+        --libdir=/usr/lib \
+        --disable-newlib-supplied-syscalls \
+        --enable-lite-exit \
+        --enable-target-optspace
+    makeParallel
+    make install DESTDIR=${PWD}/../install
+    popd
+    pushd install
+    mv usr/$AUTOCONF_TARGET/* usr/
+    rmdir usr/$AUTOCONF_TARGET
+    popd
+
+multiPackage:
+    dev:
+        packageScript: |
+            cp -a $1/install/* .
+    tgt:
+        packageScript: |
+            cp -a $1/install/{etc,lib,sbin,var} .
+            mkdir usr
+            cp -a $1/install/usr/{bin,libexec,sbin,share} usr/

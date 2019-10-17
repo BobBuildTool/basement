@@ -107,6 +107,8 @@ multiPackage:
               use: [result, tools]
             - name: libs::glibc-dev
               if: "$(eq,${GCC_LIBC},glibc)"
+            - name: libs::newlib-dev
+              if: "$(eq,${GCC_LIBC},newlib)"
 
         buildTools: [binutils]
         buildVars: [GCC_LIBC, GCC_ENABLE_LANGUAGES]
@@ -125,6 +127,7 @@ multiPackage:
 
         provideDeps:
             - libs::glibc-dev
+            - libs::newlib-dev
 
     native:
         buildTools: [target-toolchain]
