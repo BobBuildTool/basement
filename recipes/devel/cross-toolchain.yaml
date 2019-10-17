@@ -1,16 +1,23 @@
 shared: True
 
 depends:
-    - devel::gcc-cross
-    - libs::glibc-dev
+    - name: devel::gcc-cross
+      if: "${GCC_LIBC}"
+    - name: devel::gcc-cross-bare
+      if: "$(not,${GCC_LIBC})"
 
-buildVars: [AUTOCONF_TARGET]
+buildVars: [AUTOCONF_TARGET, GCC_LIBC]
 buildScript: |
     rm -rf *
-    cp -an ${BOB_DEP_PATHS[devel::gcc-cross]}/* .
+    cp -an $2/* .
     mkdir -p usr/sysroots/$AUTOCONF_TARGET
-    cp -an ${BOB_DEP_PATHS[libs::glibc-dev]}/* usr/sysroots/$AUTOCONF_TARGET
-    cp -an usr/$AUTOCONF_TARGET/lib/*.so.* usr/sysroots/$AUTOCONF_TARGET/usr/lib/
+    if [[ ${GCC_LIBC:+true} ]] ; then
+       cp -an ${BOB_DEP_PATHS[libs::${GCC_LIBC}-dev]}/* usr/sysroots/$AUTOCONF_TARGET
+       rsync usr/$AUTOCONF_TARGET/lib/ \
+         usr/sysroots/$AUTOCONF_TARGET/usr/lib/ \
+         --include '*.so.*' \
+         --exclude '*'
+    fi
 
 packageScript: |
     cp -a $1/* .

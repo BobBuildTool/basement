@@ -66,8 +66,6 @@ packageScript: |
     # copy everything
     installPackageDev "$1/install/" "*"
 
-provideDeps: [ "*-tgt" ]
-
 multiPackage:
     cross-bare:
         depends:
@@ -105,17 +103,17 @@ multiPackage:
 
     cross:
         depends:
-            -
-                name: devel::binutils
-                use: [result, tools]
-            - libs::glibc-dev
+            - name: devel::binutils
+              use: [result, tools]
+            - name: libs::glibc-dev
+              if: "$(eq,${GCC_LIBC},glibc)"
 
         buildTools: [binutils]
-        buildVars: [GCC_ENABLE_LANGUAGES]
+        buildVars: [GCC_LIBC, GCC_ENABLE_LANGUAGES]
         buildScript: |
             buildGcc \
                 --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET} \
-                --with-build-sysroot=${BOB_DEP_PATHS[libs::glibc-dev]}      \
+                --with-build-sysroot=${BOB_DEP_PATHS[libs::${GCC_LIBC}-dev]} \
                 --enable-linker-build-id                                    \
                 --enable-threads=posix                                      \
                 --disable-multilib                                          \
@@ -124,6 +122,9 @@ multiPackage:
 
         packageScript: |
             installStripAll usr/bin
+
+        provideDeps:
+            - libs::glibc-dev
 
     native:
         buildTools: [target-toolchain]
@@ -145,3 +146,5 @@ multiPackage:
 
         packageScript: |
             installStripAll toolchain/bin
+
+        provideDeps: [ "*-tgt" ]

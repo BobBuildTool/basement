@@ -13,6 +13,7 @@ depends:
         environment:
             AUTOCONF_TARGET: "x86_64-wendy-linux-gnu"
             ARCH: x86_64
+            GCC_LIBC: glibc
         use: [environment, tools]
         forward: True
 
