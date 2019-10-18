@@ -1,0 +1,29 @@
+Even though we disable multilib gcc still add the 32/64/x32 suffix to the
+libdir. Get rid of this behaviour because we consistently use /usr/lib for all
+our libraries.
+
+diff -Nurp gcc.orig/gcc/config/aarch64/t-aarch64-linux gcc.new/gcc/config/aarch64/t-aarch64-linux
+--- gcc.orig/gcc/config/aarch64/t-aarch64-linux	2016-01-04 15:30:50.000000000 +0100
++++ gcc.new/gcc/config/aarch64/t-aarch64-linux	2019-10-18 10:30:06.406087062 +0200
+@@ -22,7 +22,7 @@ LIB1ASMSRC   = aarch64/lib1funcs.asm
+ LIB1ASMFUNCS = _aarch64_sync_cache_range
+ 
+ AARCH_BE = $(if $(findstring TARGET_BIG_ENDIAN_DEFAULT=1, $(tm_defines)),_be)
+-MULTILIB_OSDIRNAMES = mabi.lp64=../lib64$(call if_multiarch,:aarch64$(AARCH_BE)-linux-gnu)
++MULTILIB_OSDIRNAMES = mabi.lp64=../lib$(call if_multiarch,:aarch64$(AARCH_BE)-linux-gnu)
+ MULTIARCH_DIRNAME = $(call if_multiarch,aarch64$(AARCH_BE)-linux-gnu)
+ 
+ MULTILIB_OSDIRNAMES += mabi.ilp32=../libilp32
+diff -Nurp gcc.orig/gcc/config/i386/t-linux64 gcc.new/gcc/config/i386/t-linux64
+--- gcc.orig/gcc/config/i386/t-linux64	2016-01-04 15:30:50.000000000 +0100
++++ gcc.new/gcc/config/i386/t-linux64	2019-10-18 10:31:01.487305123 +0200
+@@ -33,6 +33,6 @@
+ comma=,
+ MULTILIB_OPTIONS    = $(subst $(comma),/,$(TM_MULTILIB_CONFIG))
+ MULTILIB_DIRNAMES   = $(patsubst m%, %, $(subst /, ,$(MULTILIB_OPTIONS)))
+-MULTILIB_OSDIRNAMES = m64=../lib64$(call if_multiarch,:x86_64-linux-gnu)
+-MULTILIB_OSDIRNAMES+= m32=$(if $(wildcard $(shell echo $(SYSTEM_HEADER_DIR))/../../usr/lib32),../lib32,../lib)$(call if_multiarch,:i386-linux-gnu)
+-MULTILIB_OSDIRNAMES+= mx32=../libx32$(call if_multiarch,:x86_64-linux-gnux32)
++MULTILIB_OSDIRNAMES = m64=../lib$(call if_multiarch,:x86_64-linux-gnu)
++MULTILIB_OSDIRNAMES+= m32=../lib$(call if_multiarch,:i386-linux-gnu)
++MULTILIB_OSDIRNAMES+= mx32=../lib$(call if_multiarch,:x86_64-linux-gnux32)
