@@ -20,6 +20,12 @@ buildScript: |
     mkdir -p src
     rsync -aH --delete $1/ src/
 
+    # The make file will compile all python standard library files during
+    # installation. This is done with a PYTHONPATH pointing to the installation
+    # directory. Unfortunately this means that extension modules are also
+    # loaded from there which require libpython2.7.so.1.0...
+    export LD_LIBRARY_PATH="$BOB_CWD/install/usr/lib"
+
 multiPackage:
     "":
         depends:
