@@ -10,10 +10,10 @@ buildVars: [AUTOCONF_TARGET, GCC_LIBC]
 buildScript: |
     rm -rf *
     cp -an $2/* .
-    mkdir -p usr/sysroots/$AUTOCONF_TARGET
+    mkdir -p usr/sysroots/$AUTOCONF_TARGET/usr/lib
     if [[ ${GCC_LIBC:+true} ]] ; then
        cp -an ${BOB_DEP_PATHS[libs::${GCC_LIBC}-dev]}/* usr/sysroots/$AUTOCONF_TARGET
-       rsync usr/$AUTOCONF_TARGET/lib/ \
+       rsync -aHSK usr/$AUTOCONF_TARGET/lib/ \
          usr/sysroots/$AUTOCONF_TARGET/usr/lib/ \
          --include '*.so.*' \
          --exclude '*'
