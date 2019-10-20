@@ -18,7 +18,7 @@ buildScript: |
         )
         local i
 
-        for i in "${@:2}" ; do
+        for i in "$@" ; do
             if [[ $i == !* ]] ; then
                 OPTS+=( "--exclude=${i:1}" )
             else
