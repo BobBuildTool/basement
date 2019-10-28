@@ -30,7 +30,11 @@ buildScript: |
        --with-ssl \
        --with-ca-path=/etc/ssl/certs
 
-packageScript: |
-    autotoolsPackageTgt
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
+        provideDeps: [ "*-dev" ]
 
-provideDeps: [ "*-tgt" ]
+    tgt:
+        packageScript: autotoolsPackageTgt
+        provideDeps: [ "*-tgt" ]
