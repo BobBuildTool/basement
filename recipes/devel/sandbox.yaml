@@ -52,7 +52,7 @@ depends:
     - devel::texinfo
     - kernel::kmod
     - libs::gettext
-    - net::curl
+    - net::curl-tgt
     - net::make-ca
     - net::openssh
     - perl::perl
