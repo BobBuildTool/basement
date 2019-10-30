@@ -1,12 +1,12 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "3.0.4"
+    PKG_VERSION: "3.4.2"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/bison/bison-${PKG_VERSION}.tar.xz
-    digestSHA1: "8270497aad88c7dd4f2c317298c50513fb0c3c8e"
+    digestSHA256: "27d05534699735dc69e86add5b808d6cb35900ad3fd63fa82e3eb644336abfa0"
     stripComponents: 1
 
 buildScript: |
