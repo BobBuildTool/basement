@@ -9,6 +9,10 @@ checkoutSCM:
     digestSHA1: 74ad71fa100ec8c13bc715082757eb9ab1e4bbb0
     stripComponents: 1
 
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<<m4/*.patch>>
+
 buildScript: |
     autotoolsBuild $1
 

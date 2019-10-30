@@ -5,14 +5,17 @@ depends:
     -
         name: devel::gcc-cross-bare
         use: [tools]
+    -
+        name: devel::bison
+        use: [tools]
 
 metaEnvironment:
-    PKG_VERSION: "2.25"
+    PKG_VERSION: "2.30"
 
 checkoutSCM:
     scm: url
     url: http://ftp.gnu.org/gnu/glibc/glibc-${PKG_VERSION}.tar.xz
-    digestSHA1: "5fff5a94ef4470bf48fe1b79093185f19f5c827a"
+    digestSHA256: "e2c4114e569afbe7edbc29131a43be833850ab9a459d81beb2588016d2bbb8af"
     stripComponents: 1
 
 checkoutDeterministic: True
@@ -20,7 +23,7 @@ checkoutScript: |
     patchApplySeries $<<glibc/*.diff>>
 
 buildVars: [AUTOCONF_TARGET]
-buildTools: [gcc-cross-bare, target-toolchain]
+buildTools: [gcc-cross-bare, target-toolchain, bison]
 buildScript: |
     EXTRA=
     [ -e $1/usr/include/selinux/selinux.h ] || EXTRA+=" --without-selinux"
