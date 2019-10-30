@@ -3,7 +3,7 @@ inherit: [autotools]
 metaEnvironment:
     # The latest 0.15 version is not yet compatible with cloog 0.18.3, so
     # bumping isl is not possible until a new version of cloog is published.
-    PKG_VERSION: "0.14.1"
+    PKG_VERSION: "0.21"
 
 privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"
@@ -18,7 +18,7 @@ depends:
 checkoutSCM:
     scm: url
     url: http://isl.gforge.inria.fr/isl-${PKG_VERSION}.tar.xz
-    digestSHA256: "8882c9e36549fc757efa267706a9af733bb8d7fe3905cbfde43e17a89eea4675"
+    digestSHA256: "777058852a3db9500954361e294881214f6ecd4b594c00da5eee974cd6a54960"
     stripComponents: 1
 
 buildScript: |
