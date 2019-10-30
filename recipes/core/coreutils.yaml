@@ -1,7 +1,7 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "8.25"
+    PKG_VERSION: "8.31"
 
 depends:
     - libs::gmp-dev
@@ -12,7 +12,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/coreutils/coreutils-${PKG_VERSION}.tar.xz
-    digestSHA1: "301f186c24afb882a3ca73d19a102a2ce6f456c3"
+    digestSHA256: "ff7a9c918edce6b4f4b2725e3f9b37b0c4d193531cac49a48b56c4d0d3a9e9fd"
     stripComponents: 1
 
 buildScript: |
