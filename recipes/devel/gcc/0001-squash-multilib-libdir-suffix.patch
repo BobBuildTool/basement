@@ -13,7 +13,7 @@ diff -Nurp gcc.orig/gcc/config/aarch64/t-aarch64-linux gcc.new/gcc/config/aarch6
 +MULTILIB_OSDIRNAMES = mabi.lp64=../lib$(call if_multiarch,:aarch64$(AARCH_BE)-linux-gnu)
  MULTIARCH_DIRNAME = $(call if_multiarch,aarch64$(AARCH_BE)-linux-gnu)
  
- MULTILIB_OSDIRNAMES += mabi.ilp32=../libilp32
+ MULTILIB_OSDIRNAMES += mabi.ilp32=../libilp32$(call if_multiarch,:aarch64$(AARCH_BE)-linux-gnu_ilp32)
 diff -Nurp gcc.orig/gcc/config/i386/t-linux64 gcc.new/gcc/config/i386/t-linux64
 --- gcc.orig/gcc/config/i386/t-linux64	2016-01-04 15:30:50.000000000 +0100
 +++ gcc.new/gcc/config/i386/t-linux64	2019-10-18 10:31:01.487305123 +0200
