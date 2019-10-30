@@ -46,6 +46,10 @@ buildScript: |
     root:x:0:0:root:/root:/bin/bash
     nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
     EOF
+    cat >etc/group <<EOF
+    root:x:0:
+    nogroup:x:65534:
+    EOF
 
 packageScript: |
     cp -a $1/* .
