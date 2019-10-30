@@ -1,12 +1,12 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "1.4.17"
+    PKG_VERSION: "1.4.18"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/m4/m4-${PKG_VERSION}.tar.xz
-    digestSHA1: 74ad71fa100ec8c13bc715082757eb9ab1e4bbb0
+    digestSHA256: "f2c1e86ca0a404ff281631bdc8377638992744b175afb806e25871a24a934e07"
     stripComponents: 1
 
 checkoutDeterministic: True
