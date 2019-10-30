@@ -9,7 +9,7 @@ checkoutSCM:
     digestSHA1: "157d14d24748b4505b1a418535688706a2b81680"
     stripComponents: 1
 
-buildTools: [target-toolchain]
+buildTools: [host-toolchain, target-toolchain]
 buildVars: [ARCH, CROSS_COMPILE]
 buildScript: |
     # prevent timestamps in configuration
