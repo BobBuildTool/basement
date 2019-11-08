@@ -1,12 +1,12 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "4.6.0"
+    PKG_VERSION: "4.7.0"
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/findutils/findutils-${PKG_VERSION}.tar.gz
-    digestSHA1: "f18e8aaee3f3d4173a1f598001003be8706d28b0"
+    url: ${GNU_MIRROR}/findutils/findutils-${PKG_VERSION}.tar.xz
+    digestSHA256: "c5fefbdf9858f7e4feb86f036e1247a54c79fc2d8e4b7064d5aaa1f47dfa789a"
     stripComponents: 1
 
 buildScript: |
