@@ -1,0 +1,16 @@
+inherit: [autotools]
+
+metaEnvironment:
+    PKG_VERSION: "2.69"
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/autoconf/autoconf-${PKG_VERSION}.tar.xz
+    digestSHA1: "e891c3193029775e83e0534ac0ee0c4c711f6d23"
+    stripComponents: 1
+
+buildScript: |
+    autotoolsBuild $1
+
+packageScript: |
+    autotoolsPackageTgt
