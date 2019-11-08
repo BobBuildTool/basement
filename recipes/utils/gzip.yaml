@@ -1,12 +1,12 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "1.6"
+    PKG_VERSION: "1.10"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gzip/gzip-${PKG_VERSION}.tar.xz
-    digestSHA1: "05bd01fc90178b806e0c13f9526e2ad392084085"
+    digestSHA256: "8425ccac99872d544d4310305f915f5ea81e04d0f437ef1a230dc9d1c819d7c0"
     stripComponents: 1
 
 buildScript: |
