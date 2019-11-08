@@ -1,0 +1,99 @@
+inherit: [autotools, make, patch]
+
+metaEnvironment:
+    PKG_VERSION: "3.8.0"
+
+privateEnvironment:
+    APPLY_LIBTOOL_PATCH: "no"
+
+checkoutSCM:
+    scm: url
+    url: https://www.python.org/ftp/python/${PKG_VERSION}/Python-${PKG_VERSION}.tar.xz
+    digestSHA256: "b356244e13fb5491da890b35b13b2118c3122977c2cd825e3eb6e7d462030d84"
+    stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<<python3/*>>
+
+buildScript: |
+    mkdir -p src
+    rsync -aH --delete $1/ src/
+    pushd src
+    autoreconf -vfi
+    popd
+
+multiPackage:
+    "":
+        depends:
+           - libs::expat-dev
+           - libs::gdbm-dev
+           - libs::libffi-dev
+           - libs::ncurses-dev
+           - libs::openssl-dev
+           - libs::zlib-dev
+
+           - use: []
+             depends:
+              - libs::expat-tgt
+              - libs::gdbm-tgt
+              - libs::libffi-tgt
+              - libs::ncurses-tgt
+              - libs::openssl-tgt
+              - libs::zlib-tgt
+
+        buildTools: [python3]
+        buildScript: |
+            export ac_cv_file__dev_ptc=yes
+            export ac_cv_file__dev_ptmx=yes
+            export ac_cv_have_long_long_format=yes
+            export ac_cv_prog_HAS_HG=/bin/false
+            export ac_cv_working_tzset=yes
+
+            autotoolsBuild $PWD/src \
+                --without-ensurepip \
+                --without-cxx-main \
+                --disable-pydoc \
+                --disable-test-modules \
+                --disable-lib2to3 \
+                --disable-tk \
+                --disable-nis \
+                --disable-idle3 \
+                --disable-pyc-build
+
+        packageScript: |
+            autotoolsPackageTgt
+
+        provideDeps: [ "*-tgt" ]
+
+    minimal:
+        # Make sure we compile dependencies with position independent code.
+        # Usually everything is compiled statically but python links
+        # expat/libffi into shared libraries.
+        environment:
+            CFLAGS: "${CFLAGS:-} -fPIC"
+            CXXFLAGS: "${CXXFLAGS:-} -fPIC"
+
+        depends:
+           - libs::expat-dev
+           - libs::libffi-dev
+
+        buildScript: |
+            autotoolsBuild $PWD/src \
+                --without-ensurepip \
+                --without-cxx-main \
+                --disable-sqlite3 \
+                --disable-tk \
+                --disable-curses \
+                --disable-codecs-cjk \
+                --disable-nis \
+                --enable-unicodedata \
+                --disable-test-modules \
+                --disable-idle3 \
+                --disable-ossaudiodev
+        packageScript: |
+            autotoolsPackageTgt
+
+        provideTools:
+            python3: usr/bin
+
