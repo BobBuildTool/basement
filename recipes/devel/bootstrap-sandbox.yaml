@@ -20,7 +20,10 @@ depends:
     # stuff that goes into the sandbox image
     - core::coreutils
     - core::util-linux
+    - devel::autoconf
+    - devel::automake
     - devel::diffutils
+    - devel::libtool
     - devel::m4
     - devel::make
     - devel::makedepend

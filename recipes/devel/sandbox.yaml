@@ -39,6 +39,8 @@ depends:
 
     - core::coreutils
     - core::util-linux
+    - devel::autoconf
+    - devel::automake
     - devel::diffutils
     - devel::fakeroot
     - devel::git
