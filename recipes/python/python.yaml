@@ -1,7 +1,7 @@
 inherit: [autotools, make, patch]
 
 metaEnvironment:
-    PKG_VERSION: "2.7.15"
+    PKG_VERSION: "2.7.17"
 
 privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"
@@ -9,7 +9,7 @@ privateEnvironment:
 checkoutSCM:
     scm: url
     url: https://www.python.org/ftp/python/${PKG_VERSION}/Python-${PKG_VERSION}.tar.xz
-    digestSHA1: "f99348a095ec4a6411c84c0d15343d11920c9724"
+    digestSHA256: "4d43f033cdbd0aa7b7023c81b0e986fd11e653b5248dac9144d508f11812ba41"
     stripComponents: 1
 
 checkoutDeterministic: True
@@ -19,12 +19,9 @@ checkoutScript: |
 buildScript: |
     mkdir -p src
     rsync -aH --delete $1/ src/
-
-    # The make file will compile all python standard library files during
-    # installation. This is done with a PYTHONPATH pointing to the installation
-    # directory. Unfortunately this means that extension modules are also
-    # loaded from there which require libpython2.7.so.1.0...
-    export LD_LIBRARY_PATH="$BOB_CWD/install/usr/lib"
+    pushd src
+    autoreconf -vfi
+    popd
 
 multiPackage:
     "":
@@ -58,7 +55,9 @@ multiPackage:
                 --enable-ipv6 \
                 --enable-unicode=ucs4 \
                 --with-dbmliborder=gdbm:ndbm \
-                --without-ensurepip
+                --without-ensurepip \
+                --disable-pyo-build \
+                --disable-pyc-build
 
         packageScript: |
             autotoolsPackageTgt
