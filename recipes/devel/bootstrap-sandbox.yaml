@@ -6,6 +6,10 @@ depends:
         name: devel::pkg-config
         use: [tools]
         forward: True
+    -
+        name: python::python3-minimal
+        use: [tools]
+        forward: True
 
     # setup target toolchain
     -
@@ -33,7 +37,7 @@ depends:
     - net::make-ca
     - net::openssh
     - perl::perl
-    - python::python
+    - python::python3
     - utils::bash
     - utils::bzip2
     - utils::file

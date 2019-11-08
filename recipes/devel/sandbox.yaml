@@ -26,6 +26,10 @@ depends:
         name: devel::flex
         use: [tools]
         forward: True
+    -
+        name: python::python3-minimal
+        use: [tools]
+        forward: True
 
     # target toolchain
     -
@@ -58,7 +62,7 @@ depends:
     - net::make-ca
     - net::openssh
     - perl::perl
-    - python::python
+    - python::python3
     - utils::bash
     - utils::bc
     - utils::bzip2
