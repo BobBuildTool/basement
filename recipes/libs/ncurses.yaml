@@ -23,7 +23,9 @@ buildScript: |
 
 multiPackage:
     dev:
-        packageScript: autotoolsPackageDev
+        packageScript: |
+            autotoolsPackageDev "$1" \
+               /usr /usr/bin /usr/bin "/usr/bin/ncurses*-config"
     tgt:
         packageScript: autotoolsPackageTgt
 
