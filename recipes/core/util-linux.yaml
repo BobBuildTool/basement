@@ -21,6 +21,7 @@ checkoutSCM:
 
 buildScript: |
     export PKG_CONFIG=""
+    export NCURSESW6_CONFIG=${BOB_DEP_PATHS[libs::ncurses-dev]}/usr/bin/ncursesw6-config
     autotoolsBuild $1 \
         --without-python \
         --disable-makeinstall-chown \
