@@ -50,6 +50,7 @@ buildScript: |
     root:x:0:
     nogroup:x:65534:
     EOF
+    ln -s ../proc/self/mounts etc/mtab
 
 packageScript: |
     cp -a $1/* .
