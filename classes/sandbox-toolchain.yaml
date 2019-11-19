@@ -76,6 +76,6 @@ provideVars:
 
     # compiler flags
     CPPFLAGS:   "-Wdate-time"
-    CFLAGS:     "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
-    CXXFLAGS:   "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
+    CFLAGS:     "-Os -pipe"
+    CXXFLAGS:   "-Os -pipe"
     LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
