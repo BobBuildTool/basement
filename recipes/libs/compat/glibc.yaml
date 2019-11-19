@@ -1,0 +1,55 @@
+inherit: [make, patch]
+
+depends:
+    - kernel::linux-headers
+    -
+        name: devel::compat::gcc-cross-bare
+        use: [tools]
+
+metaEnvironment:
+    PKG_VERSION: "2.23"
+
+checkoutSCM:
+    scm: url
+    url: http://ftp.gnu.org/gnu/glibc/glibc-${PKG_VERSION}.tar.xz
+    digestSHA256: "94efeb00e4603c8546209cefb3e1a50a5315c86fa9b078b6fad758e187ce13e9"
+    stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<<glibc/*.diff>>
+
+buildVars: [AUTOCONF_TARGET]
+buildTools: [gcc-cross-bare, target-toolchain, bison]
+buildScript: |
+    EXTRA=
+    [ -e $1/usr/include/selinux/selinux.h ] || EXTRA+=" --without-selinux"
+
+    mkdir -p build install
+    pushd build
+    $1/configure \
+        --prefix=/usr                    \
+        --host=${AUTOCONF_TARGET}        \
+        --build=$($1/scripts/config.guess) \
+        --enable-kernel=4.3.3             \
+        --with-headers=$2/usr/include \
+        --enable-obsolete-rpc \
+        --libdir=/usr/lib \
+        $EXTRA
+
+    makeParallel rootsbindir=/usr/sbin slibdir=/usr/lib
+    make install rootsbindir=/usr/sbin slibdir=/usr/lib DESTDIR=${PWD}/../install
+    popd
+    cp -a $2/usr/include install/usr/
+
+multiPackage:
+    dev:
+        packageScript: |
+            cp -a $1/install/* .
+
+    tgt:
+        packageScript: |
+            cp -a $1/install/{etc,lib,sbin,var} .
+            mkdir usr
+            cp -a $1/install/usr/{bin,libexec,sbin,share} usr/
+

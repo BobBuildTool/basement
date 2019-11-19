@@ -1,0 +1,65 @@
+# This is an ancient self-built host toolchain that runs on the oldest
+# currently supported Ubuntu LTS. Artifacts created by this toolchain are
+# guaranteed to run there too. This enables the safe creation of host artifacts
+# that can be used on a broad range of distributions.
+
+shared: True
+
+depends:
+    - name: devel::compat::cross-toolchain
+      use: [environment, tools]
+      forward: True
+      environment:
+        AUTOCONF_TARGET: "x86_64-bob_compat-linux-gnu"
+        ARCH: x86_64
+        BASEMENT_OPTIMIZE: "s"
+        BASEMENT_DEBUG: "0"
+
+    - devel::compat::binutils
+    - devel::compat::gcc-native
+
+buildScript: |
+    for i in "${@:2}" ; do
+        cp -a "$i"/* .
+    done
+
+packageScript: |
+    cp -a "$1"/* .
+
+provideTools:
+    host-toolchain:
+        path: "usr/bin"
+        libs: [ "usr/lib" ]
+
+    # FIXME: This uses no fingerprintScript yet. Should check for the minimum
+    # libc/libstdc++ version once BobBuildTool/bob#284 is solved.
+    target-toolchain:
+        path: "usr/bin"
+        libs: [ "usr/lib" ]
+
+provideVars:
+    # usual compiler variables
+    AR: "ar"
+    AS: "as"
+    CC: "gcc"
+    CPP: "cpp"
+    CXX: "g++"
+    GDB: "gdb"
+    LD: "ld"
+    NM: "nm"
+    OBJCOPY: "objcopy"
+    OBJDUMP: "objdump"
+    RANLIB: "ranlib"
+    STRIP: "strip"
+
+    # Some meta variables do not change: ARCH, AUTOCONF_BUILD, AUTOCONF_HOST
+    AUTOCONF_BUILD: "${AUTOCONF_HOST}"
+    AUTOCONF_HOST:  "${AUTOCONF_HOST}"
+    CROSS_COMPILE: ""
+    TOOLCHAIN_SYSROOT: ""
+
+    # compiler flags
+    CPPFLAGS:   "-Wdate-time"
+    CFLAGS:     "-Os -pipe"
+    CXXFLAGS:   "-Os -pipe"
+    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"

@@ -1,0 +1,164 @@
+inherit: [make, install, patch]
+
+metaEnvironment:
+    PKG_VERSION: "5.4.0"
+
+depends:
+    - libs::gmp-dev
+    - libs::mpfr-dev
+    - libs::mpc-dev
+    - libs::compat::isl-dev
+
+    - use: []
+      depends:
+        - libs::gmp-tgt
+        - libs::mpfr-tgt
+        - libs::mpc-tgt
+        - libs::compat::isl-tgt
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/gcc/gcc-${PKG_VERSION}/gcc-${PKG_VERSION}.tar.bz2
+    digestSHA1: "07524df2b4ab9070bad9c49ab668da72237b8115"
+    stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries -p1 \
+        $<<gcc/0001-squash-multilib-libdir-suffix.patch>>
+
+buildTools: [host-toolchain]
+buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
+            GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU]
+buildScript: |
+    GCC_SRC=$1
+
+    # Gather all include and library paths.
+    for i in "$2" "$3" "$4" "$5" ; do
+        if [[ -d "$i/usr/include" ]] ; then
+            CPPFLAGS+=" -I$i/usr/include"
+        fi
+        for j in lib usr/lib ; do
+            if [[ -d "$i/$j" ]] ; then
+                LDFLAGS+=" -L$i/$j"
+                if compgen -G "$i/$j/*.so" >/dev/null ; then
+                    LDFLAGS+=" -Wl,-rpath-link=$i/$j"
+                fi
+            fi
+        done
+    done
+
+    [ -z "${CPPFLAGS:+true}" ] || export CPPFLAGS
+    [ -z "${LDFLAGS:+true}" ] || export LDFLAGS
+
+    buildGcc()
+    {
+        mkdir -p build install
+        pushd build
+        $GCC_SRC/configure \
+            --build=${AUTOCONF_BUILD} \
+            --host=${AUTOCONF_HOST} \
+            --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST}} \
+            --prefix=/usr \
+            ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
+            ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
+            ${GCC_TARGET_FLOAT_ABI:+--with-float=$GCC_TARGET_FLOAT_ABI} \
+            --enable-initfini-array \
+            "${@}" \
+            --disable-gtk-doc \
+            --disable-gtk-doc-html \
+            --disable-doc \
+            --disable-docs \
+            --disable-documentation \
+            --disable-debug \
+            --with-xmlto=no \
+            --with-fop=no
+        makeParallel
+        make install DESTDIR=${PWD}/../install
+        popd
+    }
+
+packageScript: |
+    # copy everything
+    installPackageDev "$1/install/" "*"
+
+multiPackage:
+    cross-bare:
+        depends:
+            -
+                name: devel::compat::binutils
+                use: [result, tools]
+        buildTools: [binutils]
+        buildScript: |
+            buildGcc \
+                --with-glibc-version=2.11                      \
+                --with-sysroot=/does/not/exist                 \
+                --with-newlib                                  \
+                --without-headers                              \
+                --disable-nls                                  \
+                --disable-multilib                             \
+                --disable-decimal-float                        \
+                --disable-threads                              \
+                --disable-libatomic                            \
+                --disable-libgomp                              \
+                --disable-libmpx                               \
+                --disable-libquadmath                          \
+                --disable-libssp                               \
+                --disable-libvtv                               \
+                --disable-libstdcxx                            \
+                --disable-shared                               \
+                --disable-bootstrap                            \
+                --enable-languages=c,c++
+            cp -a ${BOB_DEP_PATHS[devel::compat::binutils]}/* install/
+
+        packageScript: |
+            installStripAll usr/bin
+
+        provideTools:
+            gcc-cross-bare: usr/bin
+
+    cross:
+        depends:
+            - name: devel::compat::binutils
+              use: [result, tools]
+            - libs::compat::glibc-dev
+
+        buildTools: [binutils]
+        buildVars: [GCC_ENABLE_LANGUAGES]
+        buildScript: |
+            buildGcc \
+                --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET} \
+                --with-build-sysroot=${BOB_DEP_PATHS[libs::compat::glibc-dev]} \
+                --enable-linker-build-id                                    \
+                --disable-multilib                                          \
+                --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
+            cp -a ${BOB_DEP_PATHS[devel::compat::binutils]}/* install/
+
+        packageScript: |
+            installStripAll usr/bin
+
+        provideDeps:
+            - libs::compat::glibc-dev
+
+    native:
+        buildTools: [target-toolchain]
+        buildVars: [TOOLCHAIN_SYSROOT, GCC_PREFIX, GCC_ENABLE_LANGUAGES]
+        buildScript: |
+            TARGET_SYSROOT="${GCC_PREFIX:-/usr}/sysroots/${AUTOCONF_HOST}"
+            buildGcc \
+                ${GCC_PREFIX:+--prefix=${GCC_PREFIX}} \
+                --with-sysroot="${TARGET_SYSROOT}" \
+                --with-build-sysroot=${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT \
+                --enable-linker-build-id                                                    \
+                --enable-threads=posix                                                      \
+                --disable-multilib                                                          \
+                --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
+
+            # add sysroot
+            mkdir -p "install/${TARGET_SYSROOT}"
+            cp -an ${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT/* "install/${TARGET_SYSROOT}"
+
+        packageScript: |
+            installStripAll usr/bin
+
+        provideDeps: [ "*-tgt" ]
