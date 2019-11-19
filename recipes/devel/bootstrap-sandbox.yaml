@@ -1,6 +1,12 @@
 inherit: [sandbox]
 
 depends:
+    # The toolchain of the build machine is used
+    -
+        name: devel::bootstrap-host-toolchain
+        use: [environment, tools]
+        forward: True
+
     # some required host tools
     -
         name: devel::pkg-config

@@ -1,22 +1,6 @@
 environment:
     GNU_MIRROR: "http://ftp.gnu.org/pub/gnu"
 
-    # usual compiler variables
-    AR: "ar"
-    AS: "as"
-    CC: "gcc"
-    CPP: "cpp"
-    CXX: "g++"
-    GDB: "gdb"
-    LD: "ld"
-    NM: "nm"
-    OBJCOPY: "objcopy"
-    OBJDUMP: "objdump"
-    RANLIB: "ranlib"
-    STRIP: "strip"
-    ARCH:            "$(host-arch)"
-
-    # host/build environment
     AUTOCONF_BUILD:  "$(host-autoconf)"
     AUTOCONF_HOST:   "$(host-autoconf)"
 

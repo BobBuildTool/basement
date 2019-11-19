@@ -1,11 +1,10 @@
-packageVars: [AUTOCONF_BUILD, SANDBOX_AUTOCONF_BUILD]
-packageScript: |
-    # If we are not in a sandbox do a quich check if gcc is around and that
-    # it's a compatible compiler. This will only do its job if the user builds
-    # on his machine and does not download this as an artifact. Still better
-    # than nothing...
+# This package makes some assumptions about the host if we are not in a
+# sandbox. Do a quick check if gcc is around and that it's a compatible
+# compiler for our configuration.
+fingerprintIf: True
+fingerprintScript: |
     if [[ ! -e /bob || ! -e /toolchain/bin ]] ; then
-        GCC_MACHINE="$(gcc -dumpmachine)"
+        GCC_MACHINE="$(gcc -dumpmachine 2>/dev/null)"
         case "$AUTOCONF_BUILD" in
             "$GCC_MACHINE")
                 ;;
@@ -27,6 +26,8 @@ packageScript: |
         esac
     fi
 
+packageVars: [AUTOCONF_BUILD, SANDBOX_AUTOCONF_BUILD]
+packageScript: |
     # Create a wrapper scripts that prefer the right executable in /toolchain
     # and (if we are outside of a sandbox) fall back to globally installed
     # versions.
@@ -45,7 +46,12 @@ packageScript: |
 
 provideTools:
     host-toolchain: "."
-    target-toolchain: "."
+    target-toolchain:
+        path: "."
+        fingerprintIf: True
+        fingerprintScript: |
+            bob-libc-version
+            bob-libstdc++-version
 
 provideVars:
     # usual compiler variables

@@ -1,0 +1,39 @@
+# This toolchain recipe basically does nothing. It's just here to declare the
+# internal "host-toolchain" and "target-toolchain" tools and provide the usual
+# variables. The user has to have gcc installed or things will go south.
+
+provideTools:
+    host-toolchain: "."
+    target-toolchain:
+        path: "."
+        fingerprintIf: True
+        fingerprintScript: |
+            bob-libc-version
+            bob-libstdc++-version
+
+provideVars:
+    # usual compiler variables
+    AR: "ar"
+    AS: "as"
+    CC: "gcc"
+    CPP: "cpp"
+    CXX: "g++"
+    GDB: "gdb"
+    LD: "ld"
+    NM: "nm"
+    OBJCOPY: "objcopy"
+    OBJDUMP: "objdump"
+    RANLIB: "ranlib"
+    STRIP: "strip"
+    ARCH: "$(host-arch)"
+
+    # host/build environment
+    CROSS_COMPILE: ""
+    TOOLCHAIN_SYSROOT: ""
+
+    # compiler flags
+    CPPFLAGS:   "-Wdate-time"
+    CFLAGS:     "-Os -pipe"
+    CXXFLAGS:   "-Os -pipe"
+    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
+
