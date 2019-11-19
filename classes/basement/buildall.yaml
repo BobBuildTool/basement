@@ -1,0 +1,19 @@
+# This class is not meant to be used by other layers. It is just there to be
+# built by the CI system and to create binary artifacts for all commonly used
+# packages.
+
+inherit: [ "basement::rootrecipe" ]
+
+depends:
+    - devel::cross-toolchain-x86_64-linux-gnu
+    - devel::cross-toolchain-arm-linux-gnueabihf
+    - devel::cross-toolchain-arm-none-eabi
+
+buildScript: |
+    true
+
+packageTools:
+    - bison
+    - cpio
+    - flex
+    - pkg-config

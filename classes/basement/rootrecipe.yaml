@@ -1,0 +1,35 @@
+root: True
+
+depends:
+    # Setup sandbox with corresponding toolchain
+    - name: devel::sandbox
+      use: [sandbox]
+      forward: True
+    - name: devel::sandbox-toolchain
+      use: [environment, tools]
+      forward: True
+
+    # Use compatability toolchain that practically runs on all major
+    # distributions. The user might explicitly disable it's usage but this will
+    # then taint all binary artifacts built for the host.
+    - name: devel::host-compat-toolchain
+      use: [environment, tools]
+      forward: True
+      if: "${BASEMENT_HOST_COMPAT_TOOLCHAIN:-1}"
+
+    # Pick up all tools defined by the basement project. The downstream users
+    # can pick them as they like. Make sure to update the basement::buildall
+    # class to catch added tools too.
+
+    - name: devel::bison
+      use: [tools]
+      forward: True
+    - name: utils::cpio
+      use: [tools]
+      forward: True
+    - name: devel::flex
+      use: [tools]
+      forward: True
+    - name: devel::pkg-config
+      use: [tools]
+      forward: True
