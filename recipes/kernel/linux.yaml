@@ -9,8 +9,8 @@ checkoutSCM:
     digestSHA1: "4e733c7be714d7c17a11e1cdcc831dd2a072018c"
     stripComponents: 1
 
-buildTools: [bison, flex, host-toolchain, target-toolchain]
-buildVars: [CROSS_COMPILE, ARCH, LINUX_CONFIG]
+buildTools: [bison, flex, host-toolchain]
+buildVars: [ARCH]
 buildScript: |
     # prevent timestamps in configuration
     export KCONFIG_NOTIMESTAMP=1
@@ -43,6 +43,8 @@ buildScript: |
 
 multiPackage:
     "":
+        buildTools: [target-toolchain]
+        buildVars: [CROSS_COMPILE, LINUX_CONFIG]
         buildScript: |
             makeParallel bzImage modules dtbs
 
