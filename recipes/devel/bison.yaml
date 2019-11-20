@@ -3,6 +3,9 @@ inherit: [autotools]
 metaEnvironment:
     PKG_VERSION: "3.4.2"
 
+privateEnvironment:
+    MAKE_JOBS: "1"  # parallel make sometimes failes in examples/c/reccalc/...
+
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/bison/bison-${PKG_VERSION}.tar.xz
