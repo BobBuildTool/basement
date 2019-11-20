@@ -13,6 +13,14 @@ depends:
         use: [tools]
         forward: True
     -
+        name: devel::bison
+        use: [tools]
+        forward: True
+    -
+        name: devel::flex
+        use: [tools]
+        forward: True
+    -
         name: python::python3-minimal
         use: [tools]
         forward: True
