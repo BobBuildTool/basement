@@ -5,9 +5,6 @@ depends:
     -
         name: devel::gcc-cross-bare
         use: [tools]
-    -
-        name: devel::bison
-        use: [tools]
 
 metaEnvironment:
     PKG_VERSION: "2.30"
