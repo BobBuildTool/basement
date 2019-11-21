@@ -13,6 +13,7 @@ checkoutSCM:
     stripComponents: 1
 
 buildScript: |
+    export M4=m4
     autotoolsBuild $1
 
 packageScript: |
