@@ -6,6 +6,16 @@
 shared: True
 
 depends:
+    # The following tools are needed by the cross-toolchain build process.
+    # Build them explicitly here to keep the basement::rootrecipe class
+    # untainted.
+    - name: devel::bison
+      use: [tools]
+      forward: True
+    - name: devel::flex
+      use: [tools]
+      forward: True
+
     - name: devel::compat::cross-toolchain
       use: [environment, tools]
       forward: True
