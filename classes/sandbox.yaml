@@ -56,7 +56,7 @@ packageScript: |
     cp -a $1/* .
 
 provideSandbox:
-    paths: ["/bin", "/usr/bin"]
+    paths: ["/usr/bin"]
     mount:
         - "/etc/resolv.conf"
         - "/dev/pts"
