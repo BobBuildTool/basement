@@ -11,6 +11,7 @@ checkoutSCM:
 
 buildTools: [bison]
 buildScript: |
+    export M4=m4
     autotoolsBuild $1 \
         --disable-nls 
 
