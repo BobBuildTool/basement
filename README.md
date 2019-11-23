@@ -19,9 +19,8 @@ standard sandbox and common GCC toolchains are ready-to-use.
 Actually there isn't anything to build directly in this repository. Head over
 to one of the examples to see how this repository is used:
 
- * [Applications](https://github.com/BobBuildTool/bob-example-applications)
- * [Linux containers](https://github.com/BobBuildTool/bob-example-containers)
  * [Embedded systems](https://github.com/BobBuildTool/bob-example-embedded)
+ * [Linux containers](https://github.com/BobBuildTool/bob-example-containers)
 
 # How to use
 
