@@ -17,3 +17,4 @@ packageTools:
     - cpio
     - flex
     - pkg-config
+    - e2fsprogs
