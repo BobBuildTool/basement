@@ -1,23 +1,28 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "4.3"
+    PKG_VERSION: "4.4"
 
 depends:
     - utils::xz-utils
+    - libs::zlib-dev
 
 checkoutSCM:
     scm: url
-    url: https://sourceforge.net/projects/squashfs/files/squashfs/squashfs${PKG_VERSION}/squashfs${PKG_VERSION}.tar.gz
-    digestSHA1: "a615979db9cee82e4a934a1455577f597d290b41"
+    url: https://github.com/plougher/squashfs-tools/archive/${PKG_VERSION}.tar.gz
+    digestSHA256: "a7fa4845e9908523c38d4acf92f8a41fdfcd19def41bd5090d7ad767a6dc75c3"
     stripComponents: 1
 
-buildVars: [CPPFLAGS, CFLAGS, LDFLAGS]
+buildVars: [CC, CPPFLAGS, CFLAGS, LDFLAGS]
 buildScript: |
-    # autotoolsBuild $1/bc-${PKG_VERSION}
-    CFLAGS+=" -I${BOB_DEP_PATHS[utils::xz-utils]}/usr/include"
-    LDFLAGS+=" -L${BOB_DEP_PATHS[utils::xz-utils]}/usr/lib"
-    make -C $1/squashfs-tools XZ_SUPPORT=1  LZMA_XZ_SUPPORT=1
+    CFLAGS+=" -I${BOB_DEP_PATHS[utils::xz-utils]}/usr/include -I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include"
+    LDFLAGS+=" -L${BOB_DEP_PATHS[utils::xz-utils]}/usr/lib -L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib"
+
+    rsync -aH --delete $1/ .
+    make -C squashfs-tools CC=${CC}
 
 packageScript: |
-    make -C $1 install DESTDIR=${PWD}
+    make -C $1/squashfs-tools install INSTALL_DIR=${PWD}/usr/local/bin
+
+provideTools:
+    squashfs-tools: "usr/local/bin"
