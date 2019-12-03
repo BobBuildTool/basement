@@ -1,4 +1,4 @@
-bobMinimumVersion: "0.15"
+bobMinimumVersion: "0.16.0rc1"
 
 plugins:
     - multiarch

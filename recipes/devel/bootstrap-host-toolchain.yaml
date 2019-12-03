@@ -8,8 +8,8 @@ provideTools:
         path: "."
         fingerprintIf: True
         fingerprintScript: |
-            bob-libc-version
-            bob-libstdc++-version
+            bob-libc-version gcc
+            bob-libstdc++-version g++
 
 provideVars:
     # usual compiler variables

@@ -2,6 +2,7 @@
 # sandbox. Do a quick check if gcc is around and that it's a compatible
 # compiler for our configuration.
 fingerprintIf: True
+fingerprintVars: [AUTOCONF_BUILD]
 fingerprintScript: |
     if [[ ! -e /bob || ! -e /toolchain/bin ]] ; then
         GCC_MACHINE="$(gcc -dumpmachine 2>/dev/null)"
@@ -50,8 +51,10 @@ provideTools:
         path: "."
         fingerprintIf: True
         fingerprintScript: |
-            bob-libc-version
-            bob-libstdc++-version
+            # required for sandbox where gcc is not in PATH
+            export PATH="$PATH:/toolchain/bin"
+            bob-libc-version gcc
+            bob-libstdc++-version g++
 
 provideVars:
     # usual compiler variables
