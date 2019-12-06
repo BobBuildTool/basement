@@ -52,6 +52,7 @@ The following tools can be used by naming them in `{checkout,build,package}Tools
 * cpio
 * flex
 * pkg-config
+* squashfs-tools
 * e2fsprogs
 
 The following cross compiling toolchains are available pre-configured. If you need

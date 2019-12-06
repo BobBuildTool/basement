@@ -33,6 +33,9 @@ depends:
     - name: devel::pkg-config
       use: [tools]
       forward: True
+    - name: devel::squashfs-tools
+      use: [tools]
+      forward: True
     - name: utils::e2fsprogs
       use: [tools]
       forward: True

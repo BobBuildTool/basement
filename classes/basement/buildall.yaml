@@ -17,4 +17,5 @@ packageTools:
     - cpio
     - flex
     - pkg-config
+    - squashfs-tools
     - e2fsprogs
