@@ -36,16 +36,47 @@ buildScript: |
 packageScript: |
     cp -a "$1"/* .
 
+# This fingerprintScript checks for the minimum libc/libstdc++ version on the
+# host. It will output nothing but will fail if the host is not able to run the
+# toolchain binaries.
+fingerprintIf: True
+fingerprintScript: &check-host |
+    # required for sandbox where gcc is not in PATH
+    export PATH="$PATH:/toolchain/bin"
+
+    # check glibc host version
+    IFS="$IFS." read -r -d "" ARCH TYPE MAJOR MINOR <<<"$(bob-libc-version gcc)" || true
+    if [[ $TYPE != glibc ]] ; then
+        echo "These recipes assume that your host is using glibc!" >&2
+        exit 1
+    fi
+    if [[ $MAJOR -ne 2 || $MINOR -lt 23 ]] ; then
+        echo "Your host glibc version is too old!" >&2
+        exit 1
+    fi
+
+    # check libstdc++ host version
+    read -r -d "" ARCH TYPE STAMP <<<"$(bob-libstdc++-version g++)" || true
+    if [[ $TYPE != "libstdc++" ]] ; then
+        echo "These recipes assume that your host is using libstdc++!" >&2
+        exit 1
+    fi
+    if [[ $STAMP -lt 20160603 ]] ; then
+        echo "Your host libstdc++ version is too old!" >&2
+        exit 1
+    fi
+
 provideTools:
     host-toolchain:
         path: "usr/bin"
         libs: [ "usr/lib" ]
 
-    # FIXME: This uses no fingerprintScript yet. Should check for the minimum
-    # libc/libstdc++ version once BobBuildTool/bob#284 is solved.
     target-toolchain:
         path: "usr/bin"
         libs: [ "usr/lib" ]
+        # make sure host can run created binaries
+        fingerprintIf: True
+        fingerprintScript: *check-host
 
 provideVars:
     # usual compiler variables
