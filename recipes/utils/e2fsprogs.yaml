@@ -1,0 +1,19 @@
+inherit: [autotools]
+
+metaEnvironment:
+    PKG_VERSION: "1.45.4"
+
+checkoutSCM:
+    scm: url
+    url: https://mirrors.edge.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v${PKG_VERSION}/e2fsprogs-${PKG_VERSION}.tar.xz
+    digestSHA256: "65faf6b590ca1da97440d6446bd11de9e0914b42553740ba5d9d2a796fa0dc02"
+    stripComponents: 1
+
+buildScript: |
+    autotoolsBuild $1
+
+packageScript: |
+    autotoolsPackageTgt
+
+provideTools:
+    e2fsprogs: "usr/sbin"
