@@ -1,7 +1,7 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "1.4.49"
+    PKG_VERSION: "1.4.54"
 
 depends:
     - libs::openssl-dev
@@ -16,8 +16,8 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-1.4.49.tar.xz
-    digestSHA256: aedf49d7127d9e4c0ea56618e9e945a17674dc46a37ac7990120f87dd939ce09
+    url: https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-${PKG_VERSION}.tar.xz
+    digestSHA256: cf14cce2254a96d8fcb6d3181e1a3c29a8f832531c3e86ff6f2524ecda9a8721
     stripComponents: 1
 
 buildTools: [host-toolchain]
