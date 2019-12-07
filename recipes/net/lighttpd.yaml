@@ -24,6 +24,8 @@ buildTools: [host-toolchain]
 buildScript: |
     export PCRECONFIG=${BOB_DEP_PATHS[libs::pcre-lib-1-dev]}/usr/bin/pcre-config
     autotoolsBuild $1 \
+        --libdir=/usr/lib/lighttpd \
+        --libexecdir=/usr/lib/lighttpd \
         --with-openssl \
         --without-bzip2
 
