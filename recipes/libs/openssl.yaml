@@ -1,7 +1,7 @@
 inherit: [make, install]
 
 metaEnvironment:
-    PKG_VERSION: "1.0.2g"
+    PKG_VERSION: "1.1.1d"
 
 depends:
     - libs::zlib-dev
@@ -13,7 +13,7 @@ depends:
 checkoutSCM:
     scm: url
     url: https://www.openssl.org/source/openssl-${PKG_VERSION}.tar.gz
-    digestSHA1: "36af23887402a5ea4ebef91df8e61654906f58f2"
+    digestSHA256: 1e3a91bc1f9dfce01af26026f856e064eab4c8ee0a8f457b5ae30b40b8b711f2
     extract: False
 
 buildTools: [target-toolchain]
@@ -36,7 +36,7 @@ buildScript: |
 
     #make depend
     makeParallel
-    make INSTALL_PREFIX="${PWD}/../install" install_sw
+    make DESTDIR="${PWD}/../install" install_sw
 
     popd
 
