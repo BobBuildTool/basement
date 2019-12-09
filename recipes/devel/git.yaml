@@ -1,7 +1,7 @@
 inherit: [make, install]
 
 metaEnvironment:
-    PKG_VERSION: "2.8.0"
+    PKG_VERSION: "2.24.0"
 
 depends:
     - libs::zlib-dev
@@ -16,8 +16,8 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: https://www.kernel.org/pub/software/scm/git/git-${PKG_VERSION}.tar.gz
-    digestSHA1: "14fcb455094c77e3b7c399a21fedf3e869bd18e2"
+    url: https://www.kernel.org/pub/software/scm/git/git-${PKG_VERSION}.tar.xz
+    digestSHA1: "851537fc03f5a99419ef20e9b836de965c7928bd"
     extract: False
 
 buildTools: [target-toolchain]
@@ -28,7 +28,7 @@ buildScript: |
     export LDFLAGS="-L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib -L${BOB_DEP_PATHS[libs::openssl-dev]}/usr/lib -Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib -Wl,-rpath-link=${BOB_DEP_PATHS[libs::openssl-dev]}/usr/lib"
 
     mkdir -p install
-    tar -xzf $1/git-${PKG_VERSION}.tar.gz
+    tar -xf $1/git-${PKG_VERSION}.tar.xz
 
     pushd git-${PKG_VERSION}
     ./configure --host=${AUTOCONF_HOST} \
