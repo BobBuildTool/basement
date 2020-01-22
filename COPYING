@@ -1,0 +1,9 @@
+With the exception below, the Basement project is distributed under the terms
+of the MIT license (see LICENSE).
+
+The Basement project also bundles patch files, which are applied to the sources
+of the various packages. Those patches are not covered by the license of the
+Basement project. Instead, they are covered by the license of the software to
+which the patches are applied. When said software is available under multiple
+licenses, the Basement patches are only provided under the publicly accessible
+licenses.
