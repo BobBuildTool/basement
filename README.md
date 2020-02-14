@@ -28,7 +28,7 @@ First you need to add the `basement` layer to your project. To do so add a
 `layers` entry to `config.yaml`:
 
     bobMinimumVersion: "0.15"
-    laysers:
+    layers:
         - basement
 
 and then add this repository as submodule to your project:
