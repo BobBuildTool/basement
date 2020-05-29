@@ -82,3 +82,10 @@ multiPackage:
             GCC_ENABLE_LANGUAGES: "c"
             GCC_LIBC: "newlib"
 
+    # ARMv8-A AArch64 Linux toolchain
+    aarch64-linux-gnu:
+        environment:
+            AUTOCONF_TARGET: "aarch64-linux-gnu"
+            ARCH: "arm64"
+            GCC_TARGET_ARCH: "armv8-a"
+            GCC_LIBC: "glibc"

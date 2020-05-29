@@ -59,11 +59,12 @@ The following cross compiling toolchains are available pre-configured. If you ne
 other targets you can depend on `devel::cross-toolchain` directly and configure it
 as you like.
 
-* `devel::cross-toolchain-x86_64-linux-gnu`: x86_64 toolchain for Linux with glibc.
+* `devel::cross-toolchain-aarch64-linux-gnu`: ARMv8-A AArch64 Linux with glibc.
 * `devel::cross-toolchain-arm-linux-gnueabihf`: ARMv7-A Linux with glibc. Hard
   floating point ABI.
 * `devel::cross-toolchain-arm-none-eabi`: ARMv7 bare metal toolchain with
   newlib libc.
+* `devel::cross-toolchain-x86_64-linux-gnu`: x86_64 toolchain for Linux with glibc.
 
 To use a cross compiling toolchain include it where needed via:
 
