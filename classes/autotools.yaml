@@ -62,16 +62,19 @@ buildScript: |
 
         mkdir -p build install
         pushd build
-        $1/configure \
-            ${AUTOCONF_BUILD:+--build=${AUTOCONF_BUILD}} \
-            ${AUTOCONF_HOST:+--host=${AUTOCONF_HOST}} \
-            ${AUTOCONF_TARGET:+--target=${AUTOCONF_TARGET}} \
-            --prefix="/usr" \
-            --sysconfdir="/etc" \
-            --localstatedir="/var" \
-            --libdir=/usr/lib \
-            "${SHARED_STATIC[@]}" \
-            "${@:2}"
+        if [[ $1/configure -nt .configure.stamp ]] ; then
+            $1/configure \
+                ${AUTOCONF_BUILD:+--build=${AUTOCONF_BUILD}} \
+                ${AUTOCONF_HOST:+--host=${AUTOCONF_HOST}} \
+                ${AUTOCONF_TARGET:+--target=${AUTOCONF_TARGET}} \
+                --prefix="/usr" \
+                --sysconfdir="/etc" \
+                --localstatedir="/var" \
+                --libdir=/usr/lib \
+                "${SHARED_STATIC[@]}" \
+                "${@:2}"
+            touch .configure.stamp
+        fi
         makeParallel $MAKE_TARGET ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"}
         make $INSTALL_TAGET DESTDIR=${PWD}/../install ${INSTALL_OPTIONS:+"${INSTALL_OPTIONS[@]}"}
         popd
