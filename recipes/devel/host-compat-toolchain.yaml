@@ -35,6 +35,18 @@ buildScript: |
 
 packageScript: |
     cp -a "$1"/* .
+    pushd usr/bin
+    for i in * ; do
+        if [[ ! -L "$i" && -x "$i" ]] ; then
+            mv "$i" ".wrapped.${i}"
+            cat >"$i" <<EOF
+    #!/bin/sh
+    LD_LIBRARY_PATH="\$(realpath "\${0%/*}/../lib")" exec "\${0%/*}/.wrapped.${i}" "\$@"
+    EOF
+            chmod a+x "$i"
+        fi
+    done
+    popd
 
 # This fingerprintScript checks for the minimum libc/libstdc++ version on the
 # host. It will output nothing but will fail if the host is not able to run the
@@ -69,11 +81,9 @@ fingerprintScript: &check-host |
 provideTools:
     host-toolchain:
         path: "usr/bin"
-        libs: [ "usr/lib" ]
 
     target-toolchain:
         path: "usr/bin"
-        libs: [ "usr/lib" ]
         # make sure host can run created binaries
         fingerprintIf: True
         fingerprintScript: *check-host
