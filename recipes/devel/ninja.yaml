@@ -1,0 +1,21 @@
+inherit: [cmake]
+
+metaEnvironment:
+    PKG_VERSION: "1.10.0"
+
+checkoutSCM:
+    scm: url
+    url: https://github.com/ninja-build/ninja/archive/v1.10.0.tar.gz
+    digestSHA256: 3810318b08489435f8efc19c05525e80a993af5a55baa0dfeae0465a9d45f99f
+    stripComponents: 1
+
+buildScript: |
+    cmakeBuild -i "" "$1" # no install target!
+    mkdir -p install/usr/bin
+    cp build/ninja install/usr/bin/
+
+packageScript: |
+    cmakePackageTgt
+
+provideTools:
+    ninja: usr/bin
