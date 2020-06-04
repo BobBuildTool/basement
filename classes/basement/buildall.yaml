@@ -15,8 +15,11 @@ buildScript: |
 
 packageTools:
     - bison
+    - cmake
     - cpio
     - flex
+    - meson
+    - ninja
     - pkg-config
     - squashfs-tools
     - e2fsprogs
