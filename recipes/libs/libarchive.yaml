@@ -1,0 +1,36 @@
+inherit: [autotools]
+
+metaEnvironment:
+    PKG_VERSION: "3.4.3"
+
+checkoutSCM:
+    scm: url
+    url: https://www.libarchive.de/downloads/libarchive-${PKG_VERSION}.tar.xz
+    digestSHA256: 0bfc3fd40491768a88af8d9b86bf04a9e95b6d41a94f9292dbc0ec342288c05f
+    stripComponents: 1
+
+buildScript: |
+    autotoolsBuild "$1" \
+        --disable-bsdtar \
+        --disable-bsdcpio \
+        --disable-bsdcat \
+        --disable-acl \
+        --disable-xattr \
+        --without-bz2lib \
+        --without-expat \
+        --without-libiconv-prefix \
+        --without-xml2 \
+        --without-lz4 \
+        --without-lzo2 \
+        --without-mbedtls \
+        --without-nettle \
+        --without-openssl \
+        --without-zlib \
+        --without-lzma \
+        --without-zstd
+
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
+    tgt:
+        packageScript: autotoolsPackageTgt
