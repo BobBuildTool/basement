@@ -94,6 +94,7 @@ provideVars:
     STRIP: "strip"
 
     # Some meta variables do not change: ARCH, AUTOCONF_BUILD, AUTOCONF_HOST
+    ARCH: "${ARCH}"
     AUTOCONF_BUILD: "${AUTOCONF_HOST}"
     AUTOCONF_HOST:  "${AUTOCONF_HOST}"
     CROSS_COMPILE: ""
