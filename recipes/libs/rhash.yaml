@@ -1,0 +1,32 @@
+inherit: [make, install]
+
+metaEnvironment:
+    PKG_VERSION: "1.3.5"
+
+checkoutSCM:
+    scm: url
+    url: https://sourceforge.net/projects/rhash/files/rhash/${PKG_VERSION}/rhash-${PKG_VERSION}-src.tar.gz
+    digestSHA256: 98e0688acae29e68c298ffbcdbb0f838864105f9b2bd8857980664435b1f1f2e
+    extract: false
+
+buildTools: [target-toolchain]
+buildVars: [PKG_VERSION, CC, CFLAGS]
+buildScript: |
+    # build everything static on host builds
+    if [[ "${AUTOCONF_BUILD:-unknown}" == "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
+        TARGET=install-lib-static
+    else
+        TARGET=install-lib-shared install-so-link
+    fi
+
+    mkdir -p build install
+    pushd build
+    tar -xf "$1/rhash-${PKG_VERSION}-src.tar.gz" --strip-components=1
+    make PREFIX="/usr" DESTDIR="$PWD/../install" $TARGET
+    popd
+
+multiPackage:
+    dev:
+        packageScript: installPackageDev "$1/install/"
+    tgt:
+        packageScript: installPackageTgt "$1/install/"
