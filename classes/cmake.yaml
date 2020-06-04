@@ -1,0 +1,130 @@
+inherit: [make, install, pkg-config]
+
+buildTools: [cmake, target-toolchain]
+buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS, CC, CXX]
+buildScript: |
+    CMAKE_FIND_ROOT_PATH=
+
+    # Gather all include and library paths.
+    for i in "${@:2}" ; do
+        CMAKE_FIND_ROOT_PATH+="${CMAKE_FIND_ROOT_PATH:+;}$i"
+        if [[ -d "$i/usr/include" ]] ; then
+            CPPFLAGS+=" -I$i/usr/include"
+        fi
+        for j in lib usr/lib ; do
+            if [[ -d "$i/$j" ]] ; then
+                LDFLAGS+=" -L$i/$j"
+                if compgen -G "$i/$j/*.so" >/dev/null ; then
+                    LDFLAGS+=" -Wl,-rpath-link=$i/$j"
+                fi
+            fi
+        done
+    done
+
+    # CMake does not honor CPPFLAGS! Merge them with C(XX)FLAGS.
+    if [ "${CPPFLAGS:+true}" ] ; then
+        CFLAGS+=" ${CPPFLAGS}"
+        CXXFLAGS+=" ${CPPFLAGS}"
+    fi
+    [ -z "${CFLAGS:+true}" ] || export CFLAGS
+    [ -z "${CXXFLAGS:+true}" ] || export CXXFLAGS
+    [ -z "${LDFLAGS:+true}" ] || export LDFLAGS
+
+    # $1 : source path
+    cmakeBuild()
+    {
+        local MAKE_TARGET=
+        local MAKE_OPTIONS=( )
+        local INSTALL_TAGET=install
+        local INSTALL_OPTIONS=( )
+        local CMAKE_TOOLCHAIN_FILE=
+        local BUILD_SHARED_LIBS=OFF
+
+        # parse arguments
+        OPTIND=1
+        local opt
+        while getopts "i:m:o:O:s" opt ; do
+            case "$opt" in
+                i)
+                    INSTALL_TAGET="$OPTARG"
+                    ;;
+                m)
+                    MAKE_TARGET="$OPTARG"
+                    ;;
+                o)
+                    MAKE_OPTIONS+=( "$OPTARG" )
+                    ;;
+                O)
+                    INSTALL_OPTIONS+=( "$OPTARG" )
+                    ;;
+                \?)
+                  echo "Invalid option: -$OPTARG" >&2
+                  exit 1
+                  ;;
+            esac
+        done
+        shift $(( OPTIND -1 ))
+
+        mkdir -p build install
+        pushd build
+        # Create a toolchain file if cross-compiling
+        if [[ "${AUTOCONF_BUILD:-unknown}" != "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
+            local CMAKE_SYSTEM_NAME=
+            case "$AUTOCONF_HOST" in
+                *-linux-*)
+                    CMAKE_SYSTEM_NAME=Linux
+                    ;;
+                *)
+                    CMAKE_SYSTEM_NAME=Generic
+                    ;;
+            esac
+            cat >toolchain.cmake <<EOF
+    set(CMAKE_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
+    set(CMAKE_C_COMPILER ${CC})
+    set(CMAKE_CXX_COMPILER ${CXX})
+    set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+    EOF
+            CMAKE_TOOLCHAIN_FILE=toolchain.cmake
+            BUILD_SHARED_LIBS=ON
+        fi
+        cmake "$1" \
+            ${CMAKE_TOOLCHAIN_FILE:+-DCMAKE_TOOLCHAIN_FILE=$CMAKE_TOOLCHAIN_FILE} \
+            -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH" \
+            -DCMAKE_BUILD_TYPE=Bob \
+            -DCMAKE_INSTALL_PREFIX="/usr" \
+            -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
+            "${@:2}"
+        makeParallel $MAKE_TARGET ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"}
+        if [[ -n "$INSTALL_TAGET" ]] ; then
+            make $INSTALL_TAGET \
+                DESTDIR=${PWD}/../install \
+                ${INSTALL_OPTIONS:+"${INSTALL_OPTIONS[@]}"}
+        fi
+        popd
+    }
+
+packageScript: |
+    _CMAKE_BUILD_PATH=$1
+
+    cmakePackageBin()
+    {
+        installPackageBin "${1:-${_CMAKE_BUILD_PATH}}/install/" "${@:2}"
+    }
+
+    cmakePackageDev()
+    {
+        installPackageDev "${1:-${_CMAKE_BUILD_PATH}}/install/" "${@:2}"
+    }
+
+    cmakePackageLib()
+    {
+        installPackageLib "${1:-${_CMAKE_BUILD_PATH}}/install/" "${@:2}"
+    }
+
+    cmakePackageTgt()
+    {
+        installPackageTgt "${1:-${_CMAKE_BUILD_PATH}}/install/" "${@:2}"
+    }
