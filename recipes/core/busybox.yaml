@@ -1,12 +1,12 @@
 inherit: [make]
 
 metaEnvironment:
-    PKG_VERSION: "1.24.1"
+    PKG_VERSION: "1.31.1"
 
 checkoutSCM:
     scm: url
     url: https://busybox.net/downloads/busybox-${PKG_VERSION}.tar.bz2
-    digestSHA1: "157d14d24748b4505b1a418535688706a2b81680"
+    digestSHA1: "d5514f5cf8eb89a3b20ac3b965f4463f14a5709a"
     stripComponents: 1
 
 buildTools: [host-toolchain, target-toolchain]
