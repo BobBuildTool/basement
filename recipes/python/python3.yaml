@@ -32,6 +32,7 @@ multiPackage:
            - libs::ncurses-dev
            - libs::openssl-dev
            - libs::zlib-dev
+           - python::python3-setuptools
 
            - use: []
              depends:
@@ -60,6 +61,8 @@ multiPackage:
                 --disable-nis \
                 --disable-idle3 \
                 --disable-pyc-build
+
+            rsync -a "${BOB_DEP_PATHS[python::python3-setuptools]}/" install/
 
         packageScript: |
             autotoolsPackageTgt
