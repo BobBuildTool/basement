@@ -28,6 +28,7 @@ buildScript: |
        --enable-threaded-resolver \
        --with-ssl \
        --with-ca-path=/etc/ssl/certs
+    echo "Requires: openssl" >> install/usr/lib/pkgconfig/libcurl.pc
 
 multiPackage:
     dev:
