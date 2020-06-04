@@ -1,0 +1,12 @@
+diff -Nurp a/Modules/FindCURL.cmake b/Modules/FindCURL.cmake
+--- a/Modules/FindCURL.cmake	2020-05-28 12:57:26.000000000 +0200
++++ b/Modules/FindCURL.cmake	2020-06-03 22:39:01.907160741 +0200
+@@ -172,7 +172,7 @@ find_package_handle_standard_args(CURL
+                                   HANDLE_COMPONENTS)
+ 
+ if(CURL_FOUND)
+-  set(CURL_LIBRARIES ${CURL_LIBRARY})
++  set(CURL_LIBRARIES ${CURL_LIBRARY} ${PC_CURL_LIBRARIES})
+   set(CURL_INCLUDE_DIRS ${CURL_INCLUDE_DIR})
+ 
+   if(NOT TARGET CURL::libcurl)
