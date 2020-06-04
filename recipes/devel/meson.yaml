@@ -1,0 +1,37 @@
+metaEnvironment:
+    PKG_VERSION: "0.54.2"
+
+checkoutSCM:
+    scm: url
+    url: https://github.com/mesonbuild/meson/archive/${PKG_VERSION}.tar.gz
+    digestSHA256: 85cafdc70ae7d1d9d506e7356b917c649c4df2077bd6a0382db37648aa4ecbdb
+    extract: false
+
+# TODO: fingerprint Python version? The result will have .pyc files that depend
+# on the python version. OTOH python is smart enough to ignore them if they
+# don't match and compile the .py files on the fly. It will just be a bit
+# slower in this case.
+
+buildVars: [PKG_VERSION]
+buildScript: |
+    mkdir -p build install
+    pushd build
+    tar -xf "$1/${PKG_VERSION}.tar.gz" --strip-components=1
+    python3 setup.py install \
+        --root "$PWD/../install" \
+        --prefix /usr \
+        --install-lib /usr/lib/python3
+    popd
+
+    # Make the executable relocatable
+    pushd install
+    sed -i -e '2i import os\
+    import sys\
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lib", "python3"))' \
+        usr/bin/meson
+    popd
+
+packageScript: |
+    rsync -a "$1/install/" .
+provideTools:
+    meson: usr/bin
