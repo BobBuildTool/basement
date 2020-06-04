@@ -25,7 +25,6 @@ checkoutScript: |
 
 buildScript: |
     autotoolsBuild $1 \
-       --disable-static \
        --enable-threaded-resolver \
        --with-ssl \
        --with-ca-path=/etc/ssl/certs
