@@ -24,6 +24,15 @@ depends:
     - name: devel::bison
       use: [tools]
       forward: True
+    - name: devel::cmake-bootstrap  # CMake is self-hosted and has a circular
+      use: [tools]                  # dependency to itself in proper builds.
+      forward: True
+    - name: devel::ninja
+      use: [tools]
+      forward: True
+    - name: devel::meson
+      use: [tools]
+      forward: True
     - name: utils::cpio
       use: [tools]
       forward: True
@@ -32,6 +41,9 @@ depends:
       forward: True
     - name: devel::pkg-config
       use: [tools]
+      forward: True
+    - name: devel::cmake            # Overwrite "cmake" tool with properly
+      use: [tools]                  # built one.
       forward: True
     - name: devel::squashfs-tools
       use: [tools]
