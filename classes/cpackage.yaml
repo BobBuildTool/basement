@@ -1,0 +1,27 @@
+# Common class C/C++ based packages. It updates the various compiler flags
+# variables so that the dependencies are found by the toolchains. Pulls in
+# pkg-config too for the same reason.
+
+inherit: [pkg-config]
+
+buildTools: [target-toolchain]
+buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS]
+buildScript: |
+    # Gather all include and library paths.
+    for i in "${@:2}" ; do
+        if [[ -d "$i/usr/include" ]] ; then
+            CPPFLAGS+=" -I$i/usr/include"
+        fi
+        for j in lib usr/lib ; do
+            if [[ -d "$i/$j" ]] ; then
+                LDFLAGS+=" -L$i/$j"
+                if compgen -G "$i/$j/*.so" >/dev/null ; then
+                    LDFLAGS+=" -Wl,-rpath-link=$i/$j"
+                fi
+            fi
+        done
+    done
+
+    [ -z "${CPPFLAGS:+true}" ] || export CPPFLAGS
+    [ -z "${LDFLAGS:+true}" ] || export LDFLAGS
+

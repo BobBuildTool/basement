@@ -1,8 +1,7 @@
-inherit: [install, pkg-config]
+inherit: [cpackage, install]
 
-buildTools: [target-toolchain, meson, ninja]
-buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS,
-    CC, CXX, AR, STRIP]
+buildTools: [meson, ninja]
+buildVars: [CC, CXX, AR, STRIP]
 buildScript: |
     # Set a generic utf-8 locale. Introduced by Debian and seems to work on
     # Fedora too. If not set meson will barf on the first non 7-bit ASCII
@@ -12,24 +11,13 @@ buildScript: |
     function meson_join_space { local IFS=" "; echo "$*"; }
     function meson_join_list { echo -n "'$1" ; shift ; printf "%s" "${@/#/\', \'}"; echo "'" ; }
 
-    # Parse flags into clean arrays
-    declare -a MESON_CFLAGS=( ${CFLAGS:-} ) # explicitly not quoted to split CFLAGS
-    declare -a MESON_CXXFLAGS=( ${CXXFLAGS:-} ) # ditto
-    declare -a MESON_LDFLAGS=( ${LDFLAGS:-} ) # guess what...
-
-    # Gather all include and library paths.
-    for i in "${@:2}" ; do
-        if [[ -d "$i/usr/include" ]] ; then
-            MESON_CFLAGS+=("-I$i/usr/include")
-            MESON_CXXFLAGS+=("-I$i/usr/include")
-        fi
-        if [[ -d "$i/lib" ]] ; then
-            MESON_LDFLAGS+=("-L$i/lib" "-Wl,-rpath-link=$i/lib")
-        fi
-        if [[ -d "$i/usr/lib" ]] ; then
-            MESON_LDFLAGS+=("-L$i/usr/lib" "-Wl,-rpath-link=$i/usr/lib")
-        fi
-    done
+    # Parse flags into clean arrays. Meson does not honor CPPFLAGS so merge
+    # then with C(XX)FLAGS. The variables are explicitly not quoted to split
+    # them into array elements.
+    declare -a MESON_CFLAGS=( ${CPPFLAGS:-} ${CFLAGS:-} )
+    declare -a MESON_CXXFLAGS=( ${CPPFLAGS:-} ${CXXFLAGS:-} )
+    declare -a MESON_LDFLAGS=( ${LDFLAGS:-} )
+    unset CPPFLAGS
 
     # For native build we pass CFLAGS, otherwise we have to pass them in
     # cross_file.txt
