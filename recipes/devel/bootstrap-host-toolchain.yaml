@@ -10,30 +10,8 @@ provideTools:
         fingerprintScript: |
             bob-libc-version gcc
             bob-libstdc++-version g++
-
-provideVars:
-    # usual compiler variables
-    AR: "ar"
-    AS: "as"
-    CC: "gcc"
-    CPP: "cpp"
-    CXX: "g++"
-    GDB: "gdb"
-    LD: "ld"
-    NM: "nm"
-    OBJCOPY: "objcopy"
-    OBJDUMP: "objdump"
-    RANLIB: "ranlib"
-    STRIP: "strip"
-    ARCH: "$(host-arch)"
-
-    # host/build environment
-    CROSS_COMPILE: ""
-    TOOLCHAIN_SYSROOT: ""
-
-    # compiler flags
-    CPPFLAGS:   "-Wdate-time"
-    CFLAGS:     "-Os -pipe"
-    CXXFLAGS:   "-Os -pipe"
-    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
-
+        environment:
+            CPPFLAGS:   "-Wdate-time"
+            CFLAGS:     "-Os -pipe"
+            CXXFLAGS:   "-Os -pipe"
+            LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"

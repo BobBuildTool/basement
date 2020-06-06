@@ -87,31 +87,15 @@ provideTools:
         # make sure host can run created binaries
         fingerprintIf: True
         fingerprintScript: *check-host
+        environment:
+            CPPFLAGS:   "-Wdate-time"
+            CFLAGS:     "-Os -pipe"
+            CXXFLAGS:   "-Os -pipe"
+            LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
 
 provideVars:
-    # usual compiler variables
-    AR: "ar"
-    AS: "as"
-    CC: "gcc"
-    CPP: "cpp"
-    CXX: "g++"
-    GDB: "gdb"
-    LD: "ld"
-    NM: "nm"
-    OBJCOPY: "objcopy"
-    OBJDUMP: "objdump"
-    RANLIB: "ranlib"
-    STRIP: "strip"
-
-    # Some meta variables do not change: ARCH, AUTOCONF_BUILD, AUTOCONF_HOST
-    ARCH: "${ARCH}"
+    # Define our build and host systems because we define the host- and
+    # target-toolchain.
+    ARCH:           "${ARCH}"
     AUTOCONF_BUILD: "${AUTOCONF_HOST}"
     AUTOCONF_HOST:  "${AUTOCONF_HOST}"
-    CROSS_COMPILE: ""
-    TOOLCHAIN_SYSROOT: ""
-
-    # compiler flags
-    CPPFLAGS:   "-Wdate-time"
-    CFLAGS:     "-Os -pipe"
-    CXXFLAGS:   "-Os -pipe"
-    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"

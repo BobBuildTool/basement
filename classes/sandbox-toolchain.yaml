@@ -55,30 +55,15 @@ provideTools:
             export PATH="$PATH:/toolchain/bin"
             bob-libc-version gcc
             bob-libstdc++-version g++
+        environment:
+            CPPFLAGS:   "-Wdate-time"
+            CFLAGS:     "-Os -pipe"
+            CXXFLAGS:   "-Os -pipe"
+            LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
 
 provideVars:
-    # usual compiler variables
-    AR: "ar"
-    AS: "as"
-    CC: "gcc"
-    CPP: "cpp"
-    CXX: "g++"
-    GDB: "gdb"
-    LD: "ld"
-    NM: "nm"
-    OBJCOPY: "objcopy"
-    OBJDUMP: "objdump"
-    RANLIB: "ranlib"
-    STRIP: "strip"
-
-    # Some meta variables do not change: ARCH, AUTOCONF_BUILD, AUTOCONF_HOST
+    # Define our own build- and host-architecture. They are distinct from the
+    # host environment so that the "right thing"(tm) is done even though the
+    # architecture is the same.
     AUTOCONF_BUILD: "${SANDBOX_AUTOCONF_BUILD}"
     AUTOCONF_HOST:  "${SANDBOX_AUTOCONF_HOST}"
-    CROSS_COMPILE: ""
-    TOOLCHAIN_SYSROOT: ""
-
-    # compiler flags
-    CPPFLAGS:   "-Wdate-time"
-    CFLAGS:     "-Os -pipe"
-    CXXFLAGS:   "-Os -pipe"
-    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"

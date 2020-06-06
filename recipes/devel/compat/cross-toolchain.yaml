@@ -15,32 +15,32 @@ buildScript: |
 packageScript: |
     cp -a $1/* .
 
-provideVars:
-    # usual compiler variables
-    AR: "${AUTOCONF_TARGET}-ar"
-    AS: "${AUTOCONF_TARGET}-as"
-    CC: "${AUTOCONF_TARGET}-gcc"
-    CPP: "${AUTOCONF_TARGET}-cpp"
-    CXX: "${AUTOCONF_TARGET}-g++"
-    GDB: "${AUTOCONF_TARGET}-gdb"
-    LD: "${AUTOCONF_TARGET}-ld"
-    NM: "${AUTOCONF_TARGET}-nm"
-    OBJCOPY: "${AUTOCONF_TARGET}-objcopy"
-    OBJDUMP: "${AUTOCONF_TARGET}-objdump"
-    RANLIB: "${AUTOCONF_TARGET}-ranlib"
-    STRIP: "${AUTOCONF_TARGET}-strip"
-
-    # meta information
-    ARCH: "${ARCH}"
-    AUTOCONF_HOST: "${AUTOCONF_TARGET}"
-    CROSS_COMPILE: "${AUTOCONF_TARGET}-"
-    TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
-
-    # compiler flags
-    CPPFLAGS:   "-Wdate-time"
-    CFLAGS:     "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
-    CXXFLAGS:   "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
-    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
-
 provideTools:
-    target-toolchain: "usr/bin"
+    target-toolchain:
+        path: "usr/bin"
+        environment:
+            # usual compiler variables
+            AR: "${AUTOCONF_TARGET}-ar"
+            AS: "${AUTOCONF_TARGET}-as"
+            CC: "${AUTOCONF_TARGET}-gcc"
+            CPP: "${AUTOCONF_TARGET}-cpp"
+            CXX: "${AUTOCONF_TARGET}-g++"
+            GDB: "${AUTOCONF_TARGET}-gdb"
+            LD: "${AUTOCONF_TARGET}-ld"
+            NM: "${AUTOCONF_TARGET}-nm"
+            OBJCOPY: "${AUTOCONF_TARGET}-objcopy"
+            OBJDUMP: "${AUTOCONF_TARGET}-objdump"
+            RANLIB: "${AUTOCONF_TARGET}-ranlib"
+            STRIP: "${AUTOCONF_TARGET}-strip"
+
+            # meta information
+            ARCH: "${ARCH}"
+            AUTOCONF_HOST: "${AUTOCONF_TARGET}"
+            CROSS_COMPILE: "${AUTOCONF_TARGET}-"
+            TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
+
+            # compiler flags
+            CPPFLAGS:   "-Wdate-time"
+            CFLAGS:     "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
+            CXXFLAGS:   "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
+            LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"

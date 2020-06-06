@@ -1,12 +1,35 @@
 environment:
     GNU_MIRROR: "http://ftp.gnu.org/pub/gnu"
 
-    AUTOCONF_BUILD:  "$(host-autoconf)"
-    AUTOCONF_HOST:   "$(host-autoconf)"
-
     # default compile flags
     BASEMENT_OPTIMIZE: "s" # compiler optimization level (0/1/2/s)
     BASEMENT_DEBUG: "1"    # generate debug symbols (0/1)
+
+    ##########################################################################
+    # The following variables describe the currently active toolchain and
+    # should not be overridden by the user.
+    ##########################################################################
+
+    # The default build (i.e. the system that the build runs on) and host
+    # system (i.e. the system where the produced executables run on)
+    # definition.
+    ARCH:           "$(host-arch)"
+    AUTOCONF_BUILD: "$(host-autoconf)"
+    AUTOCONF_HOST:  "$(host-autoconf)"
+
+    # Default tool names.
+    AR: "ar"
+    AS: "as"
+    CC: "gcc"
+    CPP: "cpp"
+    CXX: "g++"
+    GDB: "gdb"
+    LD: "ld"
+    NM: "nm"
+    OBJCOPY: "objcopy"
+    OBJDUMP: "objdump"
+    RANLIB: "ranlib"
+    STRIP: "strip"
 
 archive:
     backend: http
