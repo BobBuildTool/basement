@@ -1,4 +1,4 @@
-bobMinimumVersion: "0.16.0rc1"
+bobMinimumVersion: "0.17.1.dev7" # need tool remapping support
 
 plugins:
     - multiarch

@@ -1,12 +1,12 @@
 inherit: [make]
 
 metaEnvironment:
-    PKG_VERSION: "5.3.9"
+    PKG_VERSION: "5.6.16"
 
 checkoutSCM:
     scm: url
     url: https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${PKG_VERSION}.tar.xz
-    digestSHA1: "4e733c7be714d7c17a11e1cdcc831dd2a072018c"
+    digestSHA1: "12249e626d804587f13c976a26000743f0876d56"
     stripComponents: 1
 
 buildTools: [bison, flex, host-toolchain]
@@ -43,9 +43,15 @@ buildScript: |
 
 multiPackage:
     "":
+        depends:
+            - name: libs::openssl-dev
+              tools:
+                target-toolchain: host-toolchain
         buildTools: [target-toolchain]
         buildVars: [CROSS_COMPILE, LINUX_CONFIG]
         buildScript: |
+            export HOSTCFLAGS="-I${BOB_DEP_PATHS[libs::openssl-dev]}/usr/include"
+            export HOSTLDFLAGS="-L${BOB_DEP_PATHS[libs::openssl-dev]}/usr/lib"
             makeParallel bzImage modules dtbs
 
         multiPackage:
