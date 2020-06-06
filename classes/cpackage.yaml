@@ -7,6 +7,16 @@ inherit: [pkg-config]
 buildTools: [target-toolchain]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS]
 buildScript: |
+    # We build everything static on host builds. Some packages (e.g.
+    # python3-minimal) still build shared libraries. Make sure we compile
+    # position independent code for this case.
+    if [[ "${AUTOCONF_BUILD:-unknown}" == "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
+        CFLAGS+=" -fPIC"
+        CXXFLAGS+=" -fPIC"
+        export CFLAGS
+        export CXXFLAGS
+    fi
+
     # Gather all include and library paths.
     for i in "${@:2}" ; do
         if [[ -d "$i/usr/include" ]] ; then
