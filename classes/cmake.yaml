@@ -38,7 +38,7 @@ buildScript: |
     set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
     set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
     EOF
-        CMAKE_TOOLCHAIN_FILE=toolchain.cmake
+        CMAKE_TOOLCHAIN_FILE="$PWD/toolchain.cmake"
         BUILD_SHARED_LIBS=ON
     else
         BUILD_SHARED_LIBS=OFF
@@ -51,7 +51,6 @@ buildScript: |
         local MAKE_OPTIONS=( )
         local INSTALL_TAGET=install
         local INSTALL_OPTIONS=( )
-        local CMAKE_TOOLCHAIN_FILE=
 
         # parse arguments
         OPTIND=1
@@ -81,7 +80,7 @@ buildScript: |
         mkdir -p build install
         pushd build
         cmake "$1" \
-            ${CMAKE_TOOLCHAIN_FILE:+-DCMAKE_TOOLCHAIN_FILE=$CMAKE_TOOLCHAIN_FILE} \
+            ${CMAKE_TOOLCHAIN_FILE:+-DCMAKE_TOOLCHAIN_FILE="$CMAKE_TOOLCHAIN_FILE"} \
             -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH" \
             -DCMAKE_BUILD_TYPE=Bob \
             -DCMAKE_INSTALL_PREFIX="/usr" \
