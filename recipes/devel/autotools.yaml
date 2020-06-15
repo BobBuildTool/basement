@@ -1,0 +1,19 @@
+# Create a relocatable package of autoconf, automake and friends. This can be
+# used as "autotools" tool in the recipes so that a consistent behaviour of
+# autoreconf and friends is possible independent of the host/sandbox.
+
+depends:
+    - devel::autoconf
+    - devel::automake
+    - devel::libtool
+    - devel::pkg-config-aclocal
+
+buildScript: |
+    for i in "${@:2}" ; do
+        cp -a "$i"/* .
+    done
+
+packageScript: |
+    cp -a $1/* .
+provideTools:
+    autotools: usr/bin
