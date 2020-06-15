@@ -1,4 +1,4 @@
-inherit: [autotools]
+inherit: [autotools, autoconf]
 
 metaEnvironment:
     PKG_VERSION: "1.38.0"
@@ -9,10 +9,8 @@ checkoutSCM:
     digestSHA256: 2cd9a757fe6c512440933e2bdcab21143d4aa6249b2541399908ce038b756c9d
     stripComponents: 1
 
-buildScript: |
-    mkdir -p src
-    rsync -aH --delete $1/ src/
-    pushd src
+checkoutDeterministic: True
+checkoutScript: |
     # Upstream needs tests to be run sequentially. This is the default in
     # automake 1.11 and before, but not starting in 1.12. To maintain
     # sequentiality in 1.12 and later, the automake option 'serial-tests'
@@ -21,9 +19,10 @@ buildScript: |
     # 1.14, so we need it.
     echo "m4_define([UV_EXTRA_AUTOMAKE_FLAGS], [serial-tests])" \
         >m4/libuv-extra-automake-flags.m4
-    autoreconf -vfi
-    popd
-    autotoolsBuild "$PWD/src"
+    autoconfReconfigure
+
+buildScript: |
+    autotoolsBuild "$1"
 
 multiPackage:
     dev:
