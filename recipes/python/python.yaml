@@ -1,4 +1,4 @@
-inherit: [autotools, make, patch]
+inherit: [autotools, autoconf, make, patch]
 
 metaEnvironment:
     PKG_VERSION: "2.7.17"
@@ -15,13 +15,11 @@ checkoutSCM:
 checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<<python/*>>
+    autoconfReconfigure
 
 buildScript: |
     mkdir -p src
     rsync -aH --delete $1/ src/
-    pushd src
-    autoreconf -vfi
-    popd
 
 multiPackage:
     "":

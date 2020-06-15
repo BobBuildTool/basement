@@ -1,4 +1,4 @@
-inherit: [autotools, make, patch]
+inherit: [autotools, autoconf, make, patch]
 
 metaEnvironment:
     PKG_VERSION: "3.8.0"
@@ -15,13 +15,14 @@ checkoutSCM:
 checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<<python3/*>>
+    autoconfReconfigure
 
+# We cannot use out-of-tree builds directly from the source workspace because
+# the build somehow manages to create .pyc files in the sources. Setting
+# PYTHONDONTWRITEBYTECODE does not suffice.
 buildScript: |
     mkdir -p src
     rsync -aH --delete $1/ src/
-    pushd src
-    autoreconf -vfi
-    popd
 
 multiPackage:
     "":
@@ -93,7 +94,8 @@ multiPackage:
                 --enable-unicodedata \
                 --disable-test-modules \
                 --disable-idle3 \
-                --disable-ossaudiodev
+                --disable-ossaudiodev \
+                --disable-pyc-build
         packageScript: |
             autotoolsPackageTgt
 
