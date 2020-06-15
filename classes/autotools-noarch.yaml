@@ -1,0 +1,78 @@
+# Dedicated autotools class for packages that only use scripting languages.
+# This class will never cross-compile because it does not depend on the
+# target toolchain at all.
+inherit: [make, install]
+
+buildScript: |
+    # $1 : source path
+    autotoolsNoarchBuild()
+    {
+        local MAKE_TARGET=
+        local MAKE_OPTIONS=( )
+        local INSTALL_TAGET=install
+        local INSTALL_OPTIONS=( )
+
+        # parse arguments
+        OPTIND=1
+        local opt
+        while getopts "i:m:o:O:s" opt ; do
+            case "$opt" in
+                i)
+                    INSTALL_TAGET="$OPTARG"
+                    ;;
+                m)
+                    MAKE_TARGET="$OPTARG"
+                    ;;
+                o)
+                    MAKE_OPTIONS+=( "$OPTARG" )
+                    ;;
+                O)
+                    INSTALL_OPTIONS+=( "$OPTARG" )
+                    ;;
+                \?)
+                  echo "Invalid option: -$OPTARG" >&2
+                  exit 1
+                  ;;
+            esac
+        done
+        shift $(( OPTIND -1 ))
+
+        mkdir -p build install
+        pushd build
+        if [[ $1/configure -nt .configure.stamp ]] ; then
+            $1/configure \
+                --prefix="/usr" \
+                --sysconfdir="/etc" \
+                --localstatedir="/var" \
+                --libdir=/usr/lib \
+                "${@:2}"
+            touch .configure.stamp
+        fi
+        makeParallel $MAKE_TARGET ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"}
+        make $INSTALL_TAGET DESTDIR=${PWD}/../install ${INSTALL_OPTIONS:+"${INSTALL_OPTIONS[@]}"}
+        popd
+    }
+
+packageScript: |
+    _AUTOTOOLS_NOARCH_BUILD_PATH=$1
+
+    autotoolsNoarchPackageBin()
+    {
+        installPackageBin "${1:-${_AUTOTOOLS_NOARCH_BUILD_PATH}}/install/" "${@:2}"
+    }
+
+    autotoolsNoarchPackageDev()
+    {
+        installPackageDev "${1:-${_AUTOTOOLS_NOARCH_BUILD_PATH}}/install/" "${@:2}"
+    }
+
+    autotoolsNoarchPackageLib()
+    {
+        installPackageLib "${1:-${_AUTOTOOLS_NOARCH_BUILD_PATH}}/install/" "${@:2}"
+    }
+
+    autotoolsNoarchPackageTgt()
+    {
+        installPackageTgt "${1:-${_AUTOTOOLS_NOARCH_BUILD_PATH}}/install/" "${@:2}"
+    }
+
