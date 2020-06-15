@@ -49,14 +49,11 @@ depends:
 
     - core::coreutils
     - core::util-linux
-    - devel::autoconf
-    - devel::automake
     - devel::diffutils
     - devel::fakeroot
     - devel::git
     - devel::gperf
     # - devel::intltool #-> "configure: error: XML::Parser perl module is required for intltool"
-    - devel::libtool
     - devel::m4
     - devel::make
     - devel::makedepend
