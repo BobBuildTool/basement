@@ -1,7 +1,10 @@
-inherit: [autotools]
+inherit: [autotools-noarch, patch]
 
 metaEnvironment:
     PKG_VERSION: "1.15.1"
+
+depends:
+    - devel::autoconf
 
 checkoutSCM:
     scm: url
@@ -9,8 +12,13 @@ checkoutSCM:
     digestSHA1: "45632d466c16ecf18d9c18dc4be883cde59acb59"
     stripComponents: 1
 
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<<automake/*.patch>>
+
 buildScript: |
-    autotoolsBuild $1
+    export PATH="${BOB_DEP_PATHS[devel::autoconf]}/usr/bin:$PATH"
+    autotoolsNoarchBuild $1
 
 packageScript: |
-    autotoolsPackageTgt
+    autotoolsNoarchPackageTgt
