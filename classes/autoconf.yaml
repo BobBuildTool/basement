@@ -1,0 +1,15 @@
+# For packages that patch configure.ac or the like. Call autoconfReconfigure
+# after the patches were applied. This class will *not* detect all changes that
+# may require another autoreconf invocation. That's up to the user.
+checkoutDeterministic: True
+checkoutTools: [autotools]
+checkoutScript: |
+    autoconfReconfigure()
+    {
+        if [[ ( ! -e configure ) || ( ! -e .autoreconf.stamp ) ||
+              ( configure.ac -nt .autoreconf.stamp ) ]] ; then
+            autoreconf -vfi
+            rm -rf autom4te.cache *.h.in~
+            touch .autoreconf.stamp
+        fi
+    }
