@@ -1,14 +1,10 @@
-inherit: [autotools, patch]
+# Eagerly inherit libtool beause it defines a checkoutScript and will be
+# inherited by the autotools class anyway. This prevents a separate checkout
+# for the aclocal multiPackage which does not depend on the autotools class.
+inherit: [libtool]
 
 metaEnvironment:
     PKG_VERSION: "0.29.1"
-
-depends:
-    - libs::glib-dev
-
-    - use: []
-      depends:
-        - libs::glib-tgt
 
 checkoutSCM:
     scm: url
@@ -16,18 +12,40 @@ checkoutSCM:
     digestSHA1: "271ce928f6d673cc16cbced2bfd14a5f2e5d3d37"
     stripComponents: 1
 
-buildScript: |
-    export GLIB_CFLAGS="-I${BOB_DEP_PATHS[libs::glib-dev]}/usr/include/glib-2.0"
-           GLIB_CFLAGS+=" -I${BOB_DEP_PATHS[libs::glib-dev]}/usr/lib/glib-2.0/include"
-    export GLIB_LIBS="-lglib-2.0 -lpthread"
-    autotoolsBuild $1 \
-       --disable-host-tool \
-       --enable-define-prefix
+multiPackage:
+    "":
+        inherit: [autotools]
 
-packageScript: |
-    autotoolsPackageTgt
+        depends:
+            - libs::glib-dev
 
-provideDeps: [ "*-tgt" ]
+            - use: []
+              depends:
+                - libs::glib-tgt
 
-provideTools:
-    pkg-config: usr/bin
+        buildScript: |
+            export GLIB_CFLAGS="-I${BOB_DEP_PATHS[libs::glib-dev]}/usr/include/glib-2.0"
+                   GLIB_CFLAGS+=" -I${BOB_DEP_PATHS[libs::glib-dev]}/usr/lib/glib-2.0/include"
+            export GLIB_LIBS="-lglib-2.0 -lpthread"
+            autotoolsBuild $1 \
+               --disable-host-tool \
+               --enable-define-prefix
+
+        packageScript: |
+            autotoolsPackageTgt
+
+        provideDeps: [ "*-tgt" ]
+
+        provideTools:
+            pkg-config: usr/bin
+
+    # Special crafted multiPackage that does not depend on the target toolchain
+    # and that provides the aclocal files for automake.
+    aclocal:
+        buildVars: [PKG_VERSION]
+        buildScript: |
+            mkdir -p usr/share/aclocal
+            sed -e "s/@VERSION@/$PKG_VERSION/" \
+                "$1/pkg.m4.in" > usr/share/aclocal/pkg.m4
+        packageScript: |
+            cp -a "$1"/* .
