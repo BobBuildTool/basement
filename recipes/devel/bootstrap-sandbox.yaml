@@ -9,6 +9,10 @@ depends:
 
     # some required host tools
     -
+        name: devel::autotools
+        use: [tools]
+        forward: True
+    -
         name: devel::pkg-config
         use: [tools]
         forward: True
