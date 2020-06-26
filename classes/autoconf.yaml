@@ -1,6 +1,12 @@
 # For packages that patch configure.ac or the like. Call autoconfReconfigure
 # after the patches were applied. This class will *not* detect all changes that
 # may require another autoreconf invocation. That's up to the user.
+
+# Prevent patching of ltmain.sh. This usually collides with autoreconf which
+# recreates ltmain.sh.
+privateEnvironment:
+    APPLY_LIBTOOL_PATCH: "no"
+
 checkoutDeterministic: True
 checkoutTools: [autotools]
 checkoutScript: |
