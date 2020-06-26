@@ -15,8 +15,22 @@ buildScript: |
             --with-shared           \
             --without-debug         \
             --without-normal        \
+            --without-cxx           \
+            --without-cxx-binding   \
+            --without-ada           \
+            --without-tests         \
+            --with-termlib          \
+            --disable-big-core      \
+            --without-profile       \
+            --disable-rpath         \
+            --disable-rpath-hack    \
+            --enable-echo           \
+            --enable-const          \
+            --enable-overwrite      \
             --enable-pc-files       \
-            --enable-widec
+            --disable-stripping     \
+            --with-pkg-config-libdir="/usr/lib/pkgconfig" \
+            --without-manpages
 
 multiPackage:
     dev:
