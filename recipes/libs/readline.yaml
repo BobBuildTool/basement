@@ -1,4 +1,4 @@
-inherit: [autotools]
+inherit: [autotools, patch]
 
 metaEnvironment:
     PKG_VERSION: "8.0"
@@ -14,6 +14,10 @@ checkoutSCM:
     url: ${GNU_MIRROR}/readline/readline-${PKG_VERSION}.tar.gz
     digestSHA1: "d58041c2143595dc001d2777ae9a200be30198b0"
     stripComponents: 1
+
+checkoutDeterministic: true
+checkoutScript: |
+    patchApplySeries $<<readline/*.patch>>
 
 buildScript: |
     export bash_cv_func_sigsetjmp=yes
