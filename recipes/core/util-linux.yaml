@@ -20,13 +20,15 @@ checkoutSCM:
     stripComponents: 1
 
 buildScript: |
-    export PKG_CONFIG=""
-    export NCURSESW6_CONFIG=${BOB_DEP_PATHS[libs::ncurses-dev]}/usr/bin/ncursesw6-config
+    export PATH="${BOB_DEP_PATHS[libs::ncurses-dev]}/usr/bin:$PATH"
     autotoolsBuild $1 \
         --without-python \
         --disable-makeinstall-chown \
         --without-systemdsystemunitdir \
         --enable-usrdir-path \
+        --disable-widechar \
+        --without-ncursesw \
+        --with-ncurses \
         bindir=/usr/bin \
         sbindir=/usr/sbin
 
