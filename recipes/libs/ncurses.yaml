@@ -38,5 +38,7 @@ multiPackage:
             autotoolsPackageDev "$1" \
                /usr /usr/bin /usr/bin "/usr/bin/ncurses*-config"
     tgt:
-        packageScript: autotoolsPackageTgt
+        packageScript: |
+            autotoolsPackageTgt
+            rm -f usr/bin/*-config
 
