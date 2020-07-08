@@ -1,5 +1,6 @@
 inherit: [cpackage, libtool, make, install]
 
+buildVars: [AUTOTOOLS_AUTO_STATIC]
 buildScript: |
     # $1 : source path
     autotoolsBuild()
@@ -8,11 +9,17 @@ buildScript: |
         local MAKE_OPTIONS=( )
         local INSTALL_TAGET=install
         local INSTALL_OPTIONS=( )
-        local SHARED_STATIC=( "--enable-shared" "--disable-static" )
+        local SHARED_STATIC=( )
 
-        # build everything static on host builds
-        if [[ "${AUTOCONF_BUILD:-unknown}" == "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
+        # Explicitly build everything static on host builds and shared on
+        # cross-builds. The package may disable this behaviour if the configure
+        # script will choke on these options.
+        if [[ "${AUTOTOOLS_AUTO_STATIC:-yes}" == no ]] ; then
+            : # do nothing
+        elif [[ "${AUTOCONF_BUILD:-unknown}" == "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
             SHARED_STATIC=( "--disable-shared" "--enable-static" )
+        else
+            SHARED_STATIC=( "--enable-shared" "--disable-static" )
         fi
 
         # parse arguments
@@ -51,7 +58,7 @@ buildScript: |
                 --sysconfdir="/etc" \
                 --localstatedir="/var" \
                 --libdir=/usr/lib \
-                "${SHARED_STATIC[@]}" \
+                ${SHARED_STATIC:+"${SHARED_STATIC[@]}"} \
                 "${@:2}"
             touch .configure.stamp
         fi
