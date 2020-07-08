@@ -10,7 +10,7 @@ checkoutSCM:
     stripComponents: 1
 
 buildTools: [host-toolchain, target-toolchain]
-buildVars: [ARCH, CROSS_COMPILE]
+buildVars: [ARCH, CROSS_COMPILE, CFLAGS, LDFLAGS]
 buildScript: |
     # prevent timestamps in configuration
     export KCONFIG_NOTIMESTAMP=1
