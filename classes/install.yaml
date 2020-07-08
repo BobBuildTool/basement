@@ -1,6 +1,53 @@
 inherit: [strip]
 
+# The install class provides the common methods to
+#  * copy the relevant parts for the different packages,
+#  * split off the debug symbols, and
+#  * fix pkg-config files for host builds.
+#
+# Shared libraries are only copied by this class when cross compiling.
+# Otherwise only static libraries are copied and the pkg-config files need to
+# be adapted to promote *.private dependencies to regular dependencies (We do
+# not pass --static to pkg-config.  Executables are still linked dynamically
+# because glibc cannot be linked statically).
 packageScript: |
+    # Install shared libraries only when cross compiling. On host builds only
+    # static libraries are installed.
+    if [[ "${AUTOCONF_BUILD:-unknown}" != "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
+        INSTALL_SHARED=yes
+    fi
+
+    function _installJoinSpace { local IFS=" "; echo "$*"; }
+    function _installJoinComma { echo -n "$1" ; shift ; printf "%s" "${@/#/, }"; }
+
+    _installFixPCStatic()
+    {
+        declare -a Requires=( )
+        declare -a Libs=( )
+        local K V
+
+        while IFS=: read -r K V ; do
+            case "$K" in
+                Requires|Requires.private)
+                    Requires+=( "$V" )
+                    ;;
+                Libs|Libs.private)
+                    Libs+=( "$V" )
+                    ;;
+                *)
+                    echo "$K${V:+:$V}"
+                    ;;
+            esac
+        done
+
+        if [[ ${#Requires[@]} -gt 0 ]] ; then
+            printf "Requires: %s\n" "$(_installJoinComma "${Requires[@]}")"
+        fi
+        if [[ ${#Libs[@]} -gt 0 ]] ; then
+            printf "Libs: %s\n" "$(_installJoinSpace "${Libs[@]}")"
+        fi
+    }
+
     installStripFile()
     {
         stripFile "$1"
@@ -47,23 +94,35 @@ packageScript: |
     {
         installCopy "$@" /usr/ "/usr/include/***" \
             /usr/lib/ \
-            "/usr/lib/*.a" "/usr/lib/*.so*" \
+            "/usr/lib/*.a" \
+            ${INSTALL_SHARED:+"/usr/lib/*.so*"} \
             "/usr/lib/pkgconfig/***" \
             "/usr/lib/cmake/***" \
             "!*"
 
         # fixup pkg-configure files by removing absolute lib dirs
         find -name '*.pc' -exec sed -i -e '/^Libs/s/-L\/[^ ]* //g' {} \;
+
+        # fixup pkg-config files when we do not install shared libraries
+        if [[ ! "${INSTALL_SHARED:-}" ]] ; then
+            local F
+            find -name '*.pc' | while read -r F ; do
+                _installFixPCStatic <"$F" >"${F}.tmp"
+                mv "${F}.tmp" "$F"
+            done
+        fi
     }
 
     # Only copy shared libraries.
     installPackageLib()
     {
-        installCopy "$@" /usr/ /usr/lib/ \
-            "/usr/lib/*.so.*" \
-            "/usr/lib/lib*-*.so" \
-            "!*"
-        installStripAll .
+        if [[ ${INSTALL_SHARED:-} ]] ; then
+            installCopy "$@" /usr/ /usr/lib/ \
+                "/usr/lib/*.so.*" \
+                "/usr/lib/lib*-*.so" \
+                "!*"
+            installStripAll .
+        fi
     }
 
     # Everything except shared or static libraries or header files.
