@@ -3,6 +3,9 @@ inherit: [autotools]
 metaEnvironment:
     PKG_VERSION: "22"
 
+privateEnvironment:
+    AUTOTOOLS_AUTO_STATIC: "no"
+
 checkoutSCM:
     scm: url
     url: https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-${PKG_VERSION}.tar.gz
