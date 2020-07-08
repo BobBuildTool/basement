@@ -24,3 +24,6 @@ packageScript: |
         ln -s ../bin/kmod usr/sbin/$i
     done
     ln -s kmod usr/lsmod
+
+provideTools:
+    kmod: usr/sbin
