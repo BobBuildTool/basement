@@ -30,13 +30,20 @@ buildScript: |
     # in arch/$(KERNEL_ARCH). Even if the kernel creates symbolic links
     # for bzImage, arch/i386 and arch/x86_64 do not exist when copying the
     # defconfig file.
-    if [[ $ARCH = i386 ]] ; then
-        LINUX_ARCH_PATH=arch/x86
-    elif [[ $ARCH = x86_64 ]] ; then
-        LINUX_ARCH_PATH=arch/x86
-    else
-        LINUX_ARCH_PATH=arch/${ARCH}
-    fi
+    case "$ARCH" in
+        i386|x86_64)
+            LINUX_ARCH_PATH=arch/x86
+            ;;
+        sh|sh64)
+            LINUX_ARCH_PATH=arch/sh
+            ;;
+        sparc32|sparc64)
+            LINUX_ARCH_PATH=arch/sparc
+            ;;
+        *)
+            LINUX_ARCH_PATH=arch/${ARCH}
+            ;;
+    esac
     echo "$LINUX_ARCH_PATH" > .arch-path
 
     # Use plain "defconfig" if we have no specific target. Otherwise check if
@@ -56,29 +63,46 @@ buildScript: |
 
 multiPackage:
     "":
+        inherit: [pkg-config]
         depends:
-            - name: libs::openssl-dev
-              tools:
+            - tools:
                 target-toolchain: host-toolchain
+              depends:
+                - libs::elfutils-libelf-dev
+                - libs::openssl-dev
+                - name: kernel::kmod
+                  use: [tools]
+
         buildTools: [target-toolchain]
         buildVars: [CROSS_COMPILE]
         buildScript: |
-            export HOSTCFLAGS="-I${BOB_DEP_PATHS[libs::openssl-dev]}/usr/include"
-            export HOSTLDFLAGS="-L${BOB_DEP_PATHS[libs::openssl-dev]}/usr/lib"
-            makeParallel bzImage modules dtbs
+            makeParallel
 
         multiPackage:
             image:
                 packageScript: |
                     read LINUX_ARCH_PATH < $1/.arch-path
-                    mkdir -p boot/overlays
-                    cp -a $1/$LINUX_ARCH_PATH/boot/zImage boot/
-                    cp -a $1/$LINUX_ARCH_PATH/boot/dts/*.dtb boot/
-                    #cp -a $1/$LINUX_ARCH_PATH/boot/dts/overlays/*.dtb* boot/overlays/
+                    mkdir -p boot
+
+                    case "$ARCH" in
+                        arm)            KBUILD_IMAGE=zImage ;;
+                        arm64)          KBUILD_IMAGE=Image.gz ;;
+                        riscv)          KBUILD_IMAGE=Image.gz ;;
+                        i386|x86_64)    KBUILD_IMAGE=bzImage ;;
+                        *)              KBUILD_IMAGE="*Image" ;;
+                    esac
+                    cp -a "$1/$LINUX_ARCH_PATH/boot/"${KBUILD_IMAGE} boot/
+                    if [[ -d "$1/$LINUX_ARCH_PATH/boot/dts" ]] ; then
+                        cp -a "$1/$LINUX_ARCH_PATH/boot/dts/"*.dtb boot/
+                    fi
 
             modules:
+                packageTools: [kmod]
+                packageVars: [PKG_VERSION]
                 packageScript: |
-                    make -C $1 INSTALL_MOD_PATH=$PWD modules_install
+                    make -C "$1" INSTALL_MOD_PATH="$PWD" modules_install
+                    rm lib/modules/"${PKG_VERSION}"/{build,source}
+                    depmod -b "$PWD" "$PKG_VERSION"
 
     # This package is only for other recipes that need special kernel headers
     # that are not available in the generic toolchain. Depending on this
