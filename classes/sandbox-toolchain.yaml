@@ -55,11 +55,6 @@ provideTools:
             export PATH="$PATH:/toolchain/bin"
             bob-libc-version gcc
             bob-libstdc++-version g++
-        environment:
-            CPPFLAGS:   "-Wdate-time"
-            CFLAGS:     "-Os -pipe"
-            CXXFLAGS:   "-Os -pipe"
-            LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
 
 provideVars:
     # Define our own build- and host-architecture. They are distinct from the

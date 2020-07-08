@@ -71,13 +71,6 @@ multiPackage:
         provideDeps: [ "*-tgt" ]
 
     minimal:
-        # Make sure we compile dependencies with position independent code.
-        # Usually everything is compiled statically but python links
-        # expat/libffi into shared libraries.
-        environment:
-            CFLAGS: "${CFLAGS:-} -fPIC"
-            CXXFLAGS: "${CXXFLAGS:-} -fPIC"
-
         depends:
            - libs::expat-dev
            - libs::libffi-dev

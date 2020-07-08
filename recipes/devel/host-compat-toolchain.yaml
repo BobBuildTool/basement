@@ -87,11 +87,6 @@ provideTools:
         # make sure host can run created binaries
         fingerprintIf: True
         fingerprintScript: *check-host
-        environment:
-            CPPFLAGS:   "-Wdate-time"
-            CFLAGS:     "-Os -pipe"
-            CXXFLAGS:   "-Os -pipe"
-            LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
 
 provideVars:
     # Define our build and host systems because we define the host- and
