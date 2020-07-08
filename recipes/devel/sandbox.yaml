@@ -59,7 +59,6 @@ depends:
     - devel::makedepend
     - devel::patch
     - devel::texinfo
-    - kernel::kmod
     - libs::gettext
     - net::curl-tgt
     - net::make-ca
