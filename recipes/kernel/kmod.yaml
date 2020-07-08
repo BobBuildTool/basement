@@ -15,5 +15,12 @@ checkoutSCM:
 buildScript: |
     autotoolsBuild $1
 
+# We have to create the symlinks ourself. Not sure why "make install" doesn't
+# do it
 packageScript: |
     autotoolsPackageTgt
+    mkdir -p usr/sbin
+    for i in depmod insmod lsmod modinfo modprobe rmmod ; do
+        ln -s ../bin/kmod usr/sbin/$i
+    done
+    ln -s kmod usr/lsmod
