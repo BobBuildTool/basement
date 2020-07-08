@@ -10,7 +10,7 @@ checkoutSCM:
     extract: false
 
 buildTools: [target-toolchain]
-buildVars: [PKG_VERSION, CC, CFLAGS]
+buildVars: [PKG_VERSION, CC, CFLAGS, LDFLAGS, AUTOCONF_BUILD, AUTOCONF_HOST]
 buildScript: |
     # build everything static on host builds
     if [[ "${AUTOCONF_BUILD:-unknown}" == "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
