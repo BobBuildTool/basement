@@ -1,7 +1,7 @@
 inherit: [make, patch]
 
 depends:
-    - kernel::linux-headers
+    - kernel::linux-libc-headers
     -
         name: devel::gcc-cross-bare
         use: [tools]

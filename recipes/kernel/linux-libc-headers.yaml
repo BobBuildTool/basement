@@ -1,0 +1,37 @@
+# This is a special recipe to build the linux kernel headers which are used by
+# libc and in turn the various compilers. Think twice to make any changes here.
+# It will result in the rebuild of all involved toolchains and packages. This
+# is probably not what you want unless you made changes to headers that are
+# needed by libc itself.
+#
+# If you have a custom kernel with additional driver headers your recipe should
+# instead use kernel::linux-headers directly. It's just honest to have this
+# direct kernel dependency until the driver was upstreamed.
+
+inherit: [make]
+
+metaEnvironment:
+    PKG_VERSION: "5.7"
+
+checkoutSCM:
+    scm: url
+    url: https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${PKG_VERSION}.tar.xz
+    digestSHA1: "07e40057b78f1c9dd2b042056325d99fcf9f8a08"
+    stripComponents: 1
+
+buildTools: [bison, flex, host-toolchain]
+buildVars: [ARCH]
+buildScript: |
+    # prevent timestamps in configuration
+    export KCONFIG_NOTIMESTAMP=1
+    export KBUILD_BUILD_TIMESTAMP='Mon Dec 28 22:49:40 CET 2015'
+
+    # Use plain "defconfig" to build kernel headers.
+    if [[ ! -e ".config" ]] ; then
+        make -C "$1" O=$PWD defconfig
+    fi
+
+    make headers_install
+
+packageScript: |
+    cp -a $1/usr .
