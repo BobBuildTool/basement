@@ -10,7 +10,7 @@ checkoutSCM:
     extract: False
 
 buildTools: [target-toolchain]
-buildVars: [AR, CC, RANLIB, AUTOCONF_HOST]
+buildVars: [AR, CC, RANLIB, AUTOCONF_BUILD, AUTOCONF_HOST]
 buildScript: |
     mkdir -p build install
 

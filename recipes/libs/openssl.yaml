@@ -17,7 +17,7 @@ checkoutSCM:
     extract: False
 
 buildTools: [target-toolchain]
-buildVars: [PKG_VERSION, CC, AR, RANLIB, ARCH, AUTOCONF_HOST]
+buildVars: [PKG_VERSION, CC, AR, RANLIB, ARCH, AUTOCONF_BUILD, AUTOCONF_HOST]
 buildScript: |
     export TARGETMACH=${AUTOCONF_HOST}
     export LDFLAGS="-Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib"
