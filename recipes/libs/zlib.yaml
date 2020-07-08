@@ -11,7 +11,7 @@ checkoutSCM:
    extract: False
 
 buildTools: [target-toolchain]
-buildVars: [CROSS_COMPILE, AUTOCONF_BUILD, AUTOCONF_HOST]
+buildVars: [CROSS_COMPILE, AUTOCONF_BUILD, AUTOCONF_HOST, CFLAGS, LDFLAGS]
 buildScript: |
     # zlib uses CROSS_PREFIX instead of CROSS_COMPILE
     if [[ ${CROSS_COMPILE:+true} ]] ; then
