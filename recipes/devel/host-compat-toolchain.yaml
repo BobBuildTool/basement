@@ -5,6 +5,9 @@
 
 shared: True
 
+environment:
+    AUTOCONF_TARGET: "$(gen-autoconf,bob_compat)"
+
 depends:
     # The following tools are needed by the cross-toolchain build process.
     # Build them explicitly here to keep the basement::rootrecipe class
@@ -16,12 +19,12 @@ depends:
       use: [tools]
       forward: True
 
+    # Cross toolchain for the current architecture -> ARCH is left as is. The
+    # AUTOCONF_TARGET is set above in "environment" already.
     - name: devel::compat::cross-toolchain
       use: [environment, tools]
       forward: True
       environment:
-        AUTOCONF_TARGET: "x86_64-bob_compat-linux-gnu"
-        ARCH: x86_64
         BASEMENT_OPTIMIZE: "s"
         BASEMENT_DEBUG: "0"
 
@@ -90,7 +93,6 @@ provideTools:
 
 provideVars:
     # Define our build and host systems because we define the host- and
-    # target-toolchain.
-    ARCH:           "${ARCH}"
-    AUTOCONF_BUILD: "${AUTOCONF_HOST}"
-    AUTOCONF_HOST:  "${AUTOCONF_HOST}"
+    # target-toolchain. ARCH is unchaged, though.
+    AUTOCONF_BUILD: "$AUTOCONF_TARGET"
+    AUTOCONF_HOST:  "$AUTOCONF_TARGET"
