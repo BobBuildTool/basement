@@ -1,4 +1,14 @@
+# Standard Linux kernel recipe that builds the kernel, modules and device
+# trees. By default the defconfig of the architecture is built. Set the
+# LINUX_CONFIG environment variable to use another ${LINUX_CONFIG}_defconfig.
+# To use a custom defconfig create a package kernel::linux-custom-config and
+# set LINUX_CUSTOM_CONFIG to the name of your custom defconfig file.
+
 inherit: [make]
+
+depends:
+    - if: "${LINUX_CUSTOM_CONFIG:-}"
+      name: kernel::linux-custom-config
 
 metaEnvironment:
     PKG_VERSION: "5.6.16"
@@ -10,7 +20,7 @@ checkoutSCM:
     stripComponents: 1
 
 buildTools: [bison, flex, host-toolchain]
-buildVars: [ARCH]
+buildVars: [ARCH, LINUX_CONFIG, LINUX_CUSTOM_CONFIG]
 buildScript: |
     # prevent timestamps in configuration
     export KCONFIG_NOTIMESTAMP=1
@@ -31,7 +41,10 @@ buildScript: |
 
     # Use plain "defconfig" if we have no specific target. Otherwise check if
     # defconfig has changed.
-    if [[ ${LINUX_CONFIG:+true} ]] ; then
+    if [[ ${LINUX_CUSTOM_CONFIG:+true} ]] ; then
+        cp -u "${BOB_DEP_PATHS[kernel::linux-custom-config]}/$LINUX_CUSTOM_CONFIG" .config
+        make -C "$1" O=$PWD olddefconfig
+    elif [[ ${LINUX_CONFIG:+true} ]] ; then
         if [[ ( ! -e ".config" ) || ( "$1/${LINUX_ARCH_PATH}/configs/${LINUX_CONFIG}_defconfig" -nt ".config" ) ]] ; then
             make -C "$1" O=$PWD "${LINUX_CONFIG}_defconfig"
         fi
@@ -48,7 +61,7 @@ multiPackage:
               tools:
                 target-toolchain: host-toolchain
         buildTools: [target-toolchain]
-        buildVars: [CROSS_COMPILE, LINUX_CONFIG]
+        buildVars: [CROSS_COMPILE]
         buildScript: |
             export HOSTCFLAGS="-I${BOB_DEP_PATHS[libs::openssl-dev]}/usr/include"
             export HOSTLDFLAGS="-L${BOB_DEP_PATHS[libs::openssl-dev]}/usr/lib"
@@ -67,9 +80,16 @@ multiPackage:
                 packageScript: |
                     make -C $1 INSTALL_MOD_PATH=$PWD modules_install
 
+    # This package is only for other recipes that need special kernel headers
+    # that are not available in the generic toolchain. Depending on this
+    # package should only be needed if you have a custom kernel with
+    # added/modified driver headers. It will make your package dependent on
+    # this kernel and it's particular configuration!
     headers:
         buildScript: |
             make headers_install
         packageScript: |
             cp -a $1/usr .
 
+provideVars:
+    LINUX_VERSION: "$PKG_VERSION"
