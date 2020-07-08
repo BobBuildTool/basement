@@ -11,12 +11,12 @@ depends:
       name: kernel::linux-custom-config
 
 metaEnvironment:
-    PKG_VERSION: "5.6.16"
+    PKG_VERSION: "5.7.4"
 
 checkoutSCM:
     scm: url
     url: https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${PKG_VERSION}.tar.xz
-    digestSHA1: "12249e626d804587f13c976a26000743f0876d56"
+    digestSHA1: "3b84ef2105b55549f1d0329f2522741581eea326"
     stripComponents: 1
 
 buildTools: [bison, flex, host-toolchain]
