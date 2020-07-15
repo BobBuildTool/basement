@@ -84,28 +84,47 @@ multiPackage:
 
         multiPackage:
             image:
+                packageVars: [PKG_VERSION, BASEMENT_DEBUG]
                 packageScript: |
                     read LINUX_ARCH_PATH < $1/.arch-path
                     mkdir -p boot
 
-                    case "$ARCH" in
-                        arm)            KBUILD_IMAGE=zImage ;;
-                        arm64)          KBUILD_IMAGE=Image.gz ;;
-                        riscv)          KBUILD_IMAGE=Image.gz ;;
-                        i386|x86_64)    KBUILD_IMAGE=bzImage ;;
-                        *)              KBUILD_IMAGE="*Image" ;;
-                    esac
-                    cp -a "$1/$LINUX_ARCH_PATH/boot/"${KBUILD_IMAGE} boot/
+                    cp "$1/$(make -s -C "$1" image_name)" "boot/vmlinux-$PKG_VERSION"
+                    cp "$1/System.map" "boot/System.map-$PKG_VERSION"
+                    cp "$1/.config" "boot/config-$PKG_VERSION"
+
                     if [[ -d "$1/$LINUX_ARCH_PATH/boot/dts" ]] ; then
-                        cp -a "$1/$LINUX_ARCH_PATH/boot/dts/"*.dtb boot/
+                        make -C "$1" INSTALL_DTBS_PATH="$PWD/boot/dtbs/$PKG_VERSION" dtbs_install
+                    fi
+
+                    if [[ ${BASEMENT_DEBUG:-0} != "0" ]] ; then
+                        mkdir -p boot/.debug
+                        cp "$1/vmlinux" "boot/.debug/vmlinux-$PKG_VERSION"
                     fi
 
             modules:
                 packageTools: [kmod]
-                packageVars: [PKG_VERSION]
+                packageVars: [PKG_VERSION, BASEMENT_DEBUG, OBJCOPY]
                 packageScript: |
                     make -C "$1" INSTALL_MOD_PATH="$PWD" modules_install
                     rm lib/modules/"${PKG_VERSION}"/{build,source}
+
+                    # Strip all modules. Shamelessly ripped from builddeb...
+                    for module in $(find lib/modules/ -name *.ko -printf '%P\n'); do
+                        module=lib/modules/$module
+                        mkdir -p $(dirname usr/lib/debug/$module)
+                        # only keep debug symbols in the debug file
+                        if [[ ${BASEMENT_DEBUG:-0} != "0" ]] ; then
+                            $OBJCOPY --only-keep-debug $module usr/lib/debug/$module
+                        fi
+                        # strip original module from debug symbols
+                        $OBJCOPY --strip-debug $module
+                        # then add a link to those
+                        if [[ ${BASEMENT_DEBUG:-0} != "0" ]] ; then
+                            $OBJCOPY --add-gnu-debuglink=usr/lib/debug/$module $module
+                        fi
+                    done
+
                     depmod -b "$PWD" "$PKG_VERSION"
 
     # This package is only for other recipes that need special kernel headers
