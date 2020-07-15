@@ -4,7 +4,7 @@
 # To use a custom defconfig create a package kernel::linux-custom-config and
 # set LINUX_CUSTOM_CONFIG to the name of your custom defconfig file.
 
-inherit: [make]
+inherit: [make, patch]
 
 depends:
     - if: "${LINUX_CUSTOM_CONFIG:-}"
@@ -18,6 +18,10 @@ checkoutSCM:
     url: https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${PKG_VERSION}.tar.xz
     digestSHA1: "3b84ef2105b55549f1d0329f2522741581eea326"
     stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<<linux/*.patch>>
 
 buildTools: [bison, flex, host-toolchain]
 buildVars: [ARCH, LINUX_CONFIG, LINUX_CUSTOM_CONFIG]

@@ -1,0 +1,37 @@
+kbuild: add pkg-config helpers
+
+Add some common helpers that handle the flags that need to be passed to
+pkg-config.  In particular they handle the --static flag when linking
+statically.
+
+Signed-off-by: Jan Klötzke <jan@kloetzke.net>
+
+diff -Nurp linux-5.7.4/scripts/Makefile.pkg-config workspace/scripts/Makefile.pkg-config
+--- linux-5.7.4/scripts/Makefile.pkg-config	1970-01-01 01:00:00.000000000 +0100
++++ workspace/scripts/Makefile.pkg-config	2020-06-23 21:23:43.226530497 +0200
+@@ -0,0 +1,7 @@
++PKG_CONFIG ?= pkg-config
++
++# Pass --static to pkg-config if linking statically on the host
++PKG_CONFIG_FLAGS := $(if $(findstring -static,$(KBUILD_HOSTLDFLAGS)),--static,)
++
++pkg-config-libs = $(shell $(PKG_CONFIG) $(PKG_CONFIG_FLAGS) $(1) --libs 2>/dev/null || echo -l$(2))
++pkg-config-flags = $(shell $(PKG_CONFIG) $(PKG_CONFIG_FLAGS) $(1) --cflags 2>/dev/null)
+diff -Nurp linux-5.7.4/tools/scripts/Makefile.pkg-config workspace/tools/scripts/Makefile.pkg-config
+--- linux-5.7.4/tools/scripts/Makefile.pkg-config	1970-01-01 01:00:00.000000000 +0100
++++ workspace/tools/scripts/Makefile.pkg-config	2020-06-23 21:24:37.602520172 +0200
+@@ -0,0 +1,14 @@
++PKG_CONFIG ?= $(CROSS_COMPILE)pkg-config
++HOST_PKG_CONFIG ?= pkg-config
++
++# Pass --static to pkg-config if linking statically on the host
++PKG_CONFIG_FLAGS := $(if $(findstring -static,$(LDFLAGS)),--static,)
++HOST_PKG_CONFIG_FLAGS := $(if $(findstring -static,$(KBUILD_HOSTLDFLAGS)),--static,)
++
++pkg-config-exists = $(call try-run, $(PKG_CONFIG) $(1) --exists,1)
++pkg-config-libs = $(shell $(PKG_CONFIG) $(PKG_CONFIG_FLAGS) $(1) --libs 2>/dev/null || echo -l$(2))
++pkg-config-flags = $(shell $(PKG_CONFIG) $(PKG_CONFIG_FLAGS) $(1) --cflags 2>/dev/null)
++
++host-pkg-config-exists = $(call try-run, $(HOST_PKG_CONFIG) $(1) --exists,1)
++host-pkg-config-libs = $(shell $(HOST_PKG_CONFIG) $(HOST_PKG_CONFIG_FLAGS) $(1) --libs 2>/dev/null || echo -l$(2))
++host-pkg-config-flags = $(shell $(HOST_PKG_CONFIG) $(HOST_PKG_CONFIG_FLAGS) $(1) --cflags 2>/dev/null)
