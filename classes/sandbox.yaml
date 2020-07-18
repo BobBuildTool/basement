@@ -32,6 +32,13 @@ buildScript: |
     ln -sf usr/lib lib
     ln -sT usr/sbin sbin
 
+    # Set default python version (if any, preferring python3)
+    if [[ -e usr/bin/python3 ]] ; then
+        ln -sT python3 usr/bin/python
+    elif [[ -e usr/bin/python2 ]] ; then
+        ln -sT python2 usr/bin/python
+    fi
+
     # remove development stuff
     rm -rf usr/include
     find usr/lib -name '*.a' -o -name '*.o' -delete
