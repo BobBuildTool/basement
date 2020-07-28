@@ -1,6 +1,7 @@
 from bob.errors import ParseError
 import fnmatch
 import os
+import platform
 
 # TODO: support more architectures; support musl/dietlibc
 
@@ -20,11 +21,13 @@ def hostArch(args, **options):
 
 # get host autoconf triple
 def hostAutoconf(args, **options):
-    u = os.uname()
-    if u.sysname != 'Linux':
-        raise ParseError("Unsupported system: " + u.sysname)
-
-    return u.machine + "-linux-gnu"
+    u = platform.uname()
+    if u.system == 'Linux':
+        return u.machine + "-linux-gnu"
+    elif u.system.startswith("MSYS_NT"):
+        return u.machine + "-pc-msys"
+    else:
+        raise ParseError("Unsupported system: " + u.system)
 
 # set or replace vendor field in autoconf triplet
 def genAutoconf(args, **options):
