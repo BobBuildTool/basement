@@ -22,3 +22,6 @@ packageScript: |
     autotoolsPackageTgt
 
 provideDeps: [ "*-tgt" ]
+
+provideTools:
+    gawk: "usr/bin"

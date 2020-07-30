@@ -54,3 +54,6 @@ depends:
     - name: utils::e2fsprogs
       use: [tools]
       forward: True
+    - name: utils::gawk
+      use: [tools]
+      forward: True
