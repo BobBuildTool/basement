@@ -3,6 +3,8 @@ inherit: [cpackage, make, install]
 buildTools: [cmake]
 buildVars: [CC, CXX]
 buildScript: |
+    _CMAKE_SOURCE_PATH=$1
+
     # Make sure CMake finds other stuff by its own logic too
     CMAKE_FIND_ROOT_PATH=
     for i in "${@:2}" ; do
@@ -44,21 +46,21 @@ buildScript: |
         BUILD_SHARED_LIBS=OFF
     fi
 
-    # $1 : source path
     cmakeBuild()
     {
         local MAKE_TARGET=
         local MAKE_OPTIONS=( )
-        local INSTALL_TAGET=install
+        local INSTALL_TARGET=install
         local INSTALL_OPTIONS=( )
+        local SOURCE_PATH=${_CMAKE_SOURCE_PATH}
 
         # parse arguments
-        OPTIND=1
+        local OPTIND=1
         local opt
-        while getopts "i:m:o:O:s" opt ; do
+        while getopts "i:m:o:O:s:" opt ; do
             case "$opt" in
                 i)
-                    INSTALL_TAGET="$OPTARG"
+                    INSTALL_TARGET="$OPTARG"
                     ;;
                 m)
                     MAKE_TARGET="$OPTARG"
@@ -69,26 +71,32 @@ buildScript: |
                 O)
                     INSTALL_OPTIONS+=( "$OPTARG" )
                     ;;
+                s)
+                    SOURCE_PATH="$OPTARG"
+                    ;;
+                --)
+                    break
+                    ;;
                 \?)
-                  echo "Invalid option: -$OPTARG" >&2
-                  exit 1
-                  ;;
+                    echo "invalid option: $OPTARG" >&2
+                    exit 1
+                    ;;
             esac
         done
         shift $(( OPTIND -1 ))
 
         mkdir -p build install
         pushd build
-        cmake "$1" \
+        cmake "$SOURCE_PATH" \
             ${CMAKE_TOOLCHAIN_FILE:+-DCMAKE_TOOLCHAIN_FILE="$CMAKE_TOOLCHAIN_FILE"} \
             -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH" \
             -DCMAKE_BUILD_TYPE=Bob \
             -DCMAKE_INSTALL_PREFIX="/usr" \
             -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
-            "${@:2}"
+            $@
         makeParallel $MAKE_TARGET ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"}
-        if [[ -n "$INSTALL_TAGET" ]] ; then
-            make $INSTALL_TAGET \
+        if [[ -n "$INSTALL_TARGET" ]] ; then
+            make $INSTALL_TARGET \
                 DESTDIR=${PWD}/../install \
                 ${INSTALL_OPTIONS:+"${INSTALL_OPTIONS[@]}"}
         fi
