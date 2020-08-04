@@ -44,6 +44,7 @@ buildScript: |
         BUILD_SHARED_LIBS=OFF
     fi
 
+    # usage: cmakeBuild [-i <install_target>] [-m <make_target>] [-o <options>] [-O <options>] <source-path> [-DCMAKE_...]
     # $1 : source path
     cmakeBuild()
     {
@@ -55,7 +56,7 @@ buildScript: |
         # parse arguments
         OPTIND=1
         local opt
-        while getopts "i:m:o:O:s" opt ; do
+        while getopts "i:m:o:O:" opt ; do
             case "$opt" in
                 i)
                     INSTALL_TAGET="$OPTARG"
