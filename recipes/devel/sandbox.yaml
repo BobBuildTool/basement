@@ -34,6 +34,10 @@ depends:
         name: python::python3-minimal
         use: [tools]
         forward: True
+    -
+        name: utils::gawk
+        use: [tools]
+        forward: True
 
     # target toolchain
     -
