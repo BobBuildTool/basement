@@ -20,7 +20,7 @@ checkoutScript: |
     patchApplySeries $<<glibc/*.diff>>
 
 buildVars: [AUTOCONF_TARGET]
-buildTools: [gcc-cross-bare, target-toolchain, bison]
+buildTools: [gcc-cross-bare, target-toolchain, bison, gawk]
 buildScript: |
     EXTRA=
     [ -e $1/usr/include/selinux/selinux.h ] || EXTRA+=" --without-selinux"

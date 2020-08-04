@@ -70,7 +70,6 @@ depends:
     - utils::bzip2
     - utils::file
     - utils::findutils
-    - utils::gawk
     - utils::grep
     - utils::gzip
     - utils::rsync
