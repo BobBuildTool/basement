@@ -112,9 +112,11 @@ packageScript: |
         installCopy "$@" /usr/ "/usr/include/***" \
             /usr/lib/ \
             "/usr/lib/*.a" \
+            "/usr/lib/*.lib" \
             ${INSTALL_SHARED:+"/usr/lib/*.so*"} \
             "/usr/lib/pkgconfig/***" \
             "/usr/lib/cmake/***" \
+            ${INSTALL_SHARED:+"/usr/bin/" "/usr/bin/*.dll"} \
             "!*"
 
         # fixup pkg-configure files by removing absolute lib dirs
@@ -134,9 +136,9 @@ packageScript: |
     installPackageLib()
     {
         if [[ ${INSTALL_SHARED:-} ]] ; then
-            installCopy "$@" /usr/ /usr/lib/ \
-                "/usr/lib/*.so.*" \
-                "/usr/lib/lib*-*.so" \
+            installCopy "$@" /usr/ \
+                /usr/lib/ "/usr/lib/*.so.*" "/usr/lib/lib*-*.so" \
+                /usr/bin/ "/usr/bin/*.dll" "/usr/bin/*.pdb" \
                 "!*"
             installStripAll .
         fi
@@ -146,7 +148,8 @@ packageScript: |
     installPackageBin()
     {
         installCopy "$@" '!/usr/include/' \
-            "!/usr/lib/*.a" "!/usr/lib/*.so*"  \
+            "!/usr/lib/*.a" "!/usr/lib/*.so*" \
+            "!/usr/lib/*.lib" "!/usr/bin/*.dll" "!/usr/bin/*.pdb" \
             "!/usr/lib/pkgconfig" \
             "!/usr/lib/cmake"
         installStripAll .

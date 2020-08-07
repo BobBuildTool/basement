@@ -6,21 +6,43 @@ inherit: [pkg-config]
 
 buildTools: [target-toolchain]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS]
+
+# The following variables are only used by the Microsoft Visual Studio
+# toolchain. Their value depends on the install location but they do not change
+# the build result. The toolset version is handled by the toolchain directly
+# and is attached to 'target-toolchain'.
+buildVarsWeak: [INCLUDE, LIB, LIBPATH, VS_PATH]
 buildScript: |
+    # In case we build on Windows the global paths need to be added to $PATH.
+    ${VS_PATH:+export PATH="$PATH:$VS_PATH"}
+
     # Gather all include and library paths.
-    for i in "${@:2}" ; do
-        if [[ -d "$i/usr/include" ]] ; then
-            CPPFLAGS+=" -I$i/usr/include"
-        fi
-        for j in lib usr/lib ; do
-            if [[ -d "$i/$j" ]] ; then
-                LDFLAGS+=" -L$i/$j"
-                if compgen -G "$i/$j/*.so" >/dev/null ; then
-                    LDFLAGS+=" -Wl,-rpath-link=$i/$j"
-                fi
+    if [[ $AUTOCONF_HOST == *-win32 ]] ; then
+        for i in "${@:2}" ; do
+            if [[ -d "$i/usr/include" ]] ; then
+                CPPFLAGS+=" -I $(cygpath -w "$i/usr/include")"
             fi
+            for j in lib usr/lib ; do
+                if [[ -d "$i/$j" ]] ; then
+                    LDFLAGS+=" -LIBPATH:$(cygpath -w "$i/$j")"
+                fi
+            done
         done
-    done
+    else
+        for i in "${@:2}" ; do
+            if [[ -d "$i/usr/include" ]] ; then
+                CPPFLAGS+=" -I$i/usr/include"
+            fi
+            for j in lib usr/lib ; do
+                if [[ -d "$i/$j" ]] ; then
+                    LDFLAGS+=" -L$i/$j"
+                    if compgen -G "$i/$j/*.so" >/dev/null ; then
+                        LDFLAGS+=" -Wl,-rpath-link=$i/$j"
+                    fi
+                fi
+            done
+        done
+    fi
 
     [ -z "${CPPFLAGS:+true}" ] || export CPPFLAGS
     [ -z "${LDFLAGS:+true}" ] || export LDFLAGS

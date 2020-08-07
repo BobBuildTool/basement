@@ -1,13 +1,25 @@
 inherit: [cpackage, ninja, install]
 
 buildToolsWeak: [cmake]
-buildVars: [CC, CXX, BASEMENT_LIBS]
+buildVars: [AUTOCONF_HOST, CC, CXX, BASEMENT_LIBS]
 buildScript: |
     # Make sure CMake finds other stuff by its own logic too
     CMAKE_FIND_ROOT_PATH=
     for i in "${@:2}" ; do
+        # If we build for native Windows a native CMake is used and we need to
+        # convert to Windows paths.
+        [[ "$AUTOCONF_HOST" == *-win32 ]] && i="$(cygpath -m $i)"
         CMAKE_FIND_ROOT_PATH+="${CMAKE_FIND_ROOT_PATH:+;}$i"
     done
+
+    # This looks odd but it prevents MSYS from converting /usr to C:\msys64\usr
+    # (or wherever MSYS was installed). See
+    # http://mingw.org/wiki/Posix_path_conversion
+    if [[ "$AUTOCONF_HOST" == *-win32 ]] ; then
+        CMAKE_INSTALL_PREFIX="//usr"
+    else
+        CMAKE_INSTALL_PREFIX="/usr"
+    fi
 
     # CMake does not honor CPPFLAGS! Merge them with C(XX)FLAGS.
     if [ "${CPPFLAGS:+true}" ] ; then
@@ -24,6 +36,9 @@ buildScript: |
         case "$AUTOCONF_HOST" in
             *-linux-*)
                 CMAKE_SYSTEM_NAME=Linux
+                ;;
+            *-win32)
+                CMAKE_SYSTEM_NAME=Windows
                 ;;
             *)
                 CMAKE_SYSTEM_NAME=Generic
@@ -106,7 +121,7 @@ buildScript: |
             ${CMAKE_TOOLCHAIN_FILE:+-DCMAKE_TOOLCHAIN_FILE="$CMAKE_TOOLCHAIN_FILE"} \
             -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH" \
             -DCMAKE_BUILD_TYPE=Bob \
-            -DCMAKE_INSTALL_PREFIX="/usr" \
+            -DCMAKE_INSTALL_PREFIX="$CMAKE_INSTALL_PREFIX" \
             -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
             "${@:2}"
 
