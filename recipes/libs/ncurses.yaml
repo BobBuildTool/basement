@@ -11,6 +11,17 @@ checkoutSCM:
 
 buildTools: [host-toolchain]
 buildScript: |
+    # We need to pass the path of the just built tic
+    # able to run on the building machine, so that the
+    # terminal database can be created without errors.
+    mkdir tic
+    pushd tic
+    $1/configure
+    make -C include
+    make -C progs tic
+    export TIC_PATH=$(pwd)/progs/tic
+    popd
+
     autotoolsBuild $1 \
             --with-shared           \
             --without-debug         \
