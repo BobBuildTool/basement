@@ -49,3 +49,12 @@ archive:
 
 include:
     - user
+
+# Keep ssh-agent working. Note: this is just enough so that checkoutSCM is
+# working. If you need ssh access from a checkoutScript too you have to add
+# the lines below to your projects default.yaml.
+whitelist: ["SSH_AGENT_PID", "SSH_AUTH_SOCK"]
+#sandbox:
+#    mount:
+#        - [ "\\$HOME/.ssh", "/nonexistent/.ssh"]
+#        - [ "\\$SSH_AUTH_SOCK", "\\$SSH_AUTH_SOCK", [nojenkins, nofail] ]
