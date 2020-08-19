@@ -1,0 +1,12 @@
+inherit: [cmake]
+
+checkoutSCM:
+    scm: import
+    url: ../src/libholler/
+    prune: True
+
+buildScript: |
+    cmakeBuild "$1"
+
+packageScript: |
+   cmakePackageDev

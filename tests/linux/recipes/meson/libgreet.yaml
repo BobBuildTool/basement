@@ -1,0 +1,18 @@
+inherit: [meson]
+
+depends:
+   - meson::libholler
+
+checkoutSCM:
+    scm: import
+    url: ../src/libgreet/
+    prune: True
+
+buildScript: |
+   mesonBuild "$1"
+
+packageScript: |
+   mesonPackageDev
+
+provideDeps:
+   - meson::libholler

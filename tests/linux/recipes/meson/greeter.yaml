@@ -1,0 +1,15 @@
+inherit: [ "basement::rootrecipe", meson ]
+
+depends:
+   - meson::libgreet
+
+checkoutSCM:
+    scm: import
+    url: ../src/greeter/
+    prune: True
+
+buildScript: |
+   mesonBuild "$1"
+
+packageScript: |
+   mesonPackageTgt

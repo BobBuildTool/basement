@@ -1,0 +1,12 @@
+inherit: [meson]
+
+checkoutSCM:
+    scm: import
+    url: ../src/libholler/
+    prune: True
+
+buildScript: |
+    mesonBuild "$1"
+
+packageScript: |
+   mesonPackageDev

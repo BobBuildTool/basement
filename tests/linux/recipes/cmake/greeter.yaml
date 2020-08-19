@@ -1,0 +1,15 @@
+inherit: [ "basement::rootrecipe", cmake ]
+
+depends:
+   - cmake::libgreet
+
+checkoutSCM:
+    scm: import
+    url: ../src/greeter/
+    prune: True
+
+buildScript: |
+   cmakeBuild "$1"
+
+packageScript: |
+   cmakePackageTgt
