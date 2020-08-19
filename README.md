@@ -16,11 +16,14 @@ standard sandbox and common GCC toolchains are ready-to-use.
 
 # How to build
 
-Actually there isn't anything to build directly in this repository. Head over
+Actually there isn't much to build directly in this repository. Head over
 to one of the examples to see how this repository is used:
 
  * [Embedded systems](https://github.com/BobBuildTool/bob-example-embedded)
  * [Linux containers](https://github.com/BobBuildTool/bob-example-containers)
+
+In `tests/linux` there are a couple of recipes that build small test packages
+which use the `basement` layer. They act as smoke tests for this project.
 
 # How to use
 
