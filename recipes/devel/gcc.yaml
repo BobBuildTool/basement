@@ -104,7 +104,7 @@ multiPackage:
             installStripAll usr/bin
 
         provideTools:
-            gcc-cross-bare:
+            target-toolchain:
                 path: usr/bin
                 environment:
                     # usual compiler variables

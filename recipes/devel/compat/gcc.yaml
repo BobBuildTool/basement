@@ -118,7 +118,7 @@ multiPackage:
             installStripAll usr/bin
 
         provideTools:
-            gcc-cross-bare: usr/bin
+            target-toolchain: usr/bin
 
     cross:
         depends:
