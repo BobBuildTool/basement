@@ -29,7 +29,8 @@ checkoutScript: |
 
 buildTools: [host-toolchain]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
-            GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU]
+            GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU,
+            GCC_MULTILIB]
 buildScript: |
     GCC_SRC=$1
     buildGcc()
@@ -79,13 +80,19 @@ multiPackage:
                 use: [result, tools]
         buildTools: [binutils]
         buildScript: |
+            if [[ -z "${GCC_MULTILIB:-}" ]] ; then
+                MULTILIB=--disable-multilib
+            else
+                MULTILIB="--with-multilib-list=$GCC_MULTILIB"
+            fi
+
             buildGcc \
                 --with-glibc-version=2.11                      \
                 --with-sysroot=/does/not/exist                 \
                 --with-newlib                                  \
                 --without-headers                              \
                 --disable-nls                                  \
-                --disable-multilib                             \
+                "$MULTILIB"                                    \
                 --disable-decimal-float                        \
                 --disable-threads                              \
                 --disable-libatomic                            \
@@ -146,11 +153,17 @@ multiPackage:
         buildTools: [binutils]
         buildVars: [GCC_LIBC, GCC_ENABLE_LANGUAGES]
         buildScript: |
+            if [[ -z "${GCC_MULTILIB:-}" ]] ; then
+                MULTILIB=--disable-multilib
+            else
+                MULTILIB="--with-multilib-list=$GCC_MULTILIB"
+            fi
+
             buildGcc \
                 --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET} \
                 --with-build-sysroot=${BOB_DEP_PATHS[libs::${GCC_LIBC}-dev]} \
                 --enable-linker-build-id                                    \
-                --disable-multilib                                          \
+                "$MULTILIB"                                                 \
                 --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
             cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
 

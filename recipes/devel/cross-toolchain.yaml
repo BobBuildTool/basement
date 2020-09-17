@@ -65,6 +65,7 @@ multiPackage:
             AUTOCONF_TARGET: "x86_64-cross-linux-gnu"
             ARCH: "x86_64"
             GCC_LIBC: "glibc"
+            GCC_MULTILIB: "m32,m64"
 
     # ARMv7 Linux CortexA toolchain with hard floating point
     arm-linux-gnueabihf:
