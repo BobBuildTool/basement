@@ -4,17 +4,20 @@ metaEnvironment:
     PKG_VERSION: "5.4.0"
 
 depends:
-    - libs::gmp-dev
-    - libs::mpfr-dev
-    - libs::mpc-dev
-    - libs::compat::isl-dev
-
-    - use: []
+    - environment:
+        BASEMENT_LIBS: static
       depends:
-        - libs::gmp-tgt
-        - libs::mpfr-tgt
-        - libs::mpc-tgt
-        - libs::compat::isl-tgt
+        - libs::gmp-dev
+        - libs::mpfr-dev
+        - libs::mpc-dev
+        - libs::compat::isl-dev
+
+        - use: []
+          depends:
+            - libs::gmp-tgt
+            - libs::mpfr-tgt
+            - libs::mpc-tgt
+            - libs::compat::isl-tgt
 
 checkoutSCM:
     scm: url
@@ -131,6 +134,7 @@ multiPackage:
                 --with-build-sysroot=${BOB_DEP_PATHS[libs::compat::glibc-dev]} \
                 --enable-linker-build-id                                    \
                 --disable-multilib                                          \
+                --disable-host-shared                                        \
                 --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
             cp -a ${BOB_DEP_PATHS[devel::compat::binutils]}/* install/
 
@@ -152,6 +156,7 @@ multiPackage:
                 --enable-linker-build-id                                                    \
                 --enable-threads=posix                                                      \
                 --disable-multilib                                                          \
+                --disable-host-shared                                                       \
                 --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
 
             # add sysroot

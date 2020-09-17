@@ -23,7 +23,9 @@ buildScript: |
         --disable-nls \
         --disable-werror \
         --enable-plugins \
-        --enable-lto
+        --enable-lto \
+        --disable-shared \
+        --enable-static
 
 packageScript: |
     autotoolsPackageTgt
