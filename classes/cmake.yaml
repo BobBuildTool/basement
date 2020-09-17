@@ -1,7 +1,7 @@
 inherit: [cpackage, make, install]
 
 buildTools: [cmake]
-buildVars: [CC, CXX]
+buildVars: [CC, CXX, BASEMENT_LIBS]
 buildScript: |
     # Make sure CMake finds other stuff by its own logic too
     CMAKE_FIND_ROOT_PATH=
@@ -43,6 +43,24 @@ buildScript: |
     else
         BUILD_SHARED_LIBS=OFF
     fi
+
+    # The build of shared libraries can be overridden via BASEMENT_LIBS.
+    # Unfortunately there is no standard switch to control static libraries in
+    # CMake.
+    case "${BASEMENT_LIBS:-__unset__}" in
+        shared|both)
+            BUILD_SHARED_LIBS=ON
+            ;;
+        static)
+            BUILD_SHARED_LIBS=OFF
+            ;;
+        __unset__)
+            ;;
+        *)
+            echo "Invalid BASEMENT_LIBS value: $BASEMENT_LIBS" >&2
+            exit 1
+            ;;
+    esac
 
     # usage: cmakeBuild [-i <install_target>] [-m <make_target>] [-o <options>] [-O <options>] <source-path> [-DCMAKE_...]
     # $1 : source path

@@ -10,12 +10,29 @@ inherit: [strip]
 # be adapted to promote *.private dependencies to regular dependencies (We do
 # not pass --static to pkg-config.  Executables are still linked dynamically
 # because glibc cannot be linked statically).
+packageVars: [BASEMENT_LIBS]
 packageScript: |
     # Install shared libraries only when cross compiling. On host builds only
     # static libraries are installed.
     if [[ "${AUTOCONF_BUILD:-unknown}" != "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
         INSTALL_SHARED=yes
     fi
+
+    # The user can override the defaults above
+    case "${BASEMENT_LIBS:-__unset__}" in
+        shared|both)
+            INSTALL_SHARED=yes
+            ;;
+        static)
+            INSTALL_SHARED=
+            ;;
+        __unset__)
+            ;;
+        *)
+            echo "Invalid BASEMENT_LIBS value: $BASEMENT_LIBS" >&2
+            exit 1
+            ;;
+    esac
 
     function _installJoinSpace { local IFS=" "; echo "$*"; }
     function _installJoinComma { echo -n "$1" ; shift ; printf "%s" "${@/#/, }"; }
