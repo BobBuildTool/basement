@@ -104,7 +104,35 @@ multiPackage:
             installStripAll usr/bin
 
         provideTools:
-            gcc-cross-bare: usr/bin
+            gcc-cross-bare:
+                path: usr/bin
+                environment:
+                    # usual compiler variables
+                    AR: "${AUTOCONF_TARGET}-ar"
+                    AS: "${AUTOCONF_TARGET}-as"
+                    CC: "${AUTOCONF_TARGET}-gcc"
+                    CPP: "${AUTOCONF_TARGET}-cpp"
+                    CXX: "${AUTOCONF_TARGET}-g++"
+                    GDB: "${AUTOCONF_TARGET}-gdb"
+                    LD: "${AUTOCONF_TARGET}-ld"
+                    NM: "${AUTOCONF_TARGET}-nm"
+                    OBJCOPY: "${AUTOCONF_TARGET}-objcopy"
+                    OBJDUMP: "${AUTOCONF_TARGET}-objdump"
+                    RANLIB: "${AUTOCONF_TARGET}-ranlib"
+                    STRIP: "${AUTOCONF_TARGET}-strip"
+
+                    # Host system definition. Note that we do not touch the build
+                    # system definiton (AUTOCONF_BUILD) because this is a cross
+                    # compiling toolchain.
+                    ARCH: "${ARCH}"
+                    AUTOCONF_HOST: "${AUTOCONF_TARGET}"
+                    CROSS_COMPILE: "${AUTOCONF_TARGET}-"
+
+                    # compiler flags
+                    CPPFLAGS:   "-Wdate-time"
+                    CFLAGS:     "-Os -pipe"
+                    CXXFLAGS:   "-Os -pipe"
+                    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
 
     cross:
         depends:
