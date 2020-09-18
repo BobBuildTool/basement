@@ -1,17 +1,13 @@
-inherit: [autotools, patch]
+inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "4.2.1"
+    PKG_VERSION: "4.3"
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/make/make-${PKG_VERSION}.tar.bz2
-    digestSHA256: "d6e262bf3601b42d2b1e4ef8310029e1dcf20083c5446b4b7aa67081fdffc589"
+    url: ${GNU_MIRROR}/make/make-${PKG_VERSION}.tar.gz
+    digestSHA256: "e05fdde47c5f7ca45cb697e973894ff4f5d79e13b750ed57d7b66d8defc78e19"
     stripComponents: 1
-
-checkoutDeterministic: True
-checkoutScript: |
-    patchApplySeries $<<make/*.patch>>
 
 buildVars: [AR]
 buildScript: |
