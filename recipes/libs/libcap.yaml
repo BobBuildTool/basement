@@ -16,6 +16,7 @@ buildScript: |
     mkdir -p install
     makeParallel -C libcap-${PKG_VERSION} \
         prefix=/usr \
+        lib=lib \
         AR=$AR \
         CC=$CC \
         RANLIB=$RANLIB \
