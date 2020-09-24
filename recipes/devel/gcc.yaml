@@ -1,4 +1,4 @@
-inherit: [make, install, patch]
+inherit: [make, install, patch, libtool]
 
 metaEnvironment:
     PKG_VERSION: "9.2.0"
