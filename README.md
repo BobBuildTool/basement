@@ -54,6 +54,7 @@ The following tools can be used by naming them in `{checkout,build,package}Tools
 * bison
 * cpio
 * flex
+* make
 * pkg-config
 * squashfs-tools
 * e2fsprogs

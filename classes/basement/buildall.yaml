@@ -19,6 +19,7 @@ packageTools:
     - cmake
     - cpio
     - flex
+    - make
     - meson
     - ninja
     - pkg-config

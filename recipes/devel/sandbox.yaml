@@ -19,6 +19,10 @@ depends:
 
     # some required host tools
     -
+        name: devel::make
+        use: [tools]
+        forward: True
+    -
         name: devel::autotools
         use: [tools]
         forward: True
@@ -59,7 +63,6 @@ depends:
     - devel::gperf
     # - devel::intltool #-> "configure: error: XML::Parser perl module is required for intltool"
     - devel::m4
-    - devel::make
     - devel::makedepend
     - devel::patch
     - devel::texinfo

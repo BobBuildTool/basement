@@ -35,3 +35,5 @@ buildScript: |
 
 packageScript: |
     installPackageTgt "$1/install/"
+provideTools:
+    make: usr/bin

@@ -27,7 +27,7 @@ checkoutScript: |
     # fix configure script (remove non-existent entry)
     sed -i -e 's/x2p\/Makefile//' perl/configure
 
-buildTools: [host-toolchain, target-toolchain]
+buildTools: [host-toolchain, target-toolchain, make]
 buildVars: [AUTOCONF_HOST, CROSS_COMPILE, TOOLCHAIN_SYSROOT, CPPFLAGS, CFLAGS, LDFLAGS]
 buildScript: |
     mkdir -p build install
