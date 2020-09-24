@@ -31,15 +31,18 @@ buildScript: |
     # version will overwrite some parts.
     if [[ -n "${GCC_MULTILIB:-}" ]] ; then
       pushd build32
-      CC="$CC -m32" CXX="$CXX -m32" $1/configure \
-          --prefix=/usr                    \
-          --host=i686-cross-linux-gnu        \
-          --build=$($1/scripts/config.guess) \
-          --enable-kernel=4.3.3             \
-          --with-headers=$2/usr/include \
-          --enable-obsolete-rpc \
-          --libdir=/usr/lib32 \
-          $EXTRA
+      if [[ $1/configure -nt .configure.stamp ]] ; then
+          CC="$CC -m32" CXX="$CXX -m32" $1/configure \
+              --prefix=/usr                    \
+              --host=i686-cross-linux-gnu        \
+              --build=$($1/scripts/config.guess) \
+              --enable-kernel=4.3.3             \
+              --with-headers=$2/usr/include \
+              --enable-obsolete-rpc \
+              --libdir=/usr/lib32 \
+              $EXTRA
+          touch .configure.stamp
+      fi
 
       makeParallel rootsbindir=/usr/sbin slibdir=/usr/lib32
       make install rootsbindir=/usr/sbin slibdir=/usr/lib32 DESTDIR=${PWD}/../install
@@ -47,15 +50,18 @@ buildScript: |
     fi
 
     pushd build
-    $1/configure \
-        --prefix=/usr                    \
-        --host=${AUTOCONF_TARGET}        \
-        --build=$($1/scripts/config.guess) \
-        --enable-kernel=4.3.3             \
-        --with-headers=$2/usr/include \
-        --enable-obsolete-rpc \
-        --libdir=/usr/lib \
-        $EXTRA
+    if [[ $1/configure -nt .configure.stamp ]] ; then
+        $1/configure \
+            --prefix=/usr                    \
+            --host=${AUTOCONF_TARGET}        \
+            --build=$($1/scripts/config.guess) \
+            --enable-kernel=4.3.3             \
+            --with-headers=$2/usr/include \
+            --enable-obsolete-rpc \
+            --libdir=/usr/lib \
+            $EXTRA
+        touch .configure.stamp
+    fi
 
     makeParallel rootsbindir=/usr/sbin slibdir=/usr/lib
     make install rootsbindir=/usr/sbin slibdir=/usr/lib DESTDIR=${PWD}/../install
