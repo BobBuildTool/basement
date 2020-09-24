@@ -58,24 +58,27 @@ buildScript: |
     {
         mkdir -p build install
         pushd build
-        $GCC_SRC/configure \
-            --build=${AUTOCONF_BUILD} \
-            --host=${AUTOCONF_HOST} \
-            --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST}} \
-            --prefix=/usr \
-            ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
-            ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
-            ${GCC_TARGET_FLOAT_ABI:+--with-float=$GCC_TARGET_FLOAT_ABI} \
-            --enable-initfini-array \
-            "${@}" \
-            --disable-gtk-doc \
-            --disable-gtk-doc-html \
-            --disable-doc \
-            --disable-docs \
-            --disable-documentation \
-            --disable-debug \
-            --with-xmlto=no \
-            --with-fop=no
+        if [[ $GCC_SRC/configure -nt .configure.stamp ]] ; then
+            $GCC_SRC/configure \
+                --build=${AUTOCONF_BUILD} \
+                --host=${AUTOCONF_HOST} \
+                --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST}} \
+                --prefix=/usr \
+                ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
+                ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
+                ${GCC_TARGET_FLOAT_ABI:+--with-float=$GCC_TARGET_FLOAT_ABI} \
+                --enable-initfini-array \
+                "${@}" \
+                --disable-gtk-doc \
+                --disable-gtk-doc-html \
+                --disable-doc \
+                --disable-docs \
+                --disable-documentation \
+                --disable-debug \
+                --with-xmlto=no \
+                --with-fop=no
+            touch .configure.stamp
+        fi
         makeParallel
         make install DESTDIR=${PWD}/../install
         popd
