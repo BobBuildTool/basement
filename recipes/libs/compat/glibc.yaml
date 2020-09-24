@@ -27,15 +27,18 @@ buildScript: |
 
     mkdir -p build install
     pushd build
-    $1/configure \
-        --prefix=/usr                    \
-        --host=${AUTOCONF_TARGET}        \
-        --build=$($1/scripts/config.guess) \
-        --enable-kernel=4.3.3             \
-        --with-headers=$2/usr/include \
-        --enable-obsolete-rpc \
-        --libdir=/usr/lib \
-        $EXTRA
+    if [[ $1/configure -nt .configure.stamp ]] ; then
+        $1/configure \
+            --prefix=/usr                    \
+            --host=${AUTOCONF_TARGET}        \
+            --build=$($1/scripts/config.guess) \
+            --enable-kernel=4.3.3             \
+            --with-headers=$2/usr/include \
+            --enable-obsolete-rpc \
+            --libdir=/usr/lib \
+            $EXTRA
+        touch .configure.stamp
+    fi
 
     makeParallel rootsbindir=/usr/sbin slibdir=/usr/lib
     make install rootsbindir=/usr/sbin slibdir=/usr/lib DESTDIR=${PWD}/../install
