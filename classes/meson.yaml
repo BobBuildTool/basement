@@ -1,6 +1,6 @@
 inherit: [cpackage, install]
 
-buildTools: [meson, ninja]
+buildToolsWeak: [meson, ninja]
 buildVars: [CC, CXX, AR, STRIP, BASEMENT_LIBS]
 buildScript: |
     # Set a generic utf-8 locale. Introduced by Debian and seems to work on

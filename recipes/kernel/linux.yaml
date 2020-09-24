@@ -103,7 +103,7 @@ multiPackage:
                     fi
 
             modules:
-                packageTools: [kmod]
+                packageToolsWeak: [kmod]
                 packageVars: [PKG_VERSION, BASEMENT_DEBUG, OBJCOPY]
                 packageScript: |
                     make -C "$1" INSTALL_MOD_PATH="$PWD" modules_install

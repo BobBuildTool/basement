@@ -1,6 +1,6 @@
 inherit: [cpackage, make, install]
 
-buildTools: [cmake]
+buildToolsWeak: [cmake]
 buildVars: [CC, CXX, BASEMENT_LIBS]
 buildScript: |
     # Make sure CMake finds other stuff by its own logic too
