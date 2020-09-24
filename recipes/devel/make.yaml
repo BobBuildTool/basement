@@ -1,4 +1,4 @@
-inherit: [autotools]
+inherit: [cpackage, libtool, install]
 
 metaEnvironment:
     PKG_VERSION: "4.3"
@@ -9,10 +9,29 @@ checkoutSCM:
     digestSHA256: "e05fdde47c5f7ca45cb697e973894ff4f5d79e13b750ed57d7b66d8defc78e19"
     stripComponents: 1
 
+# We do not build make with make. Instead call the manual build script that is
+# in the sources for this case after configuring the package.
 buildVars: [AR]
 buildScript: |
     export ac_cv_prog_AR="$AR"
-    autotoolsBuild $1 --without-guile
+
+    mkdir -p build install
+    pushd build
+    $1/configure \
+        ${AUTOCONF_BUILD:+--build=${AUTOCONF_BUILD}} \
+        ${AUTOCONF_HOST:+--host=${AUTOCONF_HOST}} \
+        ${AUTOCONF_TARGET:+--target=${AUTOCONF_TARGET}} \
+        --prefix="/usr" \
+        --sysconfdir="/etc" \
+        --localstatedir="/var" \
+        --libdir=/usr/lib \
+        --disable-dependency-tracking \
+        --without-guile
+    $1/build.sh
+    popd
+
+    mkdir -p install/usr/bin
+    cp -a build/make install/usr/bin/
 
 packageScript: |
-    autotoolsPackageTgt
+    installPackageTgt "$1/install/"
