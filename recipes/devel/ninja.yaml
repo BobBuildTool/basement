@@ -1,12 +1,12 @@
 inherit: [cmake]
 
 metaEnvironment:
-    PKG_VERSION: "1.10.0"
+    PKG_VERSION: "1.10.0.gfb670.kitware.jobserver-1"
 
 checkoutSCM:
     scm: url
-    url: https://github.com/ninja-build/ninja/archive/v1.10.0.tar.gz
-    digestSHA256: 3810318b08489435f8efc19c05525e80a993af5a55baa0dfeae0465a9d45f99f
+    url: https://github.com/Kitware/ninja/archive/v1.10.0.gfb670.kitware.jobserver-1.tar.gz
+    digestSHA256: d00033813993116a4e14f835df813daee9916b107333d88dbb798a22f8671b1f
     stripComponents: 1
 
 buildScript: |
