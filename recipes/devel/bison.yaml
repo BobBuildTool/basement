@@ -3,8 +3,10 @@ inherit: [autotools]
 metaEnvironment:
     PKG_VERSION: "3.4.2"
 
+# parallel make sometimes failes in examples/c/reccalc/...
+jobServer: False
 privateEnvironment:
-    MAKE_JOBS: "1"  # parallel make sometimes failes in examples/c/reccalc/...
+    MAKE_JOBS: "1"
 
 checkoutSCM:
     scm: url

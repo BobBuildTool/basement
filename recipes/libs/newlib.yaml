@@ -27,7 +27,7 @@ buildScript: |
         --enable-lite-exit \
         --enable-target-optspace
     makeParallel
-    make install DESTDIR=${PWD}/../install
+    makeSequential install DESTDIR=${PWD}/../install
     popd
     pushd install
     mv usr/$AUTOCONF_TARGET/* usr/

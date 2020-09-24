@@ -1,8 +1,23 @@
+jobServer: True
 buildToolsWeak: [make]
 buildVarsWeak: [MAKE_JOBS]
 buildScript: |
+    # The jobServer feature is enabled. The parallelism is normally inherited
+    # from Bob. If MAKEFLAGS is not set (e.g. when invoked from the command
+    # line) we fall back to the number of processors resp. MAKE_JOBS.
     makeParallel()
     {
-        make -j "${MAKE_JOBS-$(nproc)}" "$@"
+        if [[ "${MAKEFLAGS+set}" ]] ; then
+            make "$@"
+        else
+            make -j "${MAKE_JOBS-$(nproc)}" "$@"
+        fi
     }
 
+    makeSequential()
+    {
+        (
+            unset MAKEFLAGS
+            exec make "$@"
+        )
+    }
