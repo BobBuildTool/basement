@@ -37,32 +37,35 @@ buildScript: |
     {
         mkdir -p build install
         pushd build
-        $GCC_SRC/configure \
-            --build=${AUTOCONF_BUILD} \
-            --host=${AUTOCONF_HOST} \
-            --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST}} \
-            --prefix=/usr \
-            ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
-            ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
-            ${GCC_TARGET_FLOAT_ABI:+--with-float=$GCC_TARGET_FLOAT_ABI} \
-            --enable-initfini-array \
-            "${@}" \
-            --disable-gtk-doc \
-            --disable-gtk-doc-html \
-            --disable-doc \
-            --disable-docs \
-            --disable-documentation \
-            --disable-debug \
-            --with-xmlto=no \
-            --with-fop=no \
-            --with-gmp-include=${BOB_DEP_PATHS[libs::gmp-dev]}/usr/include \
-            --with-gmp-lib=${BOB_DEP_PATHS[libs::gmp-dev]}/usr/lib \
-            --with-mpfr-include=${BOB_DEP_PATHS[libs::mpfr-dev]}/usr/include \
-            --with-mpfr-lib=${BOB_DEP_PATHS[libs::mpfr-dev]}/usr/lib \
-            --with-mpc-include=${BOB_DEP_PATHS[libs::mpc-dev]}/usr/include \
-            --with-mpc-lib=${BOB_DEP_PATHS[libs::mpc-dev]}/usr/lib \
-            --with-isl-include=${BOB_DEP_PATHS[libs::isl-dev]}/usr/include \
-            --with-isl-lib=${BOB_DEP_PATHS[libs::isl-dev]}/usr/lib
+        if [[ $GCC_SRC/configure -nt .configure.stamp ]] ; then
+            $GCC_SRC/configure \
+                --build=${AUTOCONF_BUILD} \
+                --host=${AUTOCONF_HOST} \
+                --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST}} \
+                --prefix=/usr \
+                ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
+                ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
+                ${GCC_TARGET_FLOAT_ABI:+--with-float=$GCC_TARGET_FLOAT_ABI} \
+                --enable-initfini-array \
+                "${@}" \
+                --disable-gtk-doc \
+                --disable-gtk-doc-html \
+                --disable-doc \
+                --disable-docs \
+                --disable-documentation \
+                --disable-debug \
+                --with-xmlto=no \
+                --with-fop=no \
+                --with-gmp-include=${BOB_DEP_PATHS[libs::gmp-dev]}/usr/include \
+                --with-gmp-lib=${BOB_DEP_PATHS[libs::gmp-dev]}/usr/lib \
+                --with-mpfr-include=${BOB_DEP_PATHS[libs::mpfr-dev]}/usr/include \
+                --with-mpfr-lib=${BOB_DEP_PATHS[libs::mpfr-dev]}/usr/lib \
+                --with-mpc-include=${BOB_DEP_PATHS[libs::mpc-dev]}/usr/include \
+                --with-mpc-lib=${BOB_DEP_PATHS[libs::mpc-dev]}/usr/lib \
+                --with-isl-include=${BOB_DEP_PATHS[libs::isl-dev]}/usr/include \
+                --with-isl-lib=${BOB_DEP_PATHS[libs::isl-dev]}/usr/lib
+            touch .configure.stamp
+        fi
         makeParallel
         make install DESTDIR=${PWD}/../install
         popd
