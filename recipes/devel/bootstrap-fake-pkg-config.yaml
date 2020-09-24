@@ -1,0 +1,7 @@
+# This declares a non-functional pkg-config to satisfy the initial circular
+# dependency.
+packageScript: |
+    ln -s /bin/false pkg-config
+
+provideTools:
+    pkg-config: "."

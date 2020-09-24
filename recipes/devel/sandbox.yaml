@@ -12,6 +12,10 @@ depends:
         name: devel::bootstrap-sandbox-toolchain
         use: [environment, tools]
         forward: True
+    -
+        name: devel::bootstrap-fake-pkg-config
+        use: [tools]
+        forward: True
 
     # some required host tools
     -
