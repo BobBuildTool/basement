@@ -14,7 +14,7 @@ checkoutSCM:
     digestSHA1: "6c0e467345ca6832eff6add85124c6e81e11d174"
     stripComponents: 1
 
-buildTools: [target-toolchain]
+buildTools: [host-toolchain, target-toolchain]
 buildVars: [AUTOCONF_TARGET]
 buildScript: |
     mkdir -p build install
