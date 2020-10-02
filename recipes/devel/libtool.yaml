@@ -1,7 +1,7 @@
 # Eagerly inherit libtool beause it defines a checkoutScript and will be
 # inherited by the autotools class anyway. This prevents a separate checkout
 # for the anonymous multiPackage which does not depend on the autotools class.
-inherit: [libtool]
+inherit: [libtool, patch]
 
 metaEnvironment:
     PKG_VERSION: "2.4.6"
@@ -14,6 +14,10 @@ checkoutSCM:
     url: ${GNU_MIRROR}/libtool/libtool-${PKG_VERSION}.tar.gz
     digestSHA1: "25b6931265230a06f0fc2146df64c04e5ae6ec33"
     stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<<libtool/buildroot-libtool-v2.4.4.patch>>
 
 multiPackage:
     # Special package which does not depend on autotools class and does not use
