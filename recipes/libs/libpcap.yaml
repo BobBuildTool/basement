@@ -1,0 +1,20 @@
+inherit: [autotools]
+
+metaEnvironment:
+    PKG_VERSION: "1.9.1"
+
+checkoutSCM:
+    scm: url
+    url: https://www.tcpdump.org/release/libpcap-${PKG_VERSION}.tar.gz
+    digestSHA1: 04d6e619defad5bb17af15f6d2304e79b649786c
+    stripComponents: 1
+
+buildTools: [flex, bison]
+buildScript: |
+    autotoolsBuild "$1"
+
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
+    tgt:
+        packageScript: autotoolsPackageTgt
