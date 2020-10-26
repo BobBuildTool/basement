@@ -1,4 +1,4 @@
-bobMinimumVersion: "0.17.3.dev63" # require weak tools
+bobMinimumVersion: "0.18.0"
 
 plugins:
     - multiarch
