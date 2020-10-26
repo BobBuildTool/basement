@@ -1,6 +1,8 @@
 #ifndef HOLLER_H
 #define HOLLER_H
 
-void holler(const char *s);
+#include "libholler_export.h"
+
+LIBHOLLER_EXPORT void holler(const char *s);
 
 #endif

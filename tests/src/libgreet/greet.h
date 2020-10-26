@@ -1,6 +1,8 @@
 #ifndef GREET_H
 #define GREET_H
 
-void greet(const char *name);
+#include "libgreet_export.h"
+
+LIBGREET_EXPORT void greet(const char *name);
 
 #endif
