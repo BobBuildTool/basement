@@ -1,0 +1,25 @@
+inherit: [cmake]
+
+depends:
+    - cmake::libholler-dev
+    - use: []
+      depends:
+        - cmake::libholler-tgt
+
+checkoutSCM:
+    scm: import
+    url: ../src/libgreet/
+    prune: True
+
+buildScript: |
+   cmakeBuild "$1"
+
+multiPackage:
+    dev:
+        packageScript: |
+           cmakePackageDev
+        provideDeps: [ "*-dev" ]
+    tgt:
+        packageScript: |
+           cmakePackageTgt
+        provideDeps: [ "*-tgt" ]
