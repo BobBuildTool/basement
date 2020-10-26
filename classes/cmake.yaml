@@ -1,4 +1,4 @@
-inherit: [cpackage, make, install]
+inherit: [cpackage, ninja, install]
 
 buildToolsWeak: [cmake]
 buildVars: [CC, CXX, BASEMENT_LIBS]
@@ -62,54 +62,60 @@ buildScript: |
             ;;
     esac
 
-    # usage: cmakeBuild [-i <install_target>] [-m <make_target>] [-o <options>] [-O <options>] <source-path> [-DCMAKE_...]
-    # $1 : source path
+    # usage: cmakeBuild [-m <ninja_target>] [-o <ninja_options>]
+    #                   [-n] [-i <install_component>]
+    #                   <source-path> [-DCMAKE_...]
     cmakeBuild()
     {
-        local MAKE_TARGET=
+        local MAKE_TARGETS=( )
         local MAKE_OPTIONS=( )
-        local INSTALL_TAGET=install
-        local INSTALL_OPTIONS=( )
+        local INSTALL=yes
+        local INSTALL_COMPONENT=
 
         # parse arguments
         OPTIND=1
         local opt
-        while getopts "i:m:o:O:" opt ; do
+        while getopts "i:m:no:" opt ; do
             case "$opt" in
                 i)
-                    INSTALL_TAGET="$OPTARG"
+                    INSTALL_COMPONENT="$OPTARG"
                     ;;
                 m)
-                    MAKE_TARGET="$OPTARG"
+                    MAKE_TARGETS+=( "$OPTARG" )
+                    ;;
+                n)
+                    INSTALL=
                     ;;
                 o)
                     MAKE_OPTIONS+=( "$OPTARG" )
                     ;;
-                O)
-                    INSTALL_OPTIONS+=( "$OPTARG" )
-                    ;;
                 \?)
-                  echo "Invalid option: -$OPTARG" >&2
-                  exit 1
-                  ;;
+                    echo "Invalid option: -$OPTARG" >&2
+                    exit 1
+                    ;;
             esac
         done
         shift $(( OPTIND -1 ))
 
         mkdir -p build install
         pushd build
+
         cmake "$1" \
+            -G Ninja \
             ${CMAKE_TOOLCHAIN_FILE:+-DCMAKE_TOOLCHAIN_FILE="$CMAKE_TOOLCHAIN_FILE"} \
             -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH" \
             -DCMAKE_BUILD_TYPE=Bob \
             -DCMAKE_INSTALL_PREFIX="/usr" \
             -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
             "${@:2}"
-        makeParallel $MAKE_TARGET ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"}
-        if [[ -n "$INSTALL_TAGET" ]] ; then
-            make $INSTALL_TAGET \
-                DESTDIR=${PWD}/../install \
-                ${INSTALL_OPTIONS:+"${INSTALL_OPTIONS[@]}"}
+
+        ninjaParallel ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"} \
+            ${MAKE_TARGETS:+"${MAKE_TARGET[@]}"}
+
+        if [[ -n "$INSTALL" ]] ; then
+            DESTDIR="${PWD}/../install" cmake \
+                ${INSTALL_COMPONENT:+-DCOMPONENT="$INSTALL_COMPONENT"} \
+                -P cmake_install.cmake
         fi
         popd
     }
