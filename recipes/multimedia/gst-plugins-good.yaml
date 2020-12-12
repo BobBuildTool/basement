@@ -1,0 +1,32 @@
+inherit: [meson]
+
+metaEnvironment:
+   PKG_VERSION: "1.18.2"
+
+depends:
+   - multimedia::gst-plugins-base-dev
+   - use: []
+     depends:
+        - multimedia::gst-plugins-base-tgt
+
+checkoutSCM:
+   -
+    scm: url
+    url: https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PKG_VERSION}.tar.xz
+    digestSHA1: 4d779ad47ebb2b05b01828cba0c914d74d036fee
+
+buildVars: [PKG_VERSION]
+buildScript: |
+   mesonBuild $1/gst-plugins-good-${PKG_VERSION} \
+        -Dtests=disabled \
+        -Dexamples=disabled
+
+multiPackage:
+   dev:
+      packageScript: |
+         mesonPackageDev
+      provideDeps: [ '*-dev' ]
+   tgt:
+      packageScript: |
+         mesonPackageTgt
+      provideDeps: [ '*-tgt' ]

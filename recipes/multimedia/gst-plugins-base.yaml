@@ -1,0 +1,42 @@
+inherit: [meson]
+
+metaEnvironment:
+   PKG_VERSION: "1.18.2"
+
+depends:
+    # Requires glib-mkenums
+    - name: libs::glib-tools
+      use: [tools]
+      tools:
+        target-toolchain: host-toolchain
+
+    - libs::liborc-dev
+    - multimedia::gstreamer-dev
+    - use: []
+      depends:
+        - libs::liborc-tgt
+        - multimedia::gstreamer-tgt
+
+checkoutSCM:
+   -
+    scm: url
+    url: https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-${PKG_VERSION}.tar.xz
+    digestSHA1: 1067885cb91070cd1f04b6381b38a26760dd84f9
+
+buildVars: [PKG_VERSION]
+buildTools: [glib]
+buildScript: |
+    mesonBuild $1/gst-plugins-base-${PKG_VERSION} \
+        -Dgl=disabled \
+        -Dtests=disabled \
+        -Dexamples=disabled
+
+multiPackage:
+   dev:
+      packageScript: |
+         mesonPackageDev
+      provideDeps: [ '*-dev' ]
+   tgt:
+      packageScript: |
+         mesonPackageTgt
+      provideDeps: [ '*-tgt' ]
