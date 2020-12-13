@@ -2,11 +2,16 @@ inherit: [meson]
 
 checkoutSCM:
     scm: import
-    url: ../src/libholler/
+    url: src/libholler/
     prune: True
 
 buildScript: |
     mesonBuild "$1"
 
-packageScript: |
-   mesonPackageDev
+multiPackage:
+    dev:
+        packageScript: |
+           mesonPackageDev
+    tgt:
+        packageScript: |
+           mesonPackageTgt

@@ -2,7 +2,7 @@ inherit: [cmake]
 
 checkoutSCM:
     scm: import
-    url: ../src/libholler/
+    url: src/libholler/
     prune: True
 
 buildScript: |

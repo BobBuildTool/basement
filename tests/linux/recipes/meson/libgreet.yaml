@@ -1,11 +1,14 @@
 inherit: [meson]
 
 depends:
-   - meson::libholler
+    - meson::libholler-dev
+    - use: []
+      depends:
+        - meson::libholler-tgt
 
 checkoutSCM:
     scm: import
-    url: ../src/libgreet/
+    url: src/libgreet/
     prune: True
 
 buildScript: |
@@ -14,5 +17,12 @@ buildScript: |
 packageScript: |
    mesonPackageDev
 
-provideDeps:
-   - meson::libholler
+multiPackage:
+    dev:
+        packageScript: |
+           mesonPackageDev
+        provideDeps: [ "*-dev" ]
+    tgt:
+        packageScript: |
+           mesonPackageTgt
+        provideDeps: [ "*-tgt" ]
