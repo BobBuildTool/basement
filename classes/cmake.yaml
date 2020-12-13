@@ -17,8 +17,10 @@ buildScript: |
     # http://mingw.org/wiki/Posix_path_conversion
     if [[ "$AUTOCONF_HOST" == *-win32 ]] ; then
         CMAKE_INSTALL_PREFIX="//usr"
+        CMAKE_INSTALL_SYSCONFDIR="//etc"
     else
         CMAKE_INSTALL_PREFIX="/usr"
+        CMAKE_INSTALL_SYSCONFDIR="/etc"
     fi
 
     # CMake does not honor CPPFLAGS! Merge them with C(XX)FLAGS.
@@ -122,6 +124,7 @@ buildScript: |
             -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH" \
             -DCMAKE_BUILD_TYPE=Bob \
             -DCMAKE_INSTALL_PREFIX="$CMAKE_INSTALL_PREFIX" \
+            -DCMAKE_INSTALL_SYSCONFDIR="$CMAKE_INSTALL_SYSCONFDIR" \
             -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
             "${@:2}"
 
