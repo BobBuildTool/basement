@@ -1,15 +1,29 @@
 inherit: [ "basement::rootrecipe", meson ]
 
-depends:
-   - meson::libgreet
-
 checkoutSCM:
     scm: import
-    url: ../src/greeter/
+    url: src/greeter/
     prune: True
 
 buildScript: |
-   mesonBuild "$1"
+    mesonBuild "$1"
+    for i in "${!BOB_DEP_PATHS[@]}" ; do
+        if [[ $i == *-tgt ]] ; then
+            rsync -a "${BOB_DEP_PATHS[$i]}/" install/
+        fi
+    done
 
 packageScript: |
    mesonPackageTgt
+
+multiPackage:
+    host:
+        depends: &deps
+           - meson::libgreet-dev
+           - meson::libgreet-tgt
+    cross:
+        depends:
+            - name: devel::cross-toolchain-x86_64-linux-gnu
+              use: [tools]
+              forward: True
+            - depends: *deps

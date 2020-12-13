@@ -1,4 +1,4 @@
-inherit: [meson]
+inherit: [cmake]
 
 checkoutSCM:
     scm: import
@@ -6,12 +6,12 @@ checkoutSCM:
     prune: True
 
 buildScript: |
-    mesonBuild "$1"
+    cmakeBuild "$1"
 
 multiPackage:
     dev:
         packageScript: |
-           mesonPackageDev
+           cmakePackageDev
     tgt:
         packageScript: |
-           mesonPackageTgt
+           cmakePackageTgt

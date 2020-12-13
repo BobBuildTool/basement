@@ -4,11 +4,17 @@ project(LibHoller
    LANGUAGES C)
 
 include(GNUInstallDirs)
+include(GenerateExportHeader)
+
+# do not export any symbols by default
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 # Add library
 add_library(LibHoller holler.c holler.h)
 add_library(LibHoller::LibHoller ALIAS LibHoller)
 target_include_directories(LibHoller
+   PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
@@ -18,12 +24,12 @@ set_target_properties(LibHoller PROPERTIES
 	POSITION_INDEPENDENT_CODE "${BUILD_SHARED_LIBS}"
 )
 
+# Generate header for export/import definitions
+generate_export_header(LibHoller)
 
 # install rules
-install(TARGETS LibHoller
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        EXPORT LibHollerTargets)
-install(FILES holler.h DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+install(TARGETS LibHoller EXPORT LibHollerTargets)
+install(FILES holler.h ${PROJECT_BINARY_DIR}/libholler_export.h TYPE INCLUDE)
 
 # package stuff
 include(CMakePackageConfigHelpers)

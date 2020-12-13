@@ -1,0 +1,36 @@
+inherit: [ "basement::rootrecipe", cmake ]
+
+checkoutSCM:
+    scm: import
+    url: src/greeter/
+    prune: True
+
+buildScript: |
+    cmakeBuild "$1"
+    for i in "${!BOB_DEP_PATHS[@]}" ; do
+        if [[ $i == *-tgt ]] ; then
+            rsync -a "${BOB_DEP_PATHS[$i]}/" install/
+        fi
+    done
+
+packageScript: |
+    cmakePackageTgt
+
+multiPackage:
+    host:
+        depends: &deps
+            - cmake::libgreet-dev
+            - cmake::libgreet-tgt
+    cross:
+        depends:
+            - if: !expr |
+                "${BOB_HOST_PLATFORM}" == "msys" || "${BOB_HOST_PLATFORM}" == "win32"
+              name: devel::win::vs2019-toolchain-vc142-amd64
+              use: [environment, tools]
+              forward: True
+            - if: !expr |
+                "${BOB_HOST_PLATFORM}" != "msys" && "${BOB_HOST_PLATFORM}" != "win32"
+              name: devel::cross-toolchain-x86_64-linux-gnu
+              use: [tools]
+              forward: True
+            - depends: *deps

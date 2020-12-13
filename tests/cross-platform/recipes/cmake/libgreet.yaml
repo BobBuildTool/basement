@@ -1,10 +1,10 @@
-inherit: [meson]
+inherit: [cmake]
 
 depends:
-    - meson::libholler-dev
+    - cmake::libholler-dev
     - use: []
       depends:
-        - meson::libholler-tgt
+        - cmake::libholler-tgt
 
 checkoutSCM:
     scm: import
@@ -12,17 +12,14 @@ checkoutSCM:
     prune: True
 
 buildScript: |
-   mesonBuild "$1"
-
-packageScript: |
-   mesonPackageDev
+   cmakeBuild "$1"
 
 multiPackage:
     dev:
         packageScript: |
-           mesonPackageDev
+           cmakePackageDev
         provideDeps: [ "*-dev" ]
     tgt:
         packageScript: |
-           mesonPackageTgt
+           cmakePackageTgt
         provideDeps: [ "*-tgt" ]

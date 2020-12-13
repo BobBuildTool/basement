@@ -4,14 +4,22 @@ project(LibGreet
    LANGUAGES C)
 
 include(GNUInstallDirs)
+include(GenerateExportHeader)
 
+# do not export any symbols by default
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
+
+# Find dependency if target does not exist yet in build tree
 if (NOT TARGET LibHoller::LibHoller)
    find_package(LibHoller 1.0 CONFIG REQUIRED)
 endif()
 
+# Add library
 add_library(LibGreet greet.c greet.h)
 add_library(LibGreet::LibGreet ALIAS LibGreet)
 target_include_directories(LibGreet
+   PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(LibGreet PUBLIC LibHoller::LibHoller)
@@ -22,11 +30,12 @@ set_target_properties(LibGreet PROPERTIES
 	POSITION_INDEPENDENT_CODE "${BUILD_SHARED_LIBS}"
 )
 
+# Generate header for export/import definitions
+generate_export_header(LibGreet)
+
 # install rules
-install(TARGETS LibGreet
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        EXPORT LibGreetTargets)
-install(FILES greet.h DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+install(TARGETS LibGreet EXPORT LibGreetTargets)
+install(FILES greet.h ${PROJECT_BINARY_DIR}/libgreet_export.h TYPE INCLUDE)
 
 # package stuff
 include(CMakePackageConfigHelpers)

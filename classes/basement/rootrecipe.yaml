@@ -1,64 +1,88 @@
 root: True
 
 depends:
-    # Setup sandbox with corresponding toolchain
-    - name: devel::sandbox
-      use: [sandbox]
-      forward: True
-    - name: devel::sandbox-toolchain
-      use: [environment, tools]
-      forward: True
+    - if: !expr |
+        "${BOB_HOST_PLATFORM}" == "linux"
+      depends:
+        # Setup sandbox with corresponding toolchain
+        - name: devel::sandbox
+          use: [sandbox]
+          forward: True
+        - name: devel::sandbox-toolchain
+          use: [environment, tools]
+          forward: True
 
-    # Declare some inital tools that are needed to build the intial tools.
-    - name: devel::bootstrap-fake-pkg-config
-      use: [tools]
-      forward: True
+        # Declare some inital tools that are needed to build the intial tools.
+        - name: devel::bootstrap-fake-pkg-config
+          use: [tools]
+          forward: True
 
-    # Use compatability toolchain that practically runs on all major
-    # distributions. The user might explicitly disable it's usage but this will
-    # then taint all binary artifacts built for the host.
-    - name: devel::host-compat-toolchain
-      use: [environment, tools]
-      forward: True
-      if: "${BASEMENT_HOST_COMPAT_TOOLCHAIN:-1}"
+        # Use compatability toolchain that practically runs on all major
+        # distributions. The user might explicitly disable it's usage but this will
+        # then taint all binary artifacts built for the host.
+        - name: devel::host-compat-toolchain
+          use: [environment, tools]
+          forward: True
+          if: "${BASEMENT_HOST_COMPAT_TOOLCHAIN:-1}"
 
-    # Pick up all tools defined by the basement project. The downstream users
-    # can pick them as they like. Make sure to update the basement::buildall
-    # class to catch added tools too.
+        # Pick up all tools defined by the basement project. The downstream users
+        # can pick them as they like. Make sure to update the basement::buildall
+        # class to catch added tools too.
 
-    - name: devel::make
-      use: [tools]
-      forward: True
-    - name: devel::autotools
-      use: [tools]
-      forward: True
-    - name: devel::bison
-      use: [tools]
-      forward: True
-    - name: devel::cmake-bootstrap  # CMake is self-hosted and has a circular
-      use: [tools]                  # dependency to itself in proper builds.
-      forward: True
-    - name: devel::ninja
-      use: [tools]
-      forward: True
-    - name: devel::meson
-      use: [tools]
-      forward: True
-    - name: utils::cpio
-      use: [tools]
-      forward: True
-    - name: devel::flex
-      use: [tools]
-      forward: True
-    - name: devel::pkg-config
-      use: [tools]
-      forward: True
-    - name: devel::cmake            # Overwrite "cmake" tool with properly
-      use: [tools]                  # built one.
-      forward: True
-    - name: devel::squashfs-tools
-      use: [tools]
-      forward: True
-    - name: utils::e2fsprogs
-      use: [tools]
-      forward: True
+        - name: devel::make
+          use: [tools]
+          forward: True
+        - name: devel::autotools
+          use: [tools]
+          forward: True
+        - name: devel::bison
+          use: [tools]
+          forward: True
+        - name: devel::cmake-bootstrap  # CMake is self-hosted and has a circular
+          use: [tools]                  # dependency to itself in proper builds.
+          forward: True
+        - name: devel::ninja
+          use: [tools]
+          forward: True
+        - name: devel::meson
+          use: [tools]
+          forward: True
+        - name: utils::cpio
+          use: [tools]
+          forward: True
+        - name: devel::flex
+          use: [tools]
+          forward: True
+        - name: devel::pkg-config
+          use: [tools]
+          forward: True
+        - name: devel::cmake            # Overwrite "cmake" tool with properly
+          use: [tools]                  # built one.
+          forward: True
+        - name: devel::squashfs-tools
+          use: [tools]
+          forward: True
+        - name: utils::e2fsprogs
+          use: [tools]
+          forward: True
+
+    - if: !expr |
+        "${BOB_HOST_PLATFORM}" == "msys"
+      depends:
+        # Just declare the MSYS gcc as toolchain. The user will most probably
+        # use a visual studio toolchain or clang as target toolchain.
+        - name: devel::bootstrap-host-toolchain
+          use: [tools]
+          forward: True
+
+        # Define a couple of tools. They are all native win32 executables for
+        # speed reasons.
+        - name: devel::bootstrap-fake-pkg-config
+          use: [tools]
+          forward: True
+        - name: devel::win::cmake
+          use: [tools]
+          forward: True
+        - name: devel::win::ninja
+          use: [tools]
+          forward: True

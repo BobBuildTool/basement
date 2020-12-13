@@ -1,4 +1,4 @@
-inherit: [cmake]
+inherit: [cpackage, install]
 
 metaEnvironment:
     PKG_VERSION: "1.10.0.gfb670.kitware.jobserver-1"
@@ -9,13 +9,15 @@ checkoutSCM:
     digestSHA256: d00033813993116a4e14f835df813daee9916b107333d88dbb798a22f8671b1f
     stripComponents: 1
 
+buildVars: [CC, CXX]
 buildScript: |
-    cmakeBuild -i "" "$1" # no install target!
+    "$1/configure.py" --bootstrap
+    ./ninja
     mkdir -p install/usr/bin
-    cp build/ninja install/usr/bin/
+    cp ninja install/usr/bin/
 
 packageScript: |
-    cmakePackageTgt
+    installPackageTgt "$1/install/"
 
 provideTools:
     ninja: usr/bin

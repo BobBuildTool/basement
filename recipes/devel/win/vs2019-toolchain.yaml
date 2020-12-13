@@ -1,0 +1,64 @@
+shared: True
+
+# This is no self-contained toolchain. It is just a sentinel for the installed
+# version of the host. The paths are gathered by the vsvars plugin and used by
+# the cpackage class. The paths are consumed as weak variables to be
+# independent of the actual install location. To let Bob see that the different
+# flavours of the toolchain we consume the relevant variables here to taint the
+# "target-toolchain" tool accordingly.
+packageVars: [VC_ARCH, VC_VERSION]
+packageScript: |
+    echo "VS2019 VSVARSALL" > version.txt
+
+provideTools:
+    target-toolchain:
+        path: "just_a_placeholder"
+        environment:
+            AUTOCONF_HOST: "x86_64-pc-win32"
+
+            INCLUDE: "$(vsvars2019,INCLUDE,$VC_ARCH,-vcvars_ver=$VC_VERSION)"
+            LIBPATH: "$(vsvars2019,LIBPATH,$VC_ARCH,-vcvars_ver=$VC_VERSION)"
+            LIB: "$(vsvars2019,LIB,$VC_ARCH,-vcvars_ver=$VC_VERSION)"
+            VS_PATH: "$(vsvars2019,PATH,$VC_ARCH,-vcvars_ver=$VC_VERSION)"
+
+            CC: "cl"
+            CXX: "cl"
+
+            CPPFLAGS: ""
+            CFLAGS: "-O$(if-then-else,$(eq,${BASEMENT_OPTIMIZE},0),d,${BASEMENT_OPTIMIZE})$(if-then-else,${BASEMENT_DEBUG}, -Zi,) -W3"
+            CXXFLAGS: "-O$(if-then-else,$(eq,${BASEMENT_OPTIMIZE},0),d,${BASEMENT_OPTIMIZE})$(if-then-else,${BASEMENT_DEBUG}, -Zi,) -W3"
+            LDFLAGS: ""
+
+multiPackage:
+    vc140:
+        privateEnvironment:
+            VC_VERSION: "14.0"
+        multiPackage:
+            amd64:
+                privateEnvironment:
+                    VC_ARCH: "amd64"
+            x86:
+                privateEnvironment:
+                    VC_ARCH: "x86"
+
+    vc141:
+        privateEnvironment:
+            VC_VERSION: "14.1"
+        multiPackage:
+            amd64:
+                privateEnvironment:
+                    VC_ARCH: "amd64"
+            x86:
+                privateEnvironment:
+                    VC_ARCH: "x86"
+
+    vc142:
+        privateEnvironment:
+            VC_VERSION: "14.2"
+        multiPackage:
+            amd64:
+                privateEnvironment:
+                    VC_ARCH: "amd64"
+            x86:
+                privateEnvironment:
+                    VC_ARCH: "x86"
