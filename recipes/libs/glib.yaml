@@ -35,5 +35,9 @@ multiPackage:
             autotoolsPackageDev "$1" "/usr/lib/glib-2.0/***"
         provideDeps: [ "*-dev" ]
     tgt:
-        packageScript: autotoolsPackageTgt
+        packageScript: autotoolsPackageLib
         provideDeps: [ "*-tgt" ]
+    tools:
+        packageScript: mesonPackageBin
+        provideTools:
+            glib: usr/bin
