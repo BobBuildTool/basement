@@ -1,0 +1,19 @@
+https://bugzilla.gnome.org/show_bug.cgi?id=761550
+
+diff -Nurp a/glib/glib/gdate.c b/glib/glib/gdate.c
+--- a/glib/glib/gdate.c	2016-01-24 22:51:38.000000000 +0100
++++ b/glib/glib/gdate.c	2020-12-17 21:20:56.098040883 +0100
+@@ -2439,6 +2439,8 @@ win32_strftime_helper (const GDate     *
+  *
+  * Returns: number of characters written to the buffer, or 0 the buffer was too small
+  */
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+ gsize     
+ g_date_strftime (gchar       *s, 
+                  gsize        slen, 
+@@ -2549,3 +2551,4 @@ g_date_strftime (gchar       *s,
+   return retval;
+ #endif
+ }
++#pragma GCC diagnostic pop

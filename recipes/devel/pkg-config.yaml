@@ -1,7 +1,7 @@
 # Eagerly inherit libtool beause it defines a checkoutScript and will be
 # inherited by the autotools class anyway. This prevents a separate checkout
 # for the aclocal multiPackage which does not depend on the autotools class.
-inherit: [libtool]
+inherit: [libtool, patch]
 
 metaEnvironment:
     PKG_VERSION: "0.29.1"
@@ -11,6 +11,10 @@ checkoutSCM:
     url: https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_VERSION}.tar.gz
     digestSHA1: "271ce928f6d673cc16cbced2bfd14a5f2e5d3d37"
     stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<<pkg-config/*.patch>>
 
 multiPackage:
     "":
@@ -36,6 +40,15 @@ multiPackage:
 
         provideDeps: [ "*-tgt" ]
 
+    tool:
+        inherit: [autotools]
+        buildScript: |
+            autotoolsBuild $1 \
+               --disable-host-tool \
+               --with-internal-glib \
+               --enable-define-prefix
+        packageScript: |
+            autotoolsPackageTgt
         provideTools:
             pkg-config: usr/bin
 
