@@ -22,6 +22,7 @@ packageScript: |
     autotoolsPackageTgt
     mv usr/bin/bison usr/bin/bison-real
     cat >usr/bin/bison <<'EOF'
+    #!/bin/sh
     export BISON_PKGDATADIR="${0%/*}/../share/bison"
     bison-real "$@"
     EOF
