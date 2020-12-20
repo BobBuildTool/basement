@@ -44,6 +44,11 @@ packageScript: |
         local K V
 
         while IFS=: read -r K V ; do
+            # Skip empty values to not introduce empty elements in the Requires
+            # list that lead to parsing errors.
+            if [[ $V == *([[:space:]]) ]] ; then
+                continue
+            fi
             case "$K" in
                 Requires|Requires.private)
                     Requires+=( "$V" )
