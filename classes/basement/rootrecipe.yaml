@@ -71,6 +71,9 @@ depends:
         - name: python::python3
           use: [tools]
           forward: True
+        - name: python::python3-full
+          use: [tools]
+          forward: True
 
     - if: !expr |
         "${BOB_HOST_PLATFORM}" == "msys"

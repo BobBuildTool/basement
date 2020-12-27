@@ -1,19 +1,17 @@
 metaEnvironment:
-    PKG_VERSION: "44.1.1"
+    PKG_VERSION: "20.3.1"
 
 checkoutSCM:
     scm: url
-    url: https://github.com/pypa/setuptools/archive/v${PKG_VERSION}.tar.gz
-    digestSHA256: d8203b2425014dd7b15b95c69a41454a98c90e5383c6a23d518f61c2e3e86bfd
-    extract: False
+    url: https://github.com/pypa/pip/archive/${PKG_VERSION}.tar.gz
+    digestSHA256: "633c67c520027bead41f3b2cf0772f234542246838135f8a92c919e593068593"
 
 buildTools: [python3]
 buildVars: [PKG_VERSION]
 buildScript: |
     mkdir -p build install
     pushd build
-    tar -xf "$1/v${PKG_VERSION}.tar.gz" --strip-components=1
-    python3 bootstrap.py
+    tar -xf "$1/${PKG_VERSION}.tar.gz" --strip-components=1
     python3 setup.py install \
         --root "$PWD/../install" \
         --prefix usr

@@ -1,10 +1,10 @@
 metaEnvironment:
-    PKG_VERSION: "44.1.1"
+    PKG_VERSION: "0.36.2"
 
 checkoutSCM:
     scm: url
-    url: https://github.com/pypa/setuptools/archive/v${PKG_VERSION}.tar.gz
-    digestSHA256: d8203b2425014dd7b15b95c69a41454a98c90e5383c6a23d518f61c2e3e86bfd
+    url: https://github.com/pypa/wheel/archive/${PKG_VERSION}.tar.gz
+    digestSHA256: c31e70355935f1d47bf0d898661a1e9dd47966d935c0a785dbe5b41eedf6802a
     extract: False
 
 buildTools: [python3]
@@ -12,8 +12,7 @@ buildVars: [PKG_VERSION]
 buildScript: |
     mkdir -p build install
     pushd build
-    tar -xf "$1/v${PKG_VERSION}.tar.gz" --strip-components=1
-    python3 bootstrap.py
+    tar -xf "$1/${PKG_VERSION}.tar.gz" --strip-components=1
     python3 setup.py install \
         --root "$PWD/../install" \
         --prefix usr

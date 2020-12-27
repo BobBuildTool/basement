@@ -1,18 +1,27 @@
 buildTools: [python3]
 buildVars: [PYTHONPATH]
 buildScript: |
-    #if [[ ${BOB_HOST_PLATFORM} == "linux" ]]
-    export PYTHONPATH
+    cat << EOF > getdestlib.py
+    #!/usr/bin/env python3
+    import sysconfig
+
+    print(sysconfig.get_config_var('DESTLIB'))
+    EOF
+    DESTLIB="$(python3 getdestlib.py)"
+
     for i in "${!BOB_DEP_PATHS[@]}" ; do
         if [[ $i == *-dev ]] ; then
-            for j in $(find ${BOB_DEP_PATHS[$i]}/usr -type d -name "python3*") ; do
-                PYTHONPATH+="${PYTHONPATH:+$PYTHONPATH:}$j:$j/lib-dynload:$j/site-packages"
+            PREFIX="${BOB_DEP_PATHS[$i]}$DESTLIB"
+            for j in "" "lib-dynload" "site-packages" ; do
+                PYTHONPATH="${PYTHONPATH:+$PYTHONPATH:}$PREFIX${j:+/$j}"
             done
         fi
     done
-    for i in $(find ${BOB_TOOL_PATHS[python3]}/.. -type d -name "python3*") ; do
-        PYTHONPATH+="${PYTHONPATH:+$PYTHONPATH:}$i:$i/lib-dynload:$i/site-packages"
+    PREFIX="${BOB_TOOL_PATHS[python3]}$DESTLIB"
+    for j in "" "lib-dynload" "site-packages" ; do
+        PYTHONPATH="${PYTHONPATH:+$PYTHONPATH:}$PREFIX${j:+/$j}"
     done
+    export PYTHONPATH
 
     pip_install()
     {

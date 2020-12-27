@@ -55,7 +55,7 @@ multiPackage:
             export ac_cv_working_tzset=yes
 
             autotoolsBuild $PWD/src \
-                --with-ensurepip \
+                --without-ensurepip \
                 --without-cxx-main \
                 --disable-pydoc \
                 --disable-sqlite3 \
@@ -79,6 +79,25 @@ multiPackage:
             autotoolsPackageTgt
 
         provideDeps: [ "*-tgt" ]
+
+        provideTools:
+            python3: usr/bin
+
+    full:
+        depends:
+           - python::python3
+           - python::python3-setuptools
+           - python::python3-pip
+           - python::python3-wheel
+
+        buildScript: |
+            rsync -a "${BOB_DEP_PATHS[python::python3]}/" install/
+            rsync -a "${BOB_DEP_PATHS[python::python3-setuptools]}/" install/
+            rsync -a "${BOB_DEP_PATHS[python::python3-pip]}/" install/
+            rsync -a "${BOB_DEP_PATHS[python::python3-wheel]}/" install/
+
+        packageScript: |
+            autotoolsPackageTgt
 
         provideTools:
             python3: usr/bin
