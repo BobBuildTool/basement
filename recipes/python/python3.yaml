@@ -111,7 +111,7 @@ multiPackage:
                 --disable-uuid
 
         packageScript: |
-            autotoolsPackageTgt "$1" "/usr" "/usr/lib" "/usr/lib/python3.8" "/usr/lib/python3.8/***"
+            autotoolsPackageTgt
 
         provideTools:
             python3: usr/bin
