@@ -1,4 +1,4 @@
-inherit: [cmake]
+inherit: [cmake, python3]
 
 checkoutSCM:
     scm: import
@@ -7,11 +7,13 @@ checkoutSCM:
 
 buildScript: |
     cmakeBuild "$1"
+    pip_install pyparsing
 
 multiPackage:
     dev:
         packageScript: |
            cmakePackageDev
+           installPythonModule
     tgt:
         packageScript: |
-           cmakePackageTgt
+           cmakePackageTgt "$1" "!/usr/lib/python*"

@@ -14,7 +14,7 @@ buildScript: |
     # We need to pass the path of the just built tic
     # able to run on the building machine, so that the
     # terminal database can be created without errors.
-    mkdir tic
+    mkdir -p tic
     pushd tic
     $1/configure
     make -C include
@@ -22,10 +22,14 @@ buildScript: |
     export TIC_PATH=$(pwd)/progs/tic
     popd
 
+    OPTS=( --without-shared --with-normal )
+    if [[ "${AUTOCONF_BUILD:-unknown}" != "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
+        OPTS=( --with-shared --without-normal )
+    fi
+
     autotoolsBuild $1 \
-            --with-shared           \
+            ${OPTS[@]}              \
             --without-debug         \
-            --without-normal        \
             --without-cxx           \
             --without-cxx-binding   \
             --without-ada           \
@@ -39,6 +43,7 @@ buildScript: |
             --enable-const          \
             --enable-overwrite      \
             --enable-pc-files       \
+            --enable-widec          \
             --disable-stripping     \
             --with-pkg-config-libdir="/usr/lib/pkgconfig" \
             --without-manpages
@@ -47,7 +52,7 @@ multiPackage:
     dev:
         packageScript: |
             autotoolsPackageDev "$1" \
-               /usr /usr/bin /usr/bin "/usr/bin/ncurses*-config"
+               "/usr/" "/usr/bin/" "/usr/bin/ncurses*-config"
     tgt:
         packageScript: |
             autotoolsPackageTgt

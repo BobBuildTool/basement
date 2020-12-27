@@ -1,0 +1,36 @@
+buildTools: [python3]
+buildVars: [PYTHONPATH]
+buildScript: |
+    #if [[ ${BOB_HOST_PLATFORM} == "linux" ]]
+    export PYTHONPATH
+    for i in "${!BOB_DEP_PATHS[@]}" ; do
+        if [[ $i == *-dev ]] ; then
+            for j in $(find ${BOB_DEP_PATHS[$i]}/usr -type d -name "python3*") ; do
+                PYTHONPATH+="${PYTHONPATH:+$PYTHONPATH:}$j:$j/lib-dynload:$j/site-packages"
+            done
+        fi
+    done
+    for i in $(find ${BOB_TOOL_PATHS[python3]}/.. -type d -name "python3*") ; do
+        PYTHONPATH+="${PYTHONPATH:+$PYTHONPATH:}$i:$i/lib-dynload:$i/site-packages"
+    done
+
+    pip_install()
+    {
+        mkdir -p install
+        python3 -m pip install $* \
+            --root ${PWD}/install \
+            --prefix usr \
+            --isolated \
+            --disable-pip-version-check \
+            --no-warn-script-location \
+            --no-cache-dir
+    }
+
+packageScript: |
+    BUILD_DIR=$1
+
+    installPythonModule()
+    {
+        rsync -a --delete --exclude "*.dist-info/" --exclude "__pycache__/" --include "/usr/" --include "/usr/lib/" --include "/usr/lib/python3.8/" --include "/usr/lib/python3.8/***" --exclude "*" $BUILD_DIR/install/ .
+    }
+

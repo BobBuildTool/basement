@@ -1,3 +1,5 @@
+inherit: [python3]
+
 metaEnvironment:
     PKG_VERSION: "44.1.1"
 
@@ -7,7 +9,6 @@ checkoutSCM:
     digestSHA256: d8203b2425014dd7b15b95c69a41454a98c90e5383c6a23d518f61c2e3e86bfd
     extract: False
 
-buildTools: [python3]
 buildVars: [PKG_VERSION]
 buildScript: |
     mkdir -p build install

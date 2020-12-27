@@ -65,6 +65,12 @@ depends:
         - name: utils::e2fsprogs
           use: [tools]
           forward: True
+        - name: python::python3-minimal
+          use: [tools]
+          forward: True
+        - name: python::python3
+          use: [tools]
+          forward: True
 
     - if: !expr |
         "${BOB_HOST_PLATFORM}" == "msys"
