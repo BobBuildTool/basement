@@ -71,10 +71,6 @@ multiPackage:
 
             rsync -a "${BOB_DEP_PATHS[python::python3-setuptools]}/" install/
 
-            for i in $(find install/usr/bin -type f) ; do
-               sed -i 's/^#!.*python3.*$/#!\/usr\/bin\/env python3/' $i
-            done
-
         packageScript: |
             autotoolsPackageTgt
 
