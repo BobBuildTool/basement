@@ -1,0 +1,28 @@
+inherit: [python3]
+
+buildScript: |
+    pip_install pyparsing
+
+    mkdir -p install/usr/bin
+    cat <<EOF > install/usr/bin/generator.py
+    #!/usr/bin/env python3
+    import pyparsing as pp
+
+    greet = pp.Word(pp.alphas) + "," + pp.Word(pp.alphas) + "!"
+    for greeting_str in [
+                "Hello, World!",
+                "Bonjour, Monde!",
+                "Hola, Mundo!",
+                "Hallo, Welt!",
+            ]:
+        greeting = greet.parseString(greeting_str)
+        print(greeting)
+    EOF
+    chmod +x install/usr/bin/generator.py
+
+packageScript: |
+    installPythonModule
+    cp -a $1/install/usr/bin usr/
+
+provideTools:
+    generator: "usr/bin"

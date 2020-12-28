@@ -1,11 +1,14 @@
-inherit: [ "basement::rootrecipe", cmake ]
+inherit: [ "basement::rootrecipe", cmake, python3 ]
 
 checkoutSCM:
     scm: import
     url: src/greeter/
     prune: True
 
+buildTools: [generator]
 buildScript: |
+    generator.py
+
     cmakeBuild "$1"
     for i in "${!BOB_DEP_PATHS[@]}" ; do
         if [[ $i == *-tgt ]] ; then
@@ -18,11 +21,21 @@ packageScript: |
 
 multiPackage:
     host:
+        environment:
+            HOST: "1"
         depends: &deps
+            - if: !expr |
+                "${HOST}" == "1"
+              name: python::generator
+              use: [tools, result]
+              forward: True
             - cmake::libgreet-dev
             - cmake::libgreet-tgt
     cross:
         depends:
+            - name: python::generator
+              use: [tools, result]
+              forward: True
             - if: !expr |
                 "${BOB_HOST_PLATFORM}" == "msys" || "${BOB_HOST_PLATFORM}" == "win32"
               name: devel::win::vs2019-toolchain-vc142-amd64
@@ -34,3 +47,4 @@ multiPackage:
               use: [tools]
               forward: True
             - depends: *deps
+

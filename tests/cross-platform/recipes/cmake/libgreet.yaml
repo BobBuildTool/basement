@@ -1,4 +1,4 @@
-inherit: [cmake, python3]
+inherit: [cmake]
 
 depends:
     - cmake::libholler-dev
@@ -12,23 +12,6 @@ checkoutSCM:
     prune: True
 
 buildScript: |
-   cat <<EOF > myfile.py
-   #!/usr/bin/env python3
-   import pyparsing as pp
-
-   greet = pp.Word(pp.alphas) + "," + pp.Word(pp.alphas) + "!"
-   for greeting_str in [
-               "Hello, World!",
-               "Bonjour, Monde!",
-               "Hola, Mundo!",
-               "Hallo, Welt!",
-           ]:
-       greeting = greet.parseString(greeting_str)
-       print(greeting)
-
-   EOF
-   python3 myfile.py
-
    cmakeBuild "$1"
 
 multiPackage:
