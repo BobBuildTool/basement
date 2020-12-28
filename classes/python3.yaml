@@ -13,7 +13,7 @@ buildScript: |
     fi
 
     for i in "${!BOB_DEP_PATHS[@]}" ; do
-        if [[ $i == *-dev ]] ; then
+        if [[ $i == *-dev ]] || ( [[ $i != *-dev ]] && [[ $i != *-tgt ]] ) ; then
             PREFIX="${BOB_DEP_PATHS[$i]}$DESTLIB"
             for j in "" "lib-dynload" "site-packages" ; do
                 PYTHONPATH="${PYTHONPATH:+$PYTHONPATH:}$PREFIX${j:+/$j}"
