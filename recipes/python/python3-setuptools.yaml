@@ -8,7 +8,7 @@ checkoutSCM:
     extract: False
 
 buildTools: [python3]
-buildVars: [PKG_VERSION, BOB_HOST_PLATFORM]
+buildVars: [PKG_VERSION]
 buildScript: |
     mkdir -p build install/usr/lib
     pushd build

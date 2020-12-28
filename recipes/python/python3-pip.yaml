@@ -7,7 +7,7 @@ checkoutSCM:
     digestSHA256: "633c67c520027bead41f3b2cf0772f234542246838135f8a92c919e593068593"
 
 buildTools: [python3]
-buildVars: [PKG_VERSION, BOB_HOST_PLATFORM]
+buildVars: [PKG_VERSION]
 buildScript: |
     mkdir -p build install/usr/lib
     pushd build
