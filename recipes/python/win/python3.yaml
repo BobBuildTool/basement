@@ -1,0 +1,63 @@
+metaEnvironment:
+    PKG_VERSION: "3.8.0"
+
+checkoutSCM:
+    scm: url
+    url: https://www.python.org/ftp/python/${PKG_VERSION}/python-${PKG_VERSION}-embed-amd64.zip
+    digestSHA256: 9f4dba6c7b5c5db2993d899b4627872932e2229fdb9353ed352278cd4ea8b174
+
+multiPackage:
+    minimal:
+        buildVars: [PKG_VERSION]
+        buildScript: |
+            mkdir -p install
+            pushd install
+            rsync -aH --exclude "*python-${PKG_VERSION}-embed-amd64.zip*" --exclude "python*._pth" "$1/" .
+            cp python.exe python3.exe
+            ZIPFILE="$(ls python*.zip)"
+            cat << EOF > python.pth
+            .
+            ${ZIPFILE}
+            usr/lib/site-packages
+            EOF
+            popd
+
+        packageScript: |
+            cp -a $1/install/* .
+        
+        provideTools:
+            python3: "."
+
+    "":
+        depends:
+            - python::win::python3-minimal
+            - python::python3-setuptools
+
+        buildScript: |
+            rsync -aH ${BOB_DEP_PATHS[python::win::python3-minimal]}/ .
+            rsync -aH ${BOB_DEP_PATHS[python::python3-setuptools]}/ .
+
+        packageScript: |
+            cp -a $1/* .
+
+        provideTools:
+            python3: "."
+
+    full:
+        depends:
+            - python::win::python3
+            - python::python3-setuptools
+            - python::python3-pip
+            - python::python3-wheel
+
+        buildScript: |
+            rsync -aH ${BOB_DEP_PATHS[python::win::python3]}/ .
+            rsync -aH ${BOB_DEP_PATHS[python::python3-setuptools]}/ .
+            rsync -aH ${BOB_DEP_PATHS[python::python3-pip]}/ .
+            rsync -aH ${BOB_DEP_PATHS[python::python3-wheel]}/ .
+
+        packageScript: |
+            cp -a $1/* .
+
+        provideTools:
+            python3: "."

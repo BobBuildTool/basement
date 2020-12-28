@@ -1,13 +1,16 @@
 buildTools: [python3]
-buildVars: [PYTHONPATH]
+buildVars: [BOB_HOST_PLATFORM]
 buildScript: |
-    cat << EOF > getdestlib.py
+    if [[ "$BOB_HOST_PLATFORM" == "linux" ]] ; then
+        cat << EOF > getdestlib.py
     #!/usr/bin/env python3
     import sysconfig
-
     print(sysconfig.get_config_var('DESTLIB'))
     EOF
-    DESTLIB="$(python3 getdestlib.py)"
+        DESTLIB="$(python3 getdestlib.py)"
+    else
+        DESTLIB="/usr/lib"
+    fi
 
     for i in "${!BOB_DEP_PATHS[@]}" ; do
         if [[ $i == *-dev ]] ; then
@@ -25,14 +28,14 @@ buildScript: |
 
     pip_install()
     {
-        mkdir -p install
+        # force lib instead of Lib for MSYS
+        mkdir -p install/usr/lib
         python3 -m pip install $* \
             --root ${PWD}/install \
             --prefix usr \
             --isolated \
             --disable-pip-version-check \
-            --no-warn-script-location \
-            --no-cache-dir
+            --no-warn-script-location
     }
 
 packageScript: |
@@ -40,6 +43,6 @@ packageScript: |
 
     installPythonModule()
     {
-        rsync -a --delete --exclude "*.dist-info/" --exclude "__pycache__/" --include "/usr/" --include "/usr/lib/" --include "/usr/lib/python3.8/" --include "/usr/lib/python3.8/***" --exclude "*" $BUILD_DIR/install/ .
+        rsync -aH --exclude "__pycache__/" --exclude "*.dist-info/" --include "/usr/" --include "/usr/lib/" --include "/usr/lib/***" --exclude "*" $BUILD_DIR/install/ .
     }
 
