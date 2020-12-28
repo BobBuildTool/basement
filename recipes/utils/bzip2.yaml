@@ -16,6 +16,8 @@ buildScript: |
 
     pushd build
     tar xf $1/bzip2-*.tar.gz --strip-components=1
+    # Patch Makefile to create relative symlinks
+    sed -i -e '/	ln/s|$(PREFIX)/bin/\([^ ]*\)|\1|' Makefile
     make install PREFIX=$PWD/../install/usr AR=$AR CC=$CC RANLIB=$RANLIB
     popd
 
