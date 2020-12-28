@@ -1,5 +1,6 @@
 from bob.errors import ParseError
 import os, os.path
+import platform
 import subprocess
 import glob
 
@@ -8,6 +9,14 @@ cache = {}
 def vsvars2019(args, **options):
     if len(args) < 2:
         raise ParseError("$(vsvars2019,VAR,ARCH,...) expects at least two arguments")
+
+    system = platform.uname().system
+    if system.startswith("MSYS_NT"):
+        isMSYS = True
+    elif system == "Windows":
+        isMSYS = False
+    else:
+        raise ParseError("Unsupported system for $(vsvars2019,...): " + system)
 
     try:
         varname = args[0]
@@ -29,7 +38,7 @@ def vsvars2019(args, **options):
             for l in r.splitlines():
                 k,sep,v = l.strip().partition("=")
                 k = k.upper()
-                if k == 'PATH':
+                if k == 'PATH' and isMSYS:
                     # convert to POSIX path to be mergeable
                     v = subprocess.check_output(["cygpath", "-u", "-p", v], universal_newlines=True).strip()
                 env[k] = v
