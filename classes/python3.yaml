@@ -40,4 +40,3 @@ packageScript: |
     {
         rsync -aH --exclude "__pycache__/" --exclude "*.dist-info/" --include "/usr/" --include "/usr/lib/" --include "/usr/lib/***" --exclude "*" $BUILD_DIR/install/ .
     }
-
