@@ -7,6 +7,8 @@ depends:
 
 buildTools: [generator]
 buildScript: |
+    #export PYTHONPYCACHEPREFIX="/tmp"
+    export PYTHONDONTWRITEBYTECODE="1"
     generator.py > test.txt
 
 packageScript: |
