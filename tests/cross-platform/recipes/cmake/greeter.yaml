@@ -1,5 +1,10 @@
 inherit: [ "basement::rootrecipe", cmake, python3 ]
 
+depends:
+    - name: python::generator
+      use: [tools, result]
+      forward: True
+
 checkoutSCM:
     scm: import
     url: src/greeter/
@@ -21,21 +26,11 @@ packageScript: |
 
 multiPackage:
     host:
-        environment:
-            HOST: "1"
         depends: &deps
-            - if: !expr |
-                "${HOST}" == "1"
-              name: python::generator
-              use: [tools, result]
-              forward: True
             - cmake::libgreet-dev
             - cmake::libgreet-tgt
     cross:
         depends:
-            - name: python::generator
-              use: [tools, result]
-              forward: True
             - if: !expr |
                 "${BOB_HOST_PLATFORM}" == "msys" || "${BOB_HOST_PLATFORM}" == "win32"
               name: devel::win::vs2019-toolchain-vc142-amd64
