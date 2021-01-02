@@ -46,13 +46,11 @@ multiPackage:
     full:
         depends:
             - python::win::python3
-            - python::python3-setuptools
             - python::python3-pip
             - python::python3-wheel
 
         buildScript: |
             rsync -aH ${BOB_DEP_PATHS[python::win::python3]}/ .
-            rsync -aH ${BOB_DEP_PATHS[python::python3-setuptools]}/ .
             rsync -aH ${BOB_DEP_PATHS[python::python3-pip]}/ .
             rsync -aH ${BOB_DEP_PATHS[python::python3-wheel]}/ .
 
