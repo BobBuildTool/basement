@@ -1,19 +1,11 @@
-inherit: [ "basement::rootrecipe", cmake, python3 ]
-
-depends:
-    - name: python::generator
-      use: [tools, result]
-      forward: True
+inherit: [ "basement::rootrecipe", cmake ]
 
 checkoutSCM:
     scm: import
     url: src/greeter/
     prune: True
 
-buildTools: [generator]
 buildScript: |
-    generator.py
-
     cmakeBuild "$1"
     for i in "${!BOB_DEP_PATHS[@]}" ; do
         if [[ $i == *-tgt ]] ; then
