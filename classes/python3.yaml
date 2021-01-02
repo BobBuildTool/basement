@@ -1,28 +1,24 @@
 buildTools: [python3]
 buildVars: [BOB_HOST_PLATFORM]
 buildScript: |
-    if [[ "$BOB_HOST_PLATFORM" == "linux" ]] ; then
-        cat << EOF > getdestlib.py
+    cat << EOF > getdestlib.py
     #!/usr/bin/env python3
     import sysconfig
     print(sysconfig.get_config_var('DESTLIB'))
     EOF
-        DESTLIB="$(python3 getdestlib.py)"
-    else
+
+    DESTLIB="$(python3 getdestlib.py)"
+    if [[ "$DESTLIB" == "None" ]] ; then
         DESTLIB="/usr/lib"
     fi
 
-    for i in "${!BOB_DEP_PATHS[@]}" ; do
-        if [[ $i == *-dev ]] || ( [[ $i != *-dev ]] && [[ $i != *-tgt ]] ) ; then
-            PREFIX="${BOB_DEP_PATHS[$i]}$DESTLIB"
+    for i in "${!BOB_ALL_PATHS[@]}" ; do
+        if [[ $i != *-tgt ]] ; then
+            PREFIX="${BOB_ALL_PATHS[$i]}$DESTLIB"
             for j in "" "lib-dynload" "site-packages" ; do
                 PYTHONPATH="${PYTHONPATH:+$PYTHONPATH:}$PREFIX${j:+/$j}"
             done
         fi
-    done
-    PREFIX="${BOB_TOOL_PATHS[python3]}$DESTLIB"
-    for j in "" "lib-dynload" "site-packages" ; do
-        PYTHONPATH="${PYTHONPATH:+$PYTHONPATH:}$PREFIX${j:+/$j}"
     done
     export PYTHONPATH
 
@@ -33,7 +29,6 @@ buildScript: |
         python3 -m pip install $* \
             --root ${PWD}/install \
             --prefix usr \
-            --isolated \
             --disable-pip-version-check \
             --no-warn-script-location
     }
