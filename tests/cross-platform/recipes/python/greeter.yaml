@@ -2,7 +2,7 @@ inherit: [ "basement::rootrecipe", python3, install ]
 
 depends:
     - name: python::generator
-      use: [tools, result]
+      use: [tools]
       forward: True
 
 buildTools: [generator]
