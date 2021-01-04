@@ -1,5 +1,4 @@
 buildTools: [python3]
-buildVars: [BOB_HOST_PLATFORM]
 buildScript: |
     cat << EOF > getdestlib.py
     #!/usr/bin/env python3
