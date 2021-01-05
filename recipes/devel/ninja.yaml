@@ -11,7 +11,7 @@ checkoutSCM:
 
 buildVars: [CC, CXX]
 buildScript: |
-    "$1/configure.py" --bootstrap
+    python3 "$1/configure.py" --bootstrap
     ./ninja
     mkdir -p install/usr/bin
     cp ninja install/usr/bin/
