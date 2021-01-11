@@ -101,6 +101,7 @@ multiPackage:
            - libs::expat-dev
            - libs::gdbm-dev
            - libs::libffi-dev
+           - libs::openssl-dev
            - libs::zlib-dev
 
         buildScript: |
