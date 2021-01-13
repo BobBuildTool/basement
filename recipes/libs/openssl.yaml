@@ -75,6 +75,7 @@ buildScript: |
         --libdir=lib \
         "${SHARED_STATIC[@]}" \
         "-I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include" \
+        "-Wl,-L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib" \
         "-Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib" \
         linux-${ARCH}
 
