@@ -46,10 +46,14 @@ packageScript: |
         while IFS=: read -r K V ; do
             case "$K" in
                 Requires|Requires.private)
-                    Requires+=( "$V" )
+                    if [ ! -z "$V" ] ; then
+                        Requires+=( "$V" )
+                    fi
                     ;;
                 Libs|Libs.private)
-                    Libs+=( "$V" )
+                    if [ ! -z "$V" ] ; then
+                        Libs+=( "$V" )
+                    fi
                     ;;
                 *)
                     echo "$K${V:+:$V}"
