@@ -48,53 +48,62 @@ multiPackage:
 
         buildTools: [python3]
         buildScript: |
-            export ac_cv_file__dev_ptc=yes
-            export ac_cv_file__dev_ptmx=yes
-            export ac_cv_have_long_long_format=yes
-            export ac_cv_prog_HAS_HG=/bin/false
-            export ac_cv_working_tzset=yes
+            buildMe()
+            {
+                export ac_cv_file__dev_ptc=yes
+                export ac_cv_file__dev_ptmx=yes
+                export ac_cv_have_long_long_format=yes
+                export ac_cv_prog_HAS_HG=/bin/false
+                export ac_cv_working_tzset=yes
 
-            autotoolsBuild $PWD/src \
-                --without-ensurepip \
-                --without-cxx-main \
-                --disable-pydoc \
-                --disable-sqlite3 \
-                --disable-test-modules \
-                --disable-lib2to3 \
-                --disable-tk \
-                --disable-nis \
-                --disable-idle3 \
-                --disable-bzip2 \
-                --disable-xz \
-                --disable-pyc-build \
-                --disable-uuid
+                autotoolsBuild $PWD/src \
+                    --without-ensurepip \
+                    --without-cxx-main \
+                    --disable-pydoc \
+                    --disable-sqlite3 \
+                    --disable-test-modules \
+                    --disable-lib2to3 \
+                    --disable-tk \
+                    --disable-nis \
+                    --disable-idle3 \
+                    --disable-bzip2 \
+                    --disable-xz \
+                    --disable-pyc-build \
+                    --disable-uuid
 
-            rsync -a "${BOB_DEP_PATHS[python::python3-setuptools]}/" install/
+                rsync -a "${BOB_DEP_PATHS[python::python3-setuptools]}/" install/
+            }
 
-        packageScript: |
-            autotoolsPackageTgt
+        multiPackage:
+            "":
+                buildScript: |
+                    buildMe
+
+                packageScript: |
+                    autotoolsPackageTgt
+
+                provideTools:
+                    python3: usr/bin
+
+            dev:
+                depends:
+                   - python::python3-pip
+                   - python::python3-wheel
+
+                buildScript: |
+                    buildMe
+                    rsync -a "${BOB_DEP_PATHS[python::python3-pip]}/" install/
+                    rsync -a "${BOB_DEP_PATHS[python::python3-wheel]}/" install/
+
+                packageScript: |
+                    rsync -a "$1/install/" .
+
+                provideTools:
+                    python3:
+                        path: usr/bin
+                        netAccess: True
 
         provideDeps: [ "*-tgt" ]
-
-        provideTools:
-            python3: usr/bin
-
-    full:
-        depends:
-           - python::python3
-           - python::python3-pip
-           - python::python3-wheel
-
-        buildScript: |
-            rsync -a "${BOB_DEP_PATHS[python::python3]}/" install/
-            rsync -a "${BOB_DEP_PATHS[python::python3-pip]}/" install/
-            rsync -a "${BOB_DEP_PATHS[python::python3-wheel]}/" install/
-
-        packageScript: |
-            autotoolsPackageTgt
-
-        provideTools:
-            python3: usr/bin
 
     minimal:
         depends:

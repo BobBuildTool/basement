@@ -6,14 +6,15 @@ buildScript: |
     print(sysconfig.get_config_var('DESTLIB'))
     EOF
 
-    DESTLIB="$(python3 getdestlib.py)"
-    if [[ "$DESTLIB" == "None" ]] ; then
-        DESTLIB="/usr/lib"
+    PYTHONDESTLIB="$(python3 getdestlib.py)"
+    if [[ "$PYTHONDESTLIB" == "None" ]] ; then
+        PYTHONDESTLIB="/usr/lib"
     fi
+    export PYTHONDESTLIB
 
     for i in "${!BOB_ALL_PATHS[@]}" ; do
         if [[ $i != *-tgt ]] ; then
-            PREFIX="${BOB_ALL_PATHS[$i]}$DESTLIB"
+            PREFIX="${BOB_ALL_PATHS[$i]}$PYTHONDESTLIB"
             for j in "" "lib-dynload" "site-packages" ; do
                 PYTHONPATH="${PYTHONPATH:+$PYTHONPATH:}$PREFIX${j:+/$j}"
             done
@@ -25,11 +26,12 @@ buildScript: |
     {
         # force lib instead of Lib for MSYS
         mkdir -p install/usr/lib
-        python3 -m pip install $* \
+        python3 -m pip install -q $* \
             --root ${PWD}/install \
             --prefix usr \
             --disable-pip-version-check \
-            --no-warn-script-location
+            --no-warn-script-location \
+            --ignore-installed
     }
 
 packageScript: |
@@ -37,5 +39,5 @@ packageScript: |
 
     installPythonModule()
     {
-        rsync -aH --exclude "__pycache__/" --exclude "*.dist-info/" --include "/usr/" --include "/usr/lib/" --include "/usr/lib/***" --exclude "*" $BUILD_DIR/install/ .
+        rsync -aH --exclude "__pycache__/" --exclude "*.dist-info/" --exclude "*.egg-info" $@ "$BUILD_DIR/install/" .
     }

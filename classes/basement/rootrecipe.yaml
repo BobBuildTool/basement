@@ -71,7 +71,7 @@ depends:
         - name: python::python3
           use: [tools]
           forward: True
-        - name: python::python3-full
+        - name: python::python3-dev
           use: [tools]
           forward: True
 
