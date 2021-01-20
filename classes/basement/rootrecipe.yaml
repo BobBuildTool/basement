@@ -76,7 +76,7 @@ depends:
           forward: True
 
     - if: !expr |
-        "${BOB_HOST_PLATFORM}" == "msys"
+        "${BOB_HOST_PLATFORM}" == "msys" || "${BOB_HOST_PLATFORM}" == "win32"
       depends:
         # Just declare the MSYS gcc as toolchain. The user will most probably
         # use a visual studio toolchain or clang as target toolchain.
@@ -95,12 +95,15 @@ depends:
         - name: devel::win::ninja
           use: [tools]
           forward: True
+        - name: devel::win::msbuild
+          use: [tools]
+          forward: True
         - name: python::win::python3-minimal
           use: [tools]
           forward: True
         - name: python::win::python3
           use: [tools]
           forward: True
-        - name: python::win::python3-full
+        - name: python::win::python3-dev
           use: [tools]
           forward: True

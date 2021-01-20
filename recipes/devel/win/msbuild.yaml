@@ -1,0 +1,8 @@
+shared: True
+
+packageScript: |
+    true
+
+provideTools:
+    msbuild:
+        path: "$(msbuild)"

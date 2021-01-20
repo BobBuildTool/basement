@@ -1,0 +1,28 @@
+metaEnvironment:
+    PKG_VERSION: "3.8.0"
+
+checkoutSCM:
+    scm: url
+    url: https://www.python.org/ftp/python/${PKG_VERSION}/python-${PKG_VERSION}-embed-amd64.zip
+    digestSHA256: 9f4dba6c7b5c5db2993d899b4627872932e2229fdb9353ed352278cd4ea8b174
+
+buildVars: [PKG_VERSION]
+buildScript: |
+    mkdir -p install
+    pushd install
+    rsync -aH --exclude "*python-${PKG_VERSION}-embed-amd64.zip*" --exclude "python*._pth" "$1/" .
+    cp python.exe python3.exe
+    cp python.exe py.exe
+    ZIPFILE="$(ls python*.zip)"
+    cat << EOF > python.pth
+    .
+    ${ZIPFILE}
+    usr/lib/site-packages
+    EOF
+    popd
+
+packageScript: |
+    cp -a $1/install/* .
+
+provideTools:
+    python3: "."
