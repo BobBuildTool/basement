@@ -20,7 +20,6 @@ buildTools: [target-toolchain]
 buildVars: [PKG_VERSION, CC, AR, RANLIB, ARCH, AUTOCONF_BUILD, AUTOCONF_HOST, BASEMENT_LIBS]
 buildScript: |
     export TARGETMACH=${AUTOCONF_HOST}
-    export LDFLAGS="-L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib"
 
     mkdir -p install
     tar -xzf $1/openssl-${PKG_VERSION}.tar.gz
@@ -76,6 +75,8 @@ buildScript: |
         --libdir=lib \
         "${SHARED_STATIC[@]}" \
         "-I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include" \
+        "-Wl,-L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib" \
+        "-Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib" \
         linux-${ARCH}
 
     #make depend
