@@ -11,11 +11,8 @@ buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS]
 # toolchain. Their value depends on the install location but they do not change
 # the build result. The toolset version is handled by the toolchain directly
 # and is attached to 'target-toolchain'.
-buildVarsWeak: [INCLUDE, LIB, LIBPATH, VS_PATH]
+buildVarsWeak: [INCLUDE, LIB, LIBPATH]
 buildScript: |
-    # In case we build on Windows the global paths need to be added to $PATH.
-    ${VS_PATH:+export PATH="$PATH:$VS_PATH"}
-
     # Gather all include and library paths.
     if [[ $AUTOCONF_HOST == *-win32 ]] ; then
         for i in "${@:2}" ; do
