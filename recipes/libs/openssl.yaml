@@ -1,7 +1,7 @@
 inherit: [make, install]
 
 metaEnvironment:
-    PKG_VERSION: "1.1.1d"
+    PKG_VERSION: "1.1.1i"
 
 depends:
     - libs::zlib-dev
@@ -13,25 +13,70 @@ depends:
 checkoutSCM:
     scm: url
     url: https://www.openssl.org/source/openssl-${PKG_VERSION}.tar.gz
-    digestSHA256: 1e3a91bc1f9dfce01af26026f856e064eab4c8ee0a8f457b5ae30b40b8b711f2
+    digestSHA256: e8be6a35fe41d10603c3cc635e93289ed00bf34b79671a3a4de64fcee00d5242
     extract: False
 
 buildTools: [target-toolchain]
-buildVars: [PKG_VERSION, CC, AR, RANLIB, ARCH, AUTOCONF_BUILD, AUTOCONF_HOST]
+buildVars: [PKG_VERSION, CC, AR, RANLIB, ARCH, AUTOCONF_BUILD, AUTOCONF_HOST, BASEMENT_LIBS]
 buildScript: |
     export TARGETMACH=${AUTOCONF_HOST}
-    export LDFLAGS="-Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib"
 
     mkdir -p install
     tar -xzf $1/openssl-${PKG_VERSION}.tar.gz
     pushd openssl-${PKG_VERSION}
+
+    SHARED_ONLY="false"
+    if [[ -n "${BASEMENT_LIBS:-}" ]] ; then
+        case "$BASEMENT_LIBS" in
+            static)
+                SHARED_STATIC=( "-static" "zlib" )
+                ;;
+            shared)
+                SHARED_STATIC=( "shared" "zlib-dynamic" )
+                SHARED_ONLY="true"
+                ;;
+            both)
+                SHARED_STATIC=( "shared" "zlib-dynamic" )
+                ;;
+            *)
+                echo "Invalid BASEMENT_LIBS value: $BASEMENT_LIBS" >&2
+                exit 1
+                ;;
+        esac
+    elif [[ "${AUTOCONF_BUILD:-unknown}" == "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
+        SHARED_STATIC=( "-static" "zlib" )
+    else
+        SHARED_STATIC=( "shared" "zlib-dynamic" )
+        SHARED_ONLY="true"
+    fi
+
+    # refer: https://github.com/openssl/openssl/blob/master/Configurations/10-main.conf
+    case "$ARCH" in
+        arm)
+            ARCH="armv4"
+            ;;
+        arm64)
+            ARCH="aarch64"
+            ;;
+        i386)
+            ARCH="x86"
+            ;;
+        x86_64)
+            ;;
+        *)
+            echo "Architecture $ARCH currently not supported." >&2
+            exit 1
+            ;;
+    esac
+
     ./Configure \
         --prefix=/usr \
         --openssldir=/etc/ssl \
         --libdir=lib \
-        shared \
-        zlib-dynamic \
+        "${SHARED_STATIC[@]}" \
         "-I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include" \
+        "-Wl,-L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib" \
+        "-Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib" \
         linux-${ARCH}
 
     #make depend
@@ -39,6 +84,10 @@ buildScript: |
     make DESTDIR="${PWD}/../install" install_sw
 
     popd
+
+    if [[ "$SHARED_ONLY" == "true" ]] ; then
+        find install -iname "*.a" -exec rm -rf {} \;
+    fi
 
 multiPackage:
     dev:
