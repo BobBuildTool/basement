@@ -11,7 +11,7 @@ checkoutSCM:
    extract: False
 
 buildTools: [target-toolchain]
-buildVars: [CROSS_COMPILE, AUTOCONF_BUILD, AUTOCONF_HOST, CFLAGS, LDFLAGS]
+buildVars: [CROSS_COMPILE, AUTOCONF_BUILD, AUTOCONF_HOST, CFLAGS, LDFLAGS, BASEMENT_LIBS]
 buildScript: |
     # zlib uses CROSS_PREFIX instead of CROSS_COMPILE
     if [[ ${CROSS_COMPILE:+true} ]] ; then
@@ -24,8 +24,26 @@ buildScript: |
     )
 
     # compile static on native builds
-    if [[ ${AUTOCONF_BUILD} == ${AUTOCONF_HOST:-${AUTOCONF_BUILD}} ]] ; then
+    SHARED_ONLY="false"
+    if [[ -n "${BASEMENT_LIBS:-}" ]] ; then
+        case "$BASEMENT_LIBS" in
+            static)
+                CONFIGURE_OPTS+=( --static )
+                ;;
+            shared)
+                SHARED_ONLY="true"
+                ;;
+            both)
+                ;;
+            *)
+                echo "Invalid BASEMENT_LIBS value: $BASEMENT_LIBS" >&2
+                exit 1
+                ;;
+        esac
+    elif [[ "${AUTOCONF_BUILD:-unknown}" == "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
         CONFIGURE_OPTS+=( --static )
+    else
+        SHARED_ONLY="true"
     fi
 
     mkdir -p install
@@ -34,6 +52,10 @@ buildScript: |
     ./configure "${CONFIGURE_OPTS[@]}"
     make install DESTDIR=${PWD}/../install
     popd
+
+    if [[ "$SHARED_ONLY" == "true" ]] ; then
+        find install -iname "*.a" -exec rm -rf {} \;
+    fi
 
 multiPackage:
     dev:
