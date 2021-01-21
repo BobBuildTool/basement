@@ -1,4 +1,4 @@
-inherit: [patch, install]
+inherit: [patch, install, msbuild]
 
 metaEnvironment:
     PKG_VERSION: "3.8.0"
@@ -17,7 +17,7 @@ checkoutScript: |
     patchApplySeries $<<python3/*>>
 
 # depends on python3-minimal tool
-buildTools: [msbuild, python3]
+buildTools: [python3]
 buildScript: |
     mkdir -p src
     rsync -aH --delete --exclude "*.tar.xz*" $1/ src/
