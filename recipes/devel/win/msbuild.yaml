@@ -1,8 +1,10 @@
 shared: True
 
 packageScript: |
-    true
+    echo "MSBUILD" > version.txt
 
 provideTools:
     msbuild:
-        path: "$(msbuild)"
+        path: "just_a_placeholder"
+        environment:
+            MSB_PATH: "$(msbuild)"
