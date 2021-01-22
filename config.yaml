@@ -4,3 +4,4 @@ plugins:
     - multiarch
     - paths
     - vsenv
+    - msbuild

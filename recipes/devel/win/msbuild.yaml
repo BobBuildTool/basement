@@ -1,0 +1,10 @@
+shared: True
+
+packageScript: |
+    echo "MSBUILD" > version.txt
+
+provideTools:
+    msbuild:
+        path: "just_a_placeholder"
+        environment:
+            MSB_PATH: "$(msbuild)"
