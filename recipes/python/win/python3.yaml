@@ -1,0 +1,63 @@
+inherit: [patch, install, msbuild]
+
+metaEnvironment:
+    PKG_VERSION: "3.8.0"
+
+depends:
+    - python::python3-setuptools
+
+checkoutSCM:
+    scm: url
+    url: https://www.python.org/ftp/python/${PKG_VERSION}/Python-${PKG_VERSION}.tar.xz
+    digestSHA256: "b356244e13fb5491da890b35b13b2118c3122977c2cd825e3eb6e7d462030d84"
+    stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<<python3/*>>
+
+# depends on python3-minimal tool
+buildTools: [python3]
+buildScript: |
+    mkdir -p src
+    rsync -aH --delete --exclude "*.tar.xz*" $1/ src/
+
+    EXTERNALS_DIR="$(pwd -W)/externals" PYTHON="$(which python3)" ./src/PCbuild/build.bat -p x64
+    installdir="$(find src/PCbuild -iname 'python.exe')"
+    installdir="$(dirname $installdir)"
+
+    mkdir -p install/usr/bin install/usr/lib install/usr/libs
+    rsync -a $installdir/ install/usr/bin/
+    cp install/usr/bin/python.exe install/usr/bin/python3.exe
+    rsync -a src/Lib/ install/usr/lib/
+    rsync -a src/Include/ install/usr/include/
+    rsync -am --include "*.h" --include "*/" --exclude "*" src/PC/ install/usr/include/
+    cp -a install/usr/bin/*.lib install/usr/libs/
+    cp src/python3-config install/usr/bin
+
+    rsync -a "${BOB_DEP_PATHS[python::python3-setuptools]}/" install/
+
+multiPackage:
+    "":
+        packageScript: |
+            installPackageTgt "$1/install/"
+
+        provideTools:
+            python3: usr/bin
+
+    dev:
+        depends:
+            - python::python3-pip
+            - python::python3-wheel
+
+        buildScript: |
+            rsync -a "${BOB_DEP_PATHS[python::python3-pip]}/" install/
+            rsync -a "${BOB_DEP_PATHS[python::python3-wheel]}/" install/
+
+        packageScript: |
+            rsync -a "$1/install/" .
+
+        provideTools:
+            python3:
+                path: usr/bin
+                netAccess: True
