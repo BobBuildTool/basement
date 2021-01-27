@@ -14,7 +14,7 @@ buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS]
 buildVarsWeak: [INCLUDE, LIB, LIBPATH, VS_PATH]
 buildScript: |
     # In case we build on Windows the global paths need to be added to $PATH.
-    ${VS_PATH:+export PATH="$PATH:$VS_PATH"}
+    ${VS_PATH:+export PATH="$VS_PATH:$PATH"}
 
     # Gather all include and library paths.
     if [[ $AUTOCONF_HOST == *-win32 ]] ; then
