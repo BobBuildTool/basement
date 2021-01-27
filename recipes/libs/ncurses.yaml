@@ -62,6 +62,7 @@ buildScript: |
             --enable-const          \
             --enable-overwrite      \
             --enable-pc-files       \
+            --enable-widec          \
             --disable-stripping     \
             --with-pkg-config-libdir="/usr/lib/pkgconfig" \
             --without-manpages
