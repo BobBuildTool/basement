@@ -14,7 +14,7 @@ buildScript: |
     # We need to pass the path of the just built tic
     # able to run on the building machine, so that the
     # terminal database can be created without errors.
-    mkdir tic
+    mkdir -p tic
     pushd tic
     $1/configure
     make -C include
@@ -47,7 +47,7 @@ multiPackage:
     dev:
         packageScript: |
             autotoolsPackageDev "$1" \
-               /usr /usr/bin /usr/bin "/usr/bin/ncurses*-config"
+               "/usr/" "/usr/bin/" "/usr/bin/ncurses*-config"
     tgt:
         packageScript: |
             autotoolsPackageTgt
