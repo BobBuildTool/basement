@@ -10,7 +10,8 @@ checkoutSCM:
     stripComponents: 1
 
 buildScript: |
-    autotoolsBuild $1
+    autotoolsBuild $1 \
+        --enable-libgdbm-compat
 
 multiPackage:
     dev:
