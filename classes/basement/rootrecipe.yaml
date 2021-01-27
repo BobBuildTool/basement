@@ -53,7 +53,7 @@ depends:
         - name: devel::flex
           use: [tools]
           forward: True
-        - name: devel::pkg-config
+        - name: devel::pkg-config-tool
           use: [tools]
           forward: True
         - name: devel::cmake            # Overwrite "cmake" tool with properly

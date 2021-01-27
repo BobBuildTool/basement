@@ -1,0 +1,14 @@
+libgstreamer-1.0 uses symbols from libm. Usually libm is linked implicitly by
+some other library but in case of our minimal configuration the linking of some
+tests and examples will fail due to the missing explicit dependency.
+
+diff -Nurp a/pkgconfig/gstreamer.pc.in b/pkgconfig/gstreamer.pc.in
+--- a/pkgconfig/gstreamer.pc.in	2020-12-06 14:21:21.641347600 +0100
++++ b/pkgconfig/gstreamer.pc.in	2020-12-18 20:16:21.809244471 +0100
+@@ -16,5 +16,5 @@ Description: Streaming media framework
+ Version: @VERSION@
+ Requires: glib-2.0, gobject-2.0
+ Requires.private: gmodule-no-export-2.0 @UNWIND_REQUIRE@ @DW_REQUIRE@
+-Libs: -L${libdir} -lgstreamer-@GST_API_VERSION@
++Libs: -L${libdir} -lgstreamer-@GST_API_VERSION@ @LIBM@
+ Cflags: -I${includedir}

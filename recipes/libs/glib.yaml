@@ -1,7 +1,7 @@
-inherit: [autotools]
+inherit: [meson, patch]
 
 metaEnvironment:
-    PKG_VERSION: "2.48.1"
+    PKG_VERSION: "2.67.0"
 
 depends:
     - libs::libffi-dev
@@ -14,26 +14,27 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: http://ftp.gnome.org/pub/gnome/sources/glib/2.48/glib-${PKG_VERSION}.tar.xz
-    digestSHA256: "74411bff489cb2a3527bac743a51018841a56a4d896cc1e0d0d54f8166a14612"
+    url: http://ftp.gnome.org/pub/gnome/sources/glib/2.67/glib-${PKG_VERSION}.tar.xz
+    digestSHA256: "0b15e57ab6c2bb90ced4e24a1b0d8d6e9a13af8a70266751aa3a45baffeed7c1"
     stripComponents: 1
 
+checkoutDeterministic: True
+checkoutScript: |
+   patchApplySeries -p0 $<<glib/*.patch>>
+
 buildScript: |
-    export PYTHONDONTWRITEBYTECODE=1
-    export LIBFFI_CFLAGS=" "
-    export LIBFFI_LIBS="-lffi"
-    export glib_cv_long_long_format=ll
-    export glib_cv_stack_grows=no
-    export glib_cv_uscore=no
-    autotoolsBuild $1 \
-        --without-pcre
+    mesonBuild $1 -Dtests=false
 
 multiPackage:
     dev:
         packageScript: |
             # make sure glibconfig.h is copied too
-            autotoolsPackageDev "$1" "/usr/lib/glib-2.0/***"
+            mesonPackageDev "$1" "/usr/lib/glib-2.0/***"
         provideDeps: [ "*-dev" ]
     tgt:
-        packageScript: autotoolsPackageTgt
+        packageScript: mesonPackageLib
         provideDeps: [ "*-tgt" ]
+    tools:
+        packageScript: mesonPackageBin
+        provideTools:
+            glib: usr/bin

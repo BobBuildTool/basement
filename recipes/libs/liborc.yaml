@@ -1,0 +1,19 @@
+inherit: [meson]
+
+metaEnvironment:
+   PKG_VERSION: "0.4.32"
+
+checkoutSCM:
+    scm: url
+    url: https://gstreamer.freedesktop.org/data/src/orc/orc-${PKG_VERSION}.tar.xz
+    digestSHA256: a66e3d8f2b7e65178d786a01ef61f2a0a0b4d0b8370de7ce134ba73da4af18f0
+    stripComponents: 1
+
+buildScript: |
+   mesonBuild $1
+
+multiPackage:
+   dev:
+      packageScript: mesonPackageDev
+   tgt:
+      packageScript: mesonPackageTgt

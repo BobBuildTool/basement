@@ -26,12 +26,54 @@ buildScript: |
         unset CXXFLAGS
         unset LDFLAGS
 
+        case "$AUTOCONF_HOST" in
+            *-msys | *-win32)
+                MESON_SYSTEM=windows
+                ;;
+            *-linux-*)
+                MESON_SYSTEM=linux
+                ;;
+            *)
+                echo "Unsupported system: $AUTOCONF_HOST" >&2
+                exit 1
+                ;;
+        esac
+
+        case "$AUTOCONF_HOST" in
+            aarch64-*)
+                MESON_CPU_FAMILY=aarch64
+                : ${MESON_CPU=armv8}
+                ;;
+            arm-*)
+                MESON_CPU_FAMILY=arm
+                : ${MESON_CPU=armv7}
+                ;;
+            i[34567]86-*)
+                MESON_CPU_FAMILY=x86
+                : ${MESON_CPU=i686}
+                ;;
+            x86_64-*)
+                MESON_CPU_FAMILY=x86_64
+                : ${MESON_CPU=x86_64}
+                ;;
+            *)
+                echo "Unsupported cpu family: $AUTOCONF_HOST" >&2
+                exit 1
+                ;;
+        esac
+
         cat >cross_file.txt <<EOF
+    [host_machine]
+    system = '$MESON_SYSTEM'
+    cpu_family = '$MESON_CPU_FAMILY'
+    cpu = '$MESON_CPU'
+    endian = 'little'
     [binaries]
     c     = '$CC'
     cpp   = '$CXX'
     ar    = '$AR'
     strip = '$STRIP'
+    pkgconfig = '$(which pkg-config)'
     [properties]
     c_args = [$(meson_join_list "${MESON_CFLAGS[@]}")]
     cpp_args = [$(meson_join_list "${MESON_CXXFLAGS[@]}")]
