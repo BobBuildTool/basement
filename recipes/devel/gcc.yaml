@@ -140,8 +140,8 @@ multiPackage:
 
                     # compiler flags
                     CPPFLAGS:   "-Wdate-time"
-                    CFLAGS:     "-Os -pipe"
-                    CXXFLAGS:   "-Os -pipe"
+                    CFLAGS:     "-Os -pipe -fPIC"
+                    CXXFLAGS:   "-Os -pipe -fPIC"
                     LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
 
     cross:
