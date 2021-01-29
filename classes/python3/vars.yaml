@@ -1,4 +1,5 @@
 buildTools: [python3]
+
 buildScript: &ref |
     PYTHONDESTLIB=$(python3 -c "import sysconfig; print(sysconfig.get_config_var('DESTLIB'))")
     if [[ "$PYTHONDESTLIB" == "None" ]] ; then
@@ -17,4 +18,5 @@ buildScript: &ref |
     done
     export PYTHONPATH
 
+packageTools: [python3]
 packageScript: *ref
