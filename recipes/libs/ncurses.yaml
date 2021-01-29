@@ -10,7 +10,7 @@ checkoutSCM:
     stripComponents: 1
 
 buildTools: [host-toolchain]
-buildVars: [BASEMENT_LIBS]
+buildVars: [BASEMENT_LIBS, CFLAGS, CXXFLAGS]
 buildScript: |
     # We need to pass the path of the just built tic
     # able to run on the building machine, so that the
@@ -45,6 +45,9 @@ buildScript: |
     else
         OPTS=( --with-shared --without-normal )
     fi
+
+    export CFLAGS+=" -fPIC"
+    export CXXFLAGS+=" -fPIC"
 
     autotoolsBuild $1 \
             ${OPTS[@]}              \
