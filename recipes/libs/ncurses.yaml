@@ -40,7 +40,7 @@ buildScript: |
                 exit 1
                 ;;
         esac
-    elif [[ "${AUTOCONF_BUILD:-unknown}" != "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
+    elif [[ "${AUTOCONF_BUILD:-unknown}" == "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
         OPTS=( --without-shared --with-normal )
     else
         OPTS=( --with-shared --without-normal )
@@ -72,6 +72,14 @@ multiPackage:
         packageScript: |
             autotoolsPackageDev "$1" \
                "/usr/" "/usr/bin/" "/usr/bin/ncurses*-config"
+
+            pushd usr/lib
+            for i in form menu ncurses panel tinfo ; do
+                [ -f "lib${i}w.a"  ] && ln -sf "lib${i}w.a"  "lib${i}.a"  || true
+                [ -f "lib${i}w.so" ] && ln -sf "lib${i}w.so" "lib${i}.so" || true
+                ln -sf "${i}w.pc" "pkgconfig/${i}.pc"
+            done
+            popd
     tgt:
         packageScript: |
             autotoolsPackageTgt
