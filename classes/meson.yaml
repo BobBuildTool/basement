@@ -1,7 +1,7 @@
 inherit: [cpackage, install]
 
 buildToolsWeak: [meson, ninja]
-buildVars: [CC, CXX, AR, STRIP, BASEMENT_LIBS]
+buildVars: [CC, CXX, AR, STRIP]
 buildScript: |
     # Set a generic utf-8 locale. Introduced by Debian and seems to work on
     # Fedora too. If not set meson will barf on the first non 7-bit ASCII
@@ -21,7 +21,7 @@ buildScript: |
 
     # For native build we pass CFLAGS, otherwise we have to pass them in
     # cross_file.txt
-    if [[ "${AUTOCONF_BUILD:-unknown}" != "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
+    if cpackageCrossCompiling ; then
         unset CFLAGS
         unset CXXFLAGS
         unset LDFLAGS
@@ -95,10 +95,8 @@ buildScript: |
             declare -a MESON_OPTIONS=( "$1" "$PWD")
             if [[ -e $BOB_CWD/cross_file.txt ]] ; then
                 MESON_OPTIONS+=("--cross-file" "$BOB_CWD/cross_file.txt")
-                MESON_OPTIONS+=("-Ddefault_library=${BASEMENT_LIBS:-shared}")
-            else
-                MESON_OPTIONS+=("-Ddefault_library=${BASEMENT_LIBS:-static}")
             fi
+            MESON_OPTIONS+=("-Ddefault_library=$(cpackageLibraryType)")
             MESON_OPTIONS+=( --prefix /usr --libdir lib --buildtype plain )
             MESON_OPTIONS+=( "${@:2}" )
             meson "${MESON_OPTIONS[@]}"
