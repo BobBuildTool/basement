@@ -1,6 +1,6 @@
 inherit: [cpackage, libtool, make, install]
 
-buildVars: [AUTOTOOLS_AUTO_STATIC, BASEMENT_LIBS]
+buildVars: [AUTOTOOLS_AUTO_STATIC]
 buildScript: |
     # $1 : source path
     autotoolsBuild()
@@ -16,8 +16,8 @@ buildScript: |
         # script will choke on these options.
         if [[ "${AUTOTOOLS_AUTO_STATIC:-yes}" == no ]] ; then
             : # do nothing
-        elif [[ -n "${BASEMENT_LIBS:-}" ]] ; then
-            case "$BASEMENT_LIBS" in
+        else
+            case $(cpackageLibraryType) in
                 static)
                     SHARED_STATIC=( "--disable-shared" "--enable-static" )
                     ;;
@@ -27,15 +27,7 @@ buildScript: |
                 both)
                     SHARED_STATIC=( "--enable-shared" "--enable-static" )
                     ;;
-                *)
-                    echo "Invalid BASEMENT_LIBS value: $BASEMENT_LIBS" >&2
-                    exit 1
-                    ;;
             esac
-        elif [[ "${AUTOCONF_BUILD:-unknown}" == "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
-            SHARED_STATIC=( "--disable-shared" "--enable-static" )
-        else
-            SHARED_STATIC=( "--enable-shared" "--disable-static" )
         fi
 
         # parse arguments
