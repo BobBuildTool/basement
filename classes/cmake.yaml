@@ -1,7 +1,7 @@
 inherit: [cpackage, ninja, install]
 
 buildToolsWeak: [cmake]
-buildVars: [AUTOCONF_HOST, CC, CXX, BASEMENT_LIBS]
+buildVars: [AUTOCONF_HOST, CC, CXX]
 buildScript: |
     # Make sure CMake finds other stuff by its own logic too
     CMAKE_FIND_ROOT_PATH=
@@ -33,7 +33,7 @@ buildScript: |
     [ -z "${CXXFLAGS:+true}" ] || export CXXFLAGS
 
     # Create a toolchain file if cross-compiling
-    if [[ "${AUTOCONF_BUILD:-unknown}" != "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
+    if cpackageCrossCompiling ; then
         CMAKE_SYSTEM_NAME=
         case "$AUTOCONF_HOST" in
             *-linux-*)
@@ -56,26 +56,16 @@ buildScript: |
     set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
     EOF
         CMAKE_TOOLCHAIN_FILE="$PWD/toolchain.cmake"
-        BUILD_SHARED_LIBS=ON
-    else
-        BUILD_SHARED_LIBS=OFF
     fi
 
-    # The build of shared libraries can be overridden via BASEMENT_LIBS.
-    # Unfortunately there is no standard switch to control static libraries in
-    # CMake.
-    case "${BASEMENT_LIBS:-__unset__}" in
+    # The build of shared libraries can be controlled on cmake. Unfortunately
+    # there is no standard switch to control static libraries.
+    case $(cpackageLibraryType) in
         shared|both)
             BUILD_SHARED_LIBS=ON
             ;;
         static)
             BUILD_SHARED_LIBS=OFF
-            ;;
-        __unset__)
-            ;;
-        *)
-            echo "Invalid BASEMENT_LIBS value: $BASEMENT_LIBS" >&2
-            exit 1
             ;;
     esac
 
