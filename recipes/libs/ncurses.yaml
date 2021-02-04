@@ -10,7 +10,6 @@ checkoutSCM:
     stripComponents: 1
 
 buildTools: [host-toolchain]
-buildVars: [BASEMENT_LIBS]
 buildScript: |
     # We need to pass the path of the just built tic
     # able to run on the building machine, so that the
@@ -23,28 +22,19 @@ buildScript: |
     export TIC_PATH=$(pwd)/progs/tic
     popd
 
+    export AUTOTOOLS_AUTO_STATIC=no
     OPTS=( )
-    if [[ -n "${BASEMENT_LIBS:-}" ]] ; then
-        case "$BASEMENT_LIBS" in
-            static)
-                OPTS=( --without-shared --with-normal )
-                ;;
-            shared)
-                OPTS=( --with-shared --without-normal )
-                ;;
-            both)
-                OPTS=( --with-shared --with-normal )
-                ;;
-            *)
-                echo "Invalid BASEMENT_LIBS value: $BASEMENT_LIBS" >&2
-                exit 1
-                ;;
-        esac
-    elif [[ "${AUTOCONF_BUILD:-unknown}" == "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
-        OPTS=( --without-shared --with-normal )
-    else
-        OPTS=( --with-shared --without-normal )
-    fi
+    case $(cpackageLibraryType) in
+        static)
+            OPTS=( --without-shared --with-normal )
+            ;;
+        shared)
+            OPTS=( --with-shared --without-normal )
+            ;;
+        both)
+            OPTS=( --with-shared --with-normal )
+            ;;
+    esac
 
     autotoolsBuild $1 \
             ${OPTS[@]}              \
