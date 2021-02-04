@@ -1,17 +1,15 @@
-inherit: [make, install]
+inherit: [cpackage, make, install]
 
 metaEnvironment:
    PKG_VERSION: "1.2.8"
 
-checkoutVars: [PKG_VERSION]
 checkoutSCM:
    scm: url
    url: http://downloads.sourceforge.net/project/libpng/zlib/1.2.8/zlib-${PKG_VERSION}.tar.gz
    digestSHA1: "a4d316c404ff54ca545ea71a27af7dbc29817088"
    extract: False
 
-buildTools: [target-toolchain]
-buildVars: [CROSS_COMPILE, AUTOCONF_BUILD, AUTOCONF_HOST, CFLAGS, LDFLAGS, BASEMENT_LIBS]
+buildVars: [CROSS_COMPILE, PKG_VERSION]
 buildScript: |
     # zlib uses CROSS_PREFIX instead of CROSS_COMPILE
     if [[ ${CROSS_COMPILE:+true} ]] ; then
@@ -25,26 +23,16 @@ buildScript: |
 
     # compile static on native builds
     SHARED_ONLY="false"
-    if [[ -n "${BASEMENT_LIBS:-}" ]] ; then
-        case "$BASEMENT_LIBS" in
-            static)
-                CONFIGURE_OPTS+=( --static )
-                ;;
-            shared)
-                SHARED_ONLY="true"
-                ;;
-            both)
-                ;;
-            *)
-                echo "Invalid BASEMENT_LIBS value: $BASEMENT_LIBS" >&2
-                exit 1
-                ;;
-        esac
-    elif [[ "${AUTOCONF_BUILD:-unknown}" == "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
-        CONFIGURE_OPTS+=( --static )
-    else
-        SHARED_ONLY="true"
-    fi
+    case $(cpackageLibraryType) in
+        static)
+            CONFIGURE_OPTS+=( --static )
+            ;;
+        shared)
+            SHARED_ONLY="true"
+            ;;
+        both)
+            ;;
+    esac
 
     mkdir -p install
     tar -xzf $1/zlib-${PKG_VERSION}.tar.gz
