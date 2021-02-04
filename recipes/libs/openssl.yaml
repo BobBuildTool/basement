@@ -1,4 +1,4 @@
-inherit: [make, install]
+inherit: [cpackage, make, install]
 
 metaEnvironment:
     PKG_VERSION: "1.1.1i"
@@ -17,7 +17,7 @@ checkoutSCM:
     extract: False
 
 buildTools: [target-toolchain]
-buildVars: [PKG_VERSION, CC, AR, RANLIB, ARCH, AUTOCONF_BUILD, AUTOCONF_HOST, BASEMENT_LIBS]
+buildVars: [PKG_VERSION, CC, AR, RANLIB, ARCH, AUTOCONF_HOST]
 buildScript: |
     export TARGETMACH=${AUTOCONF_HOST}
 
@@ -26,29 +26,18 @@ buildScript: |
     pushd openssl-${PKG_VERSION}
 
     SHARED_ONLY="false"
-    if [[ -n "${BASEMENT_LIBS:-}" ]] ; then
-        case "$BASEMENT_LIBS" in
-            static)
-                SHARED_STATIC=( "-static" "zlib" )
-                ;;
-            shared)
-                SHARED_STATIC=( "shared" "zlib-dynamic" )
-                SHARED_ONLY="true"
-                ;;
-            both)
-                SHARED_STATIC=( "shared" "zlib-dynamic" )
-                ;;
-            *)
-                echo "Invalid BASEMENT_LIBS value: $BASEMENT_LIBS" >&2
-                exit 1
-                ;;
-        esac
-    elif [[ "${AUTOCONF_BUILD:-unknown}" == "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
-        SHARED_STATIC=( "-static" "zlib" )
-    else
-        SHARED_STATIC=( "shared" "zlib-dynamic" )
-        SHARED_ONLY="true"
-    fi
+    case $(cpackageLibraryType) in
+        static)
+            SHARED_STATIC=( "-static" "zlib" )
+            ;;
+        shared)
+            SHARED_STATIC=( "shared" "zlib-dynamic" )
+            SHARED_ONLY="true"
+            ;;
+        both)
+            SHARED_STATIC=( "shared" "zlib-dynamic" )
+            ;;
+    esac
 
     # refer: https://github.com/openssl/openssl/blob/master/Configurations/10-main.conf
     case "$ARCH" in
