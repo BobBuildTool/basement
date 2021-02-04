@@ -56,7 +56,7 @@ depends:
     - devel::m4
     - devel::makedepend
     - devel::patch
-    - libs::gettext
+    - devel::gettext
     - net::curl-tgt
     - net::make-ca
     - net::openssh
