@@ -129,7 +129,7 @@ buildScript: |
             "${@:2}"
 
         ninjaParallel ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"} \
-            ${MAKE_TARGETS:+"${MAKE_TARGET[@]}"}
+            ${MAKE_TARGETS:+"${MAKE_TARGETS[@]}"}
 
         if [[ -n "$INSTALL" ]] ; then
             DESTDIR="${PWD}/../install" cmake \
