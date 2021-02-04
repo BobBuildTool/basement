@@ -5,7 +5,8 @@
 inherit: [pkg-config]
 
 buildTools: [target-toolchain]
-buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS]
+buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS,
+            BASEMENT_LIBS]
 
 # The following variables are only used by the Microsoft Visual Studio
 # toolchain. Their value depends on the install location but they do not change
@@ -13,6 +14,42 @@ buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS]
 # and is attached to 'target-toolchain'.
 buildVarsWeak: [INCLUDE, LIB, LIBPATH, VS_PATH]
 buildScript: |
+    # Check if we're officially cross-compiling
+    cpackageCrossCompiling()
+    {
+        if [[ "${AUTOCONF_BUILD:-unknown}" != "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
+            return 0 # cross compiling
+        else
+            return 1 # native build
+        fi
+    }
+
+    # Get desired library type: "static", "shared" or "both".
+    #
+    # By default shared libraries are built when cross-compiling and static
+    # libraries on host builds. This can be overridded by setting BASEMENT_LIBS
+    # to "static", "shared" or "both".
+    cpackageLibraryType()
+    {
+        if [[ -n "${BASEMENT_LIBS:-}" ]] ; then
+            echo "$BASEMENT_LIBS"
+        elif cpackageCrossCompiling ; then
+            echo shared
+        else
+            echo static
+        fi
+    }
+
+    # Check $BASEMENT_LIBS values to catch misconfigurations early
+    case "${BASEMENT_LIBS:-__unset__}" in
+        static | shared | both | __unset__)
+            ;;
+        *)
+            echo "Invalid BASEMENT_LIBS value: $BASEMENT_LIBS" >&2
+            exit 1
+            ;;
+    esac
+
     # In case we build on Windows the global paths need to be added to $PATH.
     ${VS_PATH:+export PATH="$PATH:$VS_PATH"}
 
