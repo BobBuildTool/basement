@@ -3,6 +3,9 @@ inherit: [patch, install, msbuild]
 metaEnvironment:
     PKG_VERSION: "3.8.0"
 
+privateEnvironment:
+    BASEMENT_LIBS: "both"
+
 depends:
     - python::python3-setuptools
 
