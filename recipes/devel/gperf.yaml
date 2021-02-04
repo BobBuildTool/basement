@@ -17,3 +17,6 @@ buildScript: |
 
 packageScript: |
     autotoolsPackageTgt
+
+provideTools:
+    gperf: "usr/bin"
