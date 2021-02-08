@@ -1,5 +1,5 @@
 buildTools: [python3]
-
+buildVars: [PYTHONBYTECODEPATH]
 buildScript: &ref |
     PYTHONDESTLIB=$(python3 -c "import sysconfig; print(sysconfig.get_config_var('DESTLIB'))")
     if [[ "$PYTHONDESTLIB" == "None" ]] ; then
@@ -17,6 +17,7 @@ buildScript: &ref |
         fi
     done
     export PYTHONPATH
+    export PYTHONBYTECODEPATH="${PYTHONBYTECODEPATH:-$TMP}"
 
 packageTools: [python3]
 packageScript: *ref
