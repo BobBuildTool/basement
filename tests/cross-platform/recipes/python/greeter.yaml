@@ -7,10 +7,6 @@ depends:
 
 buildTools: [generator]
 buildScript: |
-    # or write the cache into an external directory:
-    # export PYTHONPYCACHEPREFIX="/tmp"
-    export PYTHONDONTWRITEBYTECODE="1"
-
     python3 $(which generator.py) > output.txt
 
 packageScript: |
