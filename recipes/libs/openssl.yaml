@@ -44,8 +44,7 @@ buildScript: |
         arm)
             ARCH="armv4"
             ;;
-        arm64)
-            ARCH="aarch64"
+        aarch64)
             ;;
         i386)
             ARCH="x86"

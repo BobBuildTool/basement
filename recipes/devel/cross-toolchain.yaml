@@ -89,6 +89,6 @@ multiPackage:
     aarch64-linux-gnu:
         environment:
             AUTOCONF_TARGET: "aarch64-linux-gnu"
-            ARCH: "arm64"
+            ARCH: "aarch64"
             GCC_TARGET_ARCH: "armv8-a"
             GCC_LIBC: "glibc"

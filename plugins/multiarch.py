@@ -14,7 +14,7 @@ def hostArch(args, **options):
     elif m.startswith("i"):
         return "i386"
     elif m.startswith("aarch64"):
-        return "arm64"
+        return "aarch64"
     elif m.startswith("arm"):
         return "arm"
     else:
