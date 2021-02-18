@@ -17,7 +17,7 @@ buildScript: &ref |
         fi
     done
     export PYTHONPATH
-    export PYTHONBYTECODEPATH="${PYTHONBYTECODEPATH:-$TMP}"
+    export PYTHONBYTECODEPATH="${PYTHONBYTECODEPATH:-${TMP:-/tmp}}"
 
 packageTools: [python3]
 packageScript: *ref
