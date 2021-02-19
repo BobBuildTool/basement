@@ -116,6 +116,7 @@ buildScript: |
             -DCMAKE_INSTALL_PREFIX="$CMAKE_INSTALL_PREFIX" \
             -DCMAKE_INSTALL_SYSCONFDIR="$CMAKE_INSTALL_SYSCONFDIR" \
             -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
+            -DCMAKE_MSVC_RUNTIME_LIBRARY="" \
             "${@:2}"
 
         ninjaParallel ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"} \
