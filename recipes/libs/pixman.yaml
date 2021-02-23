@@ -1,0 +1,20 @@
+inherit: [autotools]
+
+metaEnvironment:
+    PKG_VERSION: "0.40.0"
+
+checkoutSCM:
+    scm: url
+    url: https://www.cairographics.org/releases/pixman-${PKG_VERSION}.tar.gz
+    digestSHA256: 6d200dec3740d9ec4ec8d1180e25779c00bc749f94278c8b9021f5534db223fc
+    stripComponents: 1
+
+buildScript: |
+    autotoolsBuild $1
+
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
+
+    tgt:
+        packageScript: autotoolsPackageTgt
