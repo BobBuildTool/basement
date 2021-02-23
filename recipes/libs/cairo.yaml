@@ -1,0 +1,39 @@
+inherit: [autotools]
+
+metaEnvironment:
+    PKG_VERSION: "1.14.12"
+
+depends:
+    - libs::libpng-dev
+    - libs::pixman-dev
+    - libs::zlib-dev
+    - libs::freetype-dev
+    - libs::fontconfig-dev
+
+    - use: []
+      depends:
+          - libs::libpng-tgt
+          - libs::pixman-tgt
+          - libs::zlib-tgt
+          - libs::freetype-tgt
+          - libs::fontconfig-tgt
+
+checkoutSCM:
+    scm: url
+    url:  https://www.cairographics.org/releases/cairo-${PKG_VERSION}.tar.xz
+    digestSHA256: 8c90f00c500b2299c0a323dd9beead2a00353752b2092ead558139bd67f7bf16
+    stripComponents: 1
+
+buildScript: |
+    export png_REQUIRES="libpng"
+    autotoolsBuild $1 \
+        --disable-full-testing
+
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
+        provideDeps: ["*-dev"]
+
+    tgt:
+        packageScript: autotoolsPackageTgt
+        provideDeps: ["*-tgt"]
