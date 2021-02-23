@@ -1,0 +1,31 @@
+inherit: [autotools]
+
+metaEnvironment:
+    PKG_VERSION: "2.7.4"
+
+depends:
+    - libs::glib-dev
+    - libs::freetype-dev
+
+    - use: []
+      depends:
+          - libs::glib-tgt
+          - libs::freetype-tgt
+
+checkoutSCM:
+    scm: url
+    url:  https://github.com/harfbuzz/harfbuzz/releases/download/${PKG_VERSION}/harfbuzz-${PKG_VERSION}.tar.xz
+    digestSHA256: 6ad11d653347bd25d8317589df4e431a2de372c0cf9be3543368e07ec23bb8e7
+    stripComponents: 1
+
+buildScript: |
+    autotoolsBuild $1
+
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
+        provideDeps: ["*-dev"]
+
+    tgt:
+        packageScript: autotoolsPackageTgt
+        provideDeps: ["*-tgt"]
