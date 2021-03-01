@@ -6,7 +6,7 @@
 shared: True
 
 environment:
-    AUTOCONF_TARGET: "$(gen-autoconf,bob_compat)"
+    AUTOCONF_TARGET: "${SANDBOX_AUTOCONF_TARGET:-$(gen-autoconf,bob_compat)}"
 
 depends:
     # The following tools are needed by the cross-toolchain build process.

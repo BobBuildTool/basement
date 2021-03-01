@@ -9,8 +9,8 @@ checkoutSCM:
     digestSHA1: "0d6e242d70e80c243a7abeb787e007835b3f0d3d"
     extract: False
 
-buildTools: [target-toolchain]
-buildVars: [AR, CC, RANLIB, PKG_VERSION]
+buildTools: [target-toolchain, host-toolchain]
+buildVars: [AR, CC, RANLIB, PKG_VERSION, CROSS_COMPILE]
 buildScript: |
     tar -xzf $1/libcap-${PKG_VERSION}.tar.gz
     mkdir -p install
@@ -19,6 +19,7 @@ buildScript: |
         lib=lib \
         AR=$AR \
         CC=$CC \
+        ${CROSS_COMPILE:+BUILD_CC=gcc} \
         RANLIB=$RANLIB \
         RAISE_SETFCAP=no \
         DESTDIR="$PWD/install" \
