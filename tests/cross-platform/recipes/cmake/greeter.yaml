@@ -1,5 +1,11 @@
 inherit: [ "basement::rootrecipe", cmake ]
 
+environment:
+    SANDBOX_AUTOCONF_HOST: "aarch64-bob-linux-gnu"
+    SANDBOX_AUTOCONF_BUILD: "aarch64-bob-linux-gnu"
+    SANDBOX_AUTOCONF_TARGET: "aarch64-bob-linux-gnu"
+    SANDBOX_ARCH: "arm64"
+
 checkoutSCM:
     scm: import
     url: src/greeter/
