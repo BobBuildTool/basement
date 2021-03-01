@@ -36,6 +36,7 @@ buildScript: |
             --with-headers=$2/usr/include \
             --enable-obsolete-rpc \
             --libdir=/usr/lib \
+            --disable-werror \
             $EXTRA
         touch .configure.stamp
     fi
