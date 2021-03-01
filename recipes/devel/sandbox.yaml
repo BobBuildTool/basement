@@ -47,8 +47,10 @@ depends:
     -
         name: devel::cross-toolchain
         environment:
-            AUTOCONF_TARGET: "x86_64-bob-linux-gnu"
-            ARCH: x86_64
+            # TODO AUTOCONF_TARGET: "${SANDBOX_AUTOCONF_TARGET:-x86_64-bob-linux-gnu}"
+            AUTOCONF_TARGET: "aarch64-bob-linux-gnu"
+            # TODO ARCH: "${SANDBOX_ARCH:-x86_64}"
+            ARCH: "arm64"
             GCC_LIBC: glibc
             BASEMENT_OPTIMIZE: "s"
             BASEMENT_DEBUG: "0"

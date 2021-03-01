@@ -10,7 +10,7 @@ checkoutSCM:
     extract: False
 
 buildTools: [host-toolchain, target-toolchain]
-buildVars: [AR, CC, OBJCOPY, RANLIB, PKG_VERSION]
+buildVars: [AR, CC, OBJCOPY, RANLIB, PKG_VERSION, CROSS_COMPILE]
 buildScript: |
     tar -xf $1/libcap-${PKG_VERSION}.tar.xz
     mkdir -p install
@@ -21,6 +21,7 @@ buildScript: |
         AR=$AR \
         CC=$CC \
         OBJCOPY=$OBJCOPY \
+        ${CROSS_COMPILE:+BUILD_CC=gcc} \
         RANLIB=$RANLIB \
         RAISE_SETFCAP=no \
         DESTDIR="$PWD/install" \
