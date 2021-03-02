@@ -1,10 +1,11 @@
 inherit: [ "basement::rootrecipe", cmake ]
 
 environment:
-    SANDBOX_AUTOCONF_HOST: "aarch64-bob-linux-gnu"
-    SANDBOX_AUTOCONF_BUILD: "aarch64-bob-linux-gnu"
-    SANDBOX_AUTOCONF_TARGET: "aarch64-bob-linux-gnu"
-    SANDBOX_ARCH: "arm64"
+    # this is just an example how to use this sandbox inside a recipe
+    SANDBOX_AUTOCONF_HOST: "$(if-then-else,$(is-sandbox-enabled),aarch64-bob-linux-gnu,)"
+    SANDBOX_AUTOCONF_BUILD: "$(if-then-else,$(is-sandbox-enabled),aarch64-bob-linux-gnu,)"
+    SANDBOX_AUTOCONF_TARGET: "$(if-then-else,$(is-sandbox-enabled),aarch64-bob-linux-gnu,)"
+    SANDBOX_ARCH: "$(if-then-else,$(is-sandbox-enabled),arm64,)"
 
 checkoutSCM:
     scm: import
