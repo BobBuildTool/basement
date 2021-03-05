@@ -93,3 +93,6 @@ depends:
         - devel::binutils
         - devel::gcc-native
 
+provideVars:
+    AUTOCONF_HOST: "${SANDBOX_AUTOCONF_HOST:-}"
+    AUTOCONF_BUILD: "${SANDBOX_AUTOCONF_BUILD:-}"
