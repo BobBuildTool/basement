@@ -80,6 +80,9 @@ depends:
         - name: devel::bootstrap-fake-pkg-config
           use: [tools]
           forward: True
+        - name: devel::win::msbuild
+          use: [tools]
+          forward: True
         - name: devel::win::cmake
           use: [tools]
           forward: True
