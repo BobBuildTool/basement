@@ -23,6 +23,8 @@ checkoutSCM:
     stripComponents: 1
 
 buildScript: |
+    export ac_cv_prog_PS2PDF="true"
+    export ac_cv_prog_GROFF="true"
     autotoolsBuild $1
 
 packageScript: |
