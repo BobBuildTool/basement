@@ -28,6 +28,10 @@ def hostAutoconf(args, **options):
         return machine + "-linux-gnu"
     elif system.startswith("MSYS_NT"):
         return machine + "-pc-msys"
+    elif system.startswith("MINGW64_NT"):
+        return "x86_64-w64-mingw32"
+    elif system.startswith("MINGW32_NT"):
+        return "i686-w64-mingw32"
     elif system == "Windows":
         return machine + "-pc-win32"
     else:

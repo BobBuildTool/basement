@@ -5,7 +5,7 @@ import subprocess
 
 def msbuild(args, **options):
     system = platform.uname().system
-    if system.startswith("MSYS_NT"):
+    if system.startswith("MSYS_NT") or system.startswith("MINGW"):
         isMSYS = True
     elif system == "Windows":
         isMSYS = False
