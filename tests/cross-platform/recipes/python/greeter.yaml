@@ -1,0 +1,13 @@
+inherit: [ "basement::rootrecipe", python3 ]
+
+depends:
+    - name: python::generator
+      use: [tools]
+      forward: True
+
+buildTools: [generator]
+buildScript: |
+    python3 $(which generator.py) > output.txt
+
+packageScript: |
+    rsync -aH "$1/" .
