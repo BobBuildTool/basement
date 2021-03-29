@@ -40,7 +40,7 @@ environment:
     # position independent code in case static and dynamic libraries are mixed.
     CFLAGS:     "-Os -pipe -fPIC"
     CXXFLAGS:   "-Os -pipe -fPIC"
-    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
+    LDFLAGS:    "-Wl,-O1"
 
 archive:
     backend: http
