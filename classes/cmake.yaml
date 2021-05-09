@@ -8,14 +8,14 @@ buildScript: |
     for i in "${@:2}" ; do
         # If we build for native Windows a native CMake is used and we need to
         # convert to Windows paths.
-        [[ "$AUTOCONF_HOST" == *-win32 ]] && i="$(cygpath -m $i)"
+        [[ "$AUTOCONF_BUILD" == *-msys ]] && i="$(cygpath -m $i)"
         CMAKE_FIND_ROOT_PATH+="${CMAKE_FIND_ROOT_PATH:+;}$i"
     done
 
     # This looks odd but it prevents MSYS from converting /usr to C:\msys64\usr
     # (or wherever MSYS was installed). See
     # http://mingw.org/wiki/Posix_path_conversion
-    if [[ "$AUTOCONF_HOST" == *-win32 ]] ; then
+    if [[ "$AUTOCONF_BUILD" == *-msys ]] ; then
         CMAKE_INSTALL_PREFIX="//usr"
         CMAKE_INSTALL_SYSCONFDIR="//etc"
     else
@@ -39,7 +39,7 @@ buildScript: |
             *-linux-*)
                 CMAKE_SYSTEM_NAME=Linux
                 ;;
-            *-win32)
+            *-msys|*-win32)
                 CMAKE_SYSTEM_NAME=Windows
                 ;;
             *)
