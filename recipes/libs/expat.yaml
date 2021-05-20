@@ -1,12 +1,12 @@
 inherit: [autotools]
 
 metaEnvironment:
-   PKG_VERSION: "2.1.0"
+   PKG_VERSION: "2.3.0"
 
 checkoutSCM:
    scm: url
    url: http://downloads.sourceforge.net/project/expat/expat/${PKG_VERSION}/expat-${PKG_VERSION}.tar.gz
-   digestSHA1: "b08197d146930a5543a7b99e871cba3da614f6f0"
+   digestSHA256: 89df123c62f2c2e2b235692d9fe76def6a9ab03dbe95835345bf412726eb1987
    stripComponents: 1
 
 buildScript: |
