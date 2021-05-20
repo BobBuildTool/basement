@@ -5,6 +5,11 @@ checkoutSCM:
     scm: url
     url: https://www2.graphviz.org/Packages/stable/windows/10/msbuild/Release/Win32/graphviz-${PKG_VERSION}-win32.zip
     digestSHA256: 76e79d0fe4fb18112f733e0fcad152c6a894efac2c07441ecaa1993b49c91487
+    extract: False
+
+checkoutDeterministic: True
+checkoutScript: |
+    unzip -o *.zip || test $? -eq 1
 
 buildScript: |
     rsync -a $1/*/ ./usr
