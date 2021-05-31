@@ -87,3 +87,4 @@ provideVars:
     # target-toolchain. ARCH is unchaged, though.
     AUTOCONF_BUILD: "$AUTOCONF_TARGET"
     AUTOCONF_HOST:  "$AUTOCONF_TARGET"
+    LDFLAGS: "$LDFLAGS  -Wl,--hash-style=gnu"
