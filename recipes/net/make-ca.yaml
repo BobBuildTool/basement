@@ -1,7 +1,7 @@
 checkoutSCM:
     -
         scm: url
-        url: https://github.com/djlucas/make-ca/archive/v0.6.tar.gz
+        url: ${GITHUB_MIRROR}/djlucas/make-ca/archive/v0.6.tar.gz
         digestSHA1: 5f909366eca66c6c2caa8e44ca531d198b18a69d
         dir: make-ca
         stripComponents: 1

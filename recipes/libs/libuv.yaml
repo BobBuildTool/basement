@@ -5,7 +5,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: https://github.com/libuv/libuv/archive/v${PKG_VERSION}.tar.gz
+    url: ${GITHUB_MIRROR}/libuv/libuv/archive/v${PKG_VERSION}.tar.gz
     digestSHA256: 2cd9a757fe6c512440933e2bdcab21143d4aa6249b2541399908ce038b756c9d
     stripComponents: 1
 

@@ -3,7 +3,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: https://github.com/Kitware/CMake/releases/download/v${PKG_VERSION}/cmake-${PKG_VERSION}-win64-x64.zip
+    url: ${GITHUB_MIRROR}/Kitware/CMake/releases/download/v${PKG_VERSION}/cmake-${PKG_VERSION}-win64-x64.zip
     digestSHA256: 8a02de221aa96c236a947b28ca1bd6327b9bb82fa74b91e5caa49ffd6a642ae2
 
 buildVars: [PKG_VERSION]

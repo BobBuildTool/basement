@@ -15,7 +15,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${PKG_VERSION}.tar.xz
+    url: ${KERNEL_MIRROR}/linux/kernel/v5.x/linux-${PKG_VERSION}.tar.xz
     digestSHA1: "3b84ef2105b55549f1d0329f2522741581eea326"
     stripComponents: 1
 

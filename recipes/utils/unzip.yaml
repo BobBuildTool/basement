@@ -5,7 +5,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: https://sourceforge.net/projects/infozip/files/UnZip%206.x%20%28latest%29/UnZip%206.0/unzip${PKG_VERSION}.tar.gz
+    url: ${SOURCEFORGE_MIRROR}/infozip/unzip${PKG_VERSION}.tar.gz
     digestSHA1: "abf7de8a4018a983590ed6f5cbd990d4740f8a22"
     extract: False
 

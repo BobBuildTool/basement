@@ -16,7 +16,7 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: https://www.kernel.org/pub/software/scm/git/git-${PKG_VERSION}.tar.xz
+    url: ${KERNEL_MIRROR}/software/scm/git/git-${PKG_VERSION}.tar.xz
     digestSHA1: "851537fc03f5a99419ef20e9b836de965c7928bd"
     extract: False
 

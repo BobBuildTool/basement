@@ -5,7 +5,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: https://sourceware.org/pub/bzip2/bzip2-${PKG_VERSION}.tar.gz
+    url: ${SOURCEWARE_MIRROR}/bzip2/bzip2-${PKG_VERSION}.tar.gz
     digestSHA1: "bf7badf7e248e0ecf465d33c2f5aeec774209227"
     extract: False
 
