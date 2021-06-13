@@ -10,7 +10,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: ftp://sourceware.org/pub/newlib/newlib-${PKG_VERSION}.tar.gz
+    url: ${SOURCEWARE_MIRROR}/newlib/newlib-${PKG_VERSION}.tar.gz
     digestSHA1: "6c0e467345ca6832eff6add85124c6e81e11d174"
     stripComponents: 1
 

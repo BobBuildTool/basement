@@ -9,7 +9,7 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: https://github.com/plougher/squashfs-tools/archive/${PKG_VERSION}.tar.gz
+    url: ${GITHUB_MIRROR}/plougher/squashfs-tools/archive/${PKG_VERSION}.tar.gz
     digestSHA256: "a7fa4845e9908523c38d4acf92f8a41fdfcd19def41bd5090d7ad767a6dc75c3"
     stripComponents: 1
 

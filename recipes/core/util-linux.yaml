@@ -15,7 +15,7 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: https://www.kernel.org/pub/linux/utils/util-linux/v${PKG_VERSION_MAJOR}/util-linux-${PKG_VERSION}.tar.xz
+    url: ${KERNEL_MIRROR}/linux/utils/util-linux/v${PKG_VERSION_MAJOR}/util-linux-${PKG_VERSION}.tar.xz
     digestSHA256: "21b7431e82f6bcd9441a01beeec3d57ed33ee948f8a5b41da577073c372eb58a"
     stripComponents: 1
 

@@ -5,7 +5,7 @@ metaEnvironment:
 
 checkoutSCM:
    scm: url
-   url: ftp://sourceware.org/pub/libffi/libffi-${PKG_VERSION}.tar.gz
+   url: ${SOURCEWARE_MIRROR}/libffi/libffi-${PKG_VERSION}.tar.gz
    digestSHA1: "280c265b789e041c02e5c97815793dfc283fb1e6"
    stripComponents: 1
 

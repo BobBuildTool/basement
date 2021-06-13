@@ -11,7 +11,8 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: https://sourceware.org/elfutils/ftp/${PKG_VERSION}/elfutils-${PKG_VERSION}.tar.bz2
+    url: ${SOURCEWARE_MIRROR}/elfutils/${PKG_VERSION}/elfutils-${PKG_VERSION}.tar.bz2
+    digestSHA256: 25a545566cbacaa37ae6222e58f1c48ea4570f53ba991886e2f5ce96e22a23a2
     stripComponents: 1
 
 buildScript: |

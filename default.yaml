@@ -1,5 +1,9 @@
 environment:
     GNU_MIRROR: "http://ftp.gnu.org/pub/gnu"
+    GITHUB_MIRROR: "https://github.com"
+    KERNEL_MIRROR: "https://cdn.kernel.org/pub"
+    SOURCEFORGE_MIRROR: "https://downloads.sourceforge.net"
+    SOURCEWARE_MIRROR: "https://sourceware.org/pub"
 
     # default compile flags
     BASEMENT_OPTIMIZE: "s" # compiler optimization level (0/1/2/s)

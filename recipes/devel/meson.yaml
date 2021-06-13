@@ -3,7 +3,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: https://github.com/mesonbuild/meson/archive/${PKG_VERSION}.tar.gz
+    url: ${GITHUB_MIRROR}/mesonbuild/meson/archive/${PKG_VERSION}.tar.gz
     digestSHA256: a9ca7adf66dc69fbb7e583f7c7aef16b9fe56ec2874a3d58747e69a3affdf300
     extract: false
 

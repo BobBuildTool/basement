@@ -5,7 +5,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: https://sourceforge.net/projects/rhash/files/rhash/${PKG_VERSION}/rhash-${PKG_VERSION}-src.tar.gz
+    url: ${SOURCEFORGE_MIRROR}/rhash/rhash-${PKG_VERSION}-src.tar.gz
     digestSHA256: 98e0688acae29e68c298ffbcdbb0f838864105f9b2bd8857980664435b1f1f2e
     extract: false
 

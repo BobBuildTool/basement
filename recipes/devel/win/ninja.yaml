@@ -3,7 +3,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: https://github.com/ninja-build/ninja/releases/download/v${PKG_VERSION}/ninja-win.zip
+    url: ${GITHUB_MIRROR}/ninja-build/ninja/releases/download/v${PKG_VERSION}/ninja-win.zip
     digestSHA256: 5d1211ea003ec9760ad7f5d313ebf0b659d4ffafa221187d2b4444bc03714a33
 
 buildScript: |

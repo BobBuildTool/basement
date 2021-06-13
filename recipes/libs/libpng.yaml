@@ -12,7 +12,7 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: https://downloads.sourceforge.net/libpng/libpng-${PKG_VERSION}.tar.xz
+    url: ${SOURCEFORGE_MIRROR}/libpng/libpng-${PKG_VERSION}.tar.xz
     digestSHA1: 3ab93fabbf4c27e1c4724371df408d9a1bd3f656
     stripComponents: 1
 

@@ -5,7 +5,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-${PKG_VERSION}.tar.gz
+    url: ${KERNEL_MIRROR}/linux/libs/security/linux-privs/libcap2/libcap-${PKG_VERSION}.tar.gz
     digestSHA1: "0d6e242d70e80c243a7abeb787e007835b3f0d3d"
     extract: False
 

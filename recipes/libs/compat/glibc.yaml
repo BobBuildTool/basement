@@ -11,7 +11,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: http://ftp.gnu.org/gnu/glibc/glibc-${PKG_VERSION}.tar.xz
+    url: ${GNU_MIRROR}/glibc/glibc-${PKG_VERSION}.tar.xz
     digestSHA256: "94efeb00e4603c8546209cefb3e1a50a5315c86fa9b078b6fad758e187ce13e9"
     stripComponents: 1
 

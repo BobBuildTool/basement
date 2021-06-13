@@ -8,7 +8,7 @@ privateEnvironment:
 
 checkoutSCM:
     scm: url
-    url: https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-${PKG_VERSION}.tar.gz
+    url: ${KERNEL_MIRROR}/linux/utils/kernel/kmod/kmod-${PKG_VERSION}.tar.gz
     digestSHA1: "e07a6245a040e8c18bff39b302d6d09bcbdf57b6"
     stripComponents: 1
 

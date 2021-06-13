@@ -3,7 +3,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: https://github.com/pypa/setuptools/archive/v${PKG_VERSION}.tar.gz
+    url: ${GITHUB_MIRROR}/pypa/setuptools/archive/v${PKG_VERSION}.tar.gz
     digestSHA256: d8203b2425014dd7b15b95c69a41454a98c90e5383c6a23d518f61c2e3e86bfd
     extract: False
 

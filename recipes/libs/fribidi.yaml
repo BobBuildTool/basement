@@ -5,7 +5,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: https://github.com/fribidi/fribidi/releases/download/v${PKG_VERSION}/fribidi-${PKG_VERSION}.tar.xz
+    url: ${GITHUB_MIRROR}/fribidi/fribidi/releases/download/v${PKG_VERSION}/fribidi-${PKG_VERSION}.tar.xz
     digestSHA256: 7f1c687c7831499bcacae5e8675945a39bacbad16ecaa945e9454a32df653c01
     stripComponents: 1
 

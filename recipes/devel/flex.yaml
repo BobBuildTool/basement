@@ -5,7 +5,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: https://sourceforge.net/projects/flex/files/flex-${PKG_VERSION}.tar.gz
+    url: ${SOURCEFORGE_MIRROR}/flex/flex-${PKG_VERSION}.tar.gz
     digestSHA1: "cfe10b5de4893ced356adc437e78018e715818c3"
     stripComponents: 1
 
