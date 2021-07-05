@@ -1,7 +1,7 @@
-inherit: [cpackage, ninja, install, licenses]
+inherit: [cpackage, ninja, install, licenses, make]
 
 buildToolsWeak: [cmake]
-buildVars: [AUTOCONF_HOST, AR, CC, CXX]
+buildVars: [AUTOCONF_HOST, AR, CC, CXX, CMAKE_GENERATOR]
 buildSetup: |
     # Make sure CMake finds other stuff by its own logic too
     CMAKE_FIND_ROOT_PATH=
@@ -144,7 +144,7 @@ buildSetup: |
         pushd build
 
         cmake "$1" \
-            -G Ninja \
+            -G "${CMAKE_GENERATOR:-Ninja}" \
             ${CMAKE_TOOLCHAIN_FILE:+-DCMAKE_TOOLCHAIN_FILE="$CMAKE_TOOLCHAIN_FILE"} \
             -DCMAKE_FIND_ROOT_PATH="$CMAKE_FIND_ROOT_PATH" \
             -DCMAKE_BUILD_TYPE=Bob \
@@ -155,9 +155,13 @@ buildSetup: |
             -DCMAKE_MSVC_RUNTIME_LIBRARY="" \
             "${@:2}"
 
-        ninjaParallel ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"} \
-            ${MAKE_TARGETS:+"${MAKE_TARGETS[@]}"}
-
+        if [[ "${CMAKE_GENERATOR:-Ninja}" == Ninja ]]; then
+            ninjaParallel ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"} \
+                ${MAKE_TARGETS:+"${MAKE_TARGETS[@]}"}
+        elif [[ "${CMAKE_GENERATOR:-Ninja}" == 'Unix Makefiles' ]]; then
+            makeParallel ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"} \
+                 ${MAKE_TARGETS:+"${MAKE_TARGET[@]}"}
+        fi
         if [[ -n "$INSTALL" ]] ; then
             DESTDIR="${PWD}/../install" cmake \
                 ${INSTALL_COMPONENT:+-DCOMPONENT="$INSTALL_COMPONENT"} \
