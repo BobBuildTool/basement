@@ -47,7 +47,6 @@ buildScript: |
                 ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
                 ${GCC_TARGET_FLOAT_ABI:+--with-float=$GCC_TARGET_FLOAT_ABI} \
                 --enable-initfini-array \
-                --with-linker-hash-style=gnu \
                 "${@}" \
                 --disable-gtk-doc \
                 --disable-gtk-doc-html \
