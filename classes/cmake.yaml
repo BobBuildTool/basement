@@ -12,7 +12,7 @@ buildSetup: |
         CMAKE_FIND_ROOT_PATH+="${CMAKE_FIND_ROOT_PATH:+;}$i"
     done
     # We should also add the sysroot path of gcc/g++ if available.
-    if[[ "$CXX" == *"g++" ]] ; then
+    if [[ "$CXX" == *"g++" ]] ; then
         SYSROOT="$($CXX -print-sysroot)"
     fi
     [ -z "${SYSROOT:+true}" ] || CMAKE_FIND_ROOT_PATH+=";${SYSROOT}"
