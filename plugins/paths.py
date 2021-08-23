@@ -1,6 +1,21 @@
+from os import makedirs
 from os.path import join
 from bob.errors import ParseError
-from bob.input import PluginState, PluginProperty
+from bob.input import PluginState, PluginProperty, PluginSetting
+
+class ShortPathSetting(PluginSetting):
+    pass
+
+shortPathSetting = ShortPathSetting(None)
+
+def shortPathFormatter(step, states):
+    settings = shortPathSetting.getSettings()
+    shortPath = settings.get('path') if settings else None
+    if shortPath:
+        makedirs(shortPath, exist_ok=True)
+        return shortPath
+    else:
+        return ""
 
 def commonFormatter(step, states):
     if step.isCheckoutStep():
@@ -12,13 +27,13 @@ def commonFormatter(step, states):
     return ret.replace('::', "/")
 
 def releaseFormatter(step, states):
-    return join("work", commonFormatter(step, states), step.getLabel())
+    return join(shortPathFormatter(step, states), "work", commonFormatter(step, states), step.getLabel())
 
 def developFormatter(step, states):
-    return join("dev", step.getLabel(), commonFormatter(step, states))
+    return join(shortPathFormatter(step, states), "dev", step.getLabel(), commonFormatter(step, states))
 
 def jenkinsFormatter(step, states):
-    return join(commonFormatter(step, states), step.getLabel())
+    return join(shortPathFormatter(step, states), commonFormatter(step, states), step.getLabel())
 
 manifest = {
     'apiVersion' : "0.3",
@@ -26,5 +41,8 @@ manifest = {
         'releaseNameFormatter' : releaseFormatter,
         'developNameFormatter' : developFormatter,
         'jenkinsNameFormatter' : jenkinsFormatter
+    },
+    'settings' : {
+        "ShortPath" : shortPathSetting,
     },
 }
