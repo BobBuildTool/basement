@@ -1,8 +1,5 @@
 # Basement
 
-[![Recipes Build Status](https://ci.bobbuildtool.dev/jenkins/buildStatus/icon?job=basement-integration&subject=Recipes)](https://ci.bobbuildtool.dev/jenkins/view/basement/job/basement-integration/)
-[![Packages Build Status](https://ci.bobbuildtool.dev/jenkins/buildStatus/icon?job=basement-buildall&subject=Packages)](https://ci.bobbuildtool.dev/jenkins/view/basement/)
-
 These basement project is a collection of useful recipes and classes that can be
 used by other projects. Most importantly it provides standard classes
 to handle common build systems and other standard tasks. Additionally a
