@@ -13,7 +13,7 @@ buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS,
 # the build result. The toolset version is handled by the toolchain directly
 # and is attached to 'target-toolchain'.
 buildVarsWeak: [INCLUDE, LIB, LIBPATH, VS_PATH]
-buildScript: |
+buildSetup: |
     # Check if we're officially cross-compiling
     cpackageCrossCompiling()
     {

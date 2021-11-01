@@ -1,5 +1,5 @@
 buildToolsWeak: [pkg-config]
-buildScript: |
+buildSetup: |
     # make sure to not search any system paths
     export PKG_CONFIG_DIR=
 

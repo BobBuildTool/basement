@@ -11,7 +11,7 @@ inherit: [strip]
 # not pass --static to pkg-config.  Executables are still linked dynamically
 # because glibc cannot be linked statically).
 packageVars: [BASEMENT_LIBS]
-packageScript: |
+packageSetup: |
     # Install shared libraries only when cross compiling. On host builds only
     # static libraries are installed.
     if [[ "${AUTOCONF_BUILD:-unknown}" != "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then

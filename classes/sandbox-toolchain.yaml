@@ -28,7 +28,7 @@ fingerprintScript: |
     fi
 
 packageVars: [AUTOCONF_BUILD, SANDBOX_AUTOCONF_BUILD]
-packageScript: |
+packageSetup: |
     # Create a wrapper scripts that prefer the right executable in /toolchain
     # and (if we are outside of a sandbox) fall back to globally installed
     # versions.

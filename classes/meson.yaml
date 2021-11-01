@@ -2,7 +2,7 @@ inherit: [cpackage, install]
 
 buildToolsWeak: [meson, ninja]
 buildVars: [CC, CXX, AR, STRIP]
-buildScript: |
+buildSetup: |
     # Set a generic utf-8 locale. Introduced by Debian and seems to work on
     # Fedora too. If not set meson will barf on the first non 7-bit ASCII
     # character.
@@ -106,7 +106,7 @@ buildScript: |
         popd
     }
 
-packageScript: |
+packageSetup: |
    _MESON_BUILD_PATH=$1
 
     mesonPackageBin()

@@ -3,7 +3,7 @@
 # target toolchain at all.
 inherit: [make, install]
 
-buildScript: |
+buildSetup: |
     # $1 : source path
     autotoolsNoarchBuild()
     {
@@ -53,7 +53,7 @@ buildScript: |
         popd
     }
 
-packageScript: |
+packageSetup: |
     _AUTOTOOLS_NOARCH_BUILD_PATH=$1
 
     autotoolsNoarchPackageBin()
