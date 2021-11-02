@@ -1,5 +1,5 @@
 checkoutDeterministic: True
-checkoutScript: |
+checkoutSetup: |
     patchApplySeries()
     {
         local i p=1 name=""

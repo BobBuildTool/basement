@@ -1,7 +1,7 @@
 inherit: [cpackage, libtool, make, install]
 
 buildVars: [AUTOTOOLS_AUTO_STATIC]
-buildScript: |
+buildSetup: |
     # $1 : source path
     autotoolsBuild()
     {
@@ -75,7 +75,7 @@ buildScript: |
         popd
     }
 
-packageScript: |
+packageSetup: |
     _AUTOTOOLS_BUILD_PATH=$1
 
     autotoolsPackageBin()

@@ -2,7 +2,7 @@ inherit: [cpackage, ninja, install]
 
 buildToolsWeak: [cmake]
 buildVars: [AUTOCONF_HOST, CC, CXX]
-buildScript: |
+buildSetup: |
     # Make sure CMake finds other stuff by its own logic too
     CMAKE_FIND_ROOT_PATH=
     for i in "${@:2}" ; do
@@ -130,7 +130,7 @@ buildScript: |
         popd
     }
 
-packageScript: |
+packageSetup: |
     _CMAKE_BUILD_PATH=$1
 
     cmakePackageBin()

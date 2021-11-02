@@ -9,7 +9,7 @@ privateEnvironment:
 
 checkoutDeterministic: True
 checkoutTools: [autotools]
-checkoutScript: |
+checkoutSetup: |
     autoconfReconfigure()
     {
         if [[ ( ! -e configure ) || ( ! -e .autoreconf.stamp ) ||

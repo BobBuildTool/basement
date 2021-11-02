@@ -2,7 +2,7 @@ inherit: [patch]
 
 checkoutVars: [APPLY_LIBTOOL_PATCH]
 checkoutDeterministic: True
-checkoutScript: |
+checkoutSetup: |
     libtoolApply()
     {
         local i

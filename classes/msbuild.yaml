@@ -1,6 +1,6 @@
 buildTools: [msbuild]
 
 buildVarsWeak: [MSB_PATH]
-buildScript: |
+buildSetup: |
     ${MSB_PATH:+export PATH="$PATH:$MSB_PATH"}
 
