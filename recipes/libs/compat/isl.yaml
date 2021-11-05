@@ -15,7 +15,7 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: http://isl.gforge.inria.fr/isl-${PKG_VERSION}.tar.xz
+    url: ${SOURCEFORGE_MIRROR}/libisl/isl-${PKG_VERSION}.tar.xz
     digestSHA256: "45292f30b3cb8b9c03009804024df72a79e9b5ab89e41c94752d6ea58a1e4b02"
     stripComponents: 1
 
