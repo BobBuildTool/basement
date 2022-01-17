@@ -38,6 +38,8 @@ multiPackage:
         packageScript: mesonPackageLib
         provideDeps: [ "*-tgt" ]
     tools:
-        packageScript: mesonPackageBin
+        packageScript: mesonPackageTgt
         provideTools:
-            glib: usr/bin
+            glib:
+                path: usr/bin
+                libs: [ "usr/lib" ]
