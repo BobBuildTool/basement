@@ -5,7 +5,7 @@ metaEnvironment:
 
 checkoutSCM:
     scm: url
-    url: https://doxygen.nl/files/doxygen-${PKG_VERSION}.src.tar.gz
+    url: ${SOURCEFORGE_MIRROR}/doxygen/doxygen-${PKG_VERSION}.src.tar.gz
     digestSHA256: 67aeae1be4e1565519898f46f1f7092f1973cce8a767e93101ee0111717091d1
     stripComponents: 1
 
