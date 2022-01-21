@@ -1,26 +1,24 @@
 inherit: [meson, patch]
 
 metaEnvironment:
-    PKG_VERSION: "2.67.0"
+    PKG_VERSION: "2.71.0"
 
 depends:
     - libs::libffi-dev
+    - libs::pcre-lib-1-dev
     - libs::zlib-dev
 
     - use: []
       depends:
         - libs::libffi-tgt
+        - libs::pcre-lib-1-tgt
         - libs::zlib-tgt
 
 checkoutSCM:
     scm: url
-    url: http://ftp.gnome.org/pub/gnome/sources/glib/2.67/glib-${PKG_VERSION}.tar.xz
-    digestSHA256: "0b15e57ab6c2bb90ced4e24a1b0d8d6e9a13af8a70266751aa3a45baffeed7c1"
+    url: http://ftp.gnome.org/pub/gnome/sources/glib/2.71/glib-${PKG_VERSION}.tar.xz
+    digestSHA256: "926816526f6e4bba9af726970ff87be7dac0b70d5805050c6207b7bb17ea4fca"
     stripComponents: 1
-
-checkoutDeterministic: True
-checkoutScript: |
-   patchApplySeries -p0 $<<glib/*.patch>>
 
 buildScript: |
     mesonBuild $1 -Dtests=false
