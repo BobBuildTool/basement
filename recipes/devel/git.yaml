@@ -6,7 +6,8 @@ metaEnvironment:
 depends:
     - libs::zlib-dev
     - libs::openssl-dev
-    - net::curl-dev
+    - name: net::curl-dev
+      use: [result, deps, tools]
 
     - use: []
       depends:
@@ -20,7 +21,7 @@ checkoutSCM:
     digestSHA1: "851537fc03f5a99419ef20e9b836de965c7928bd"
     extract: False
 
-buildTools: [target-toolchain]
+buildTools: [target-toolchain, curl]
 buildVars: [PKG_VERSION, AUTOCONF_HOST,
     CPPFLAGS, CFLAGS, LDFLAGS]
 buildScript: |
