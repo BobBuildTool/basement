@@ -1,4 +1,4 @@
-inherit: [autotools, autoconf]
+inherit: [autotools]
 
 metaEnvironment:
     PKG_VERSION: "2.13.92"
@@ -26,10 +26,6 @@ checkoutSCM:
     url: https://www.freedesktop.org/software/fontconfig/release/fontconfig-${PKG_VERSION}.tar.xz
     digestSHA256: 506e61283878c1726550bc94f2af26168f1e9f2106eac77eaaf0b2cdfad66e4e
     stripComponents: 1
-
-checkoutDeterministic: True
-checkoutScript: |
-    autoconfReconfigure
 
 buildTools: [gettext, gperf]
 buildScript: |
