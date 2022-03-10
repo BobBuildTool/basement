@@ -3,6 +3,13 @@ inherit: [autotools]
 metaEnvironment:
     PKG_VERSION: "3.4.3"
 
+depends:
+    - libs::zlib-dev
+
+    - use: []
+      depends:
+          - libs::zlib-tgt
+
 checkoutSCM:
     scm: url
     url: https://www.libarchive.de/downloads/libarchive-${PKG_VERSION}.tar.xz
@@ -25,12 +32,15 @@ buildScript: |
         --without-mbedtls \
         --without-nettle \
         --without-openssl \
-        --without-zlib \
+        --with-zlib \
         --without-lzma \
         --without-zstd
 
 multiPackage:
     dev:
         packageScript: autotoolsPackageDev
+        provideDeps: ["*-dev"]
+
     tgt:
         packageScript: autotoolsPackageTgt
+        provideDeps: ["*-tgt"]
