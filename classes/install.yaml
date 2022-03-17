@@ -71,9 +71,9 @@ packageSetup: |
         fi
     }
 
-    installStripFile()
+    installStripBinary()
     {
-        stripFile "$1"
+        stripBinary "$1"
     }
 
     installStripAll()
