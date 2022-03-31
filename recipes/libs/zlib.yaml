@@ -1,12 +1,12 @@
 inherit: [cpackage, make, install]
 
 metaEnvironment:
-   PKG_VERSION: "1.2.8"
+   PKG_VERSION: "1.2.12"
 
 checkoutSCM:
    scm: url
-   url: ${SOURCEFORGE_MIRROR}/libpng/zlib-${PKG_VERSION}.tar.gz
-   digestSHA1: "a4d316c404ff54ca545ea71a27af7dbc29817088"
+   url: ${GITHUB_MIRROR}/madler/zlib/archive/refs/tags/v${PKG_VERSION}.tar.gz
+   digestSHA1: "09211da41528f4a7bc01890eeb0577af2bc0ec26"
    extract: False
 
 buildVars: [CROSS_COMPILE, PKG_VERSION]
@@ -35,7 +35,7 @@ buildScript: |
     esac
 
     mkdir -p install
-    tar -xzf $1/zlib-${PKG_VERSION}.tar.gz
+    tar -xzf $1/v${PKG_VERSION}.tar.gz
     pushd zlib-${PKG_VERSION}
     ./configure "${CONFIGURE_OPTS[@]}"
     make install DESTDIR=${PWD}/../install
