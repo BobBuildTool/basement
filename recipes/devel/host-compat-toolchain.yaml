@@ -8,6 +8,10 @@ shared: True
 environment:
     AUTOCONF_TARGET: "$(gen-autoconf,bob_compat)"
 
+privateEnvironment:
+    # compat gcc 5.4 compilation will fail with c++17
+    CXXFLAGS: "${CXXFLAGS:+$CXXFLAGS }-std=c++11"
+
 depends:
     # The following tools are needed by the cross-toolchain build process.
     # Build them explicitly here to keep the basement::rootrecipe class
