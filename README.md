@@ -7,15 +7,17 @@ standard sandbox and common GCC toolchains are ready-to-use.
 
 # Prerequisites
 
-* A x86_64 system with the regular development tools installed
+* A x86\_64 system with the regular development tools installed
   * gcc >= 5.x
   * bash
   * POSIX awk (GNU awk version >= 3.1.5)
+  * GNU m4
   * GNU make >= 3.80
   * perl >= 5.6.1
   * GNU tar
   * gzip
   * bzip2
+  * rsync
   * xz-utils
 * Bleeding edge Bob Build Tool (https://github.com/BobBuildTool/bob)
 
