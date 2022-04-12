@@ -81,7 +81,7 @@ buildScript: |
             touch .configure.stamp
         fi
         makeParallel
-        make install DESTDIR=${PWD}/../install
+        makeSequential install DESTDIR=${PWD}/../install
         popd
     }
 
