@@ -1,35 +1,20 @@
 diff -Nurp a/po/Makefile b/po/Makefile
---- a/po/Makefile	2015-08-05 08:42:21.000000000 +0200
-+++ b/po/Makefile	2016-05-08 21:33:15.939665392 +0200
-@@ -48,7 +48,7 @@ install-others = $(LINGUAS:%=$(mo-instal
+--- a/po/Makefile	2022-04-08 12:26:47.970319042 +0200
++++ b/po/Makefile	2022-04-08 12:29:53.611030632 +0200
+@@ -50,7 +50,7 @@ generated += $(ALL_LINGUAS:%=%.mo)
  include ../Rules
- 
+
  # Generate the translation template from all the source files.
 -libc.pot: pot.header libc.pot.files
 +libc.pot: pot.header $(objpfx)libc.pot.files
  	@rm -f $@.new
  	set `date -R`; disp="$$6"; \
  	sed -e 's/VERSION/$(version)/' \
-@@ -72,7 +72,7 @@ po-sed-cmd = \
+@@ -74,7 +74,7 @@ po-sed-cmd = \
    '/\/tst-/d;$(foreach S,[ch] cxx sh ksh bash,$(subst .,\.,/.$S\(.in\)*$$/p;))'
- 
+
  # Omit tst-* files, and get only files with the given suffixes.
 -libc.pot.files: FORCE
 +$(objpfx)libc.pot.files: FORCE
  	$(..)scripts/list-sources.sh .. | sed -n $(po-sed-cmd) > $@.new
  	mv -f $@.new $@
- 
-@@ -80,11 +80,11 @@ libc.pot.files: FORCE
- 
- # Compile the binary message object files from the portable object source
- # files of translations for each language.
--%.mo: %.po
-+$(objpfx)%.mo: %.po
- 	$(MSGFMT) -o $@ $<
- 
- # Install the message object files as libc.po in the language directory.
--$(mo-installed): %.mo $(+force); $(do-install) || exit 0
-+$(mo-installed): $(objpfx)%.mo $(+force); $(do-install) || exit 0
- 
- .PHONY: linguas linguas.mo
- linguas: $(ALL_LINGUAS:=.po)

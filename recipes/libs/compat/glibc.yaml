@@ -7,12 +7,12 @@ depends:
         use: [tools]
 
 metaEnvironment:
-    PKG_VERSION: "2.23"
+    PKG_VERSION: "2.27"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/glibc/glibc-${PKG_VERSION}.tar.xz
-    digestSHA256: "94efeb00e4603c8546209cefb3e1a50a5315c86fa9b078b6fad758e187ce13e9"
+    digestSHA256: "5172de54318ec0b7f2735e5a91d908afe1c9ca291fec16b5374d9faadfc1fc72"
     stripComponents: 1
 
 checkoutDeterministic: True
@@ -32,7 +32,7 @@ buildScript: |
             --prefix=/usr                    \
             --host=${AUTOCONF_TARGET}        \
             --build=$($1/scripts/config.guess) \
-            --enable-kernel=4.3.3             \
+            --enable-kernel=4.15.0           \
             --with-headers=$2/usr/include \
             --enable-obsolete-rpc \
             --libdir=/usr/lib \
