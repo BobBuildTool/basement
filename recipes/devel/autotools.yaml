@@ -9,6 +9,7 @@ depends:
     - devel::pkg-config-aclocal
 
 buildScript: |
+    rm -rf *
     for i in "${@:2}" ; do
         cp -a "$i"/* .
     done
