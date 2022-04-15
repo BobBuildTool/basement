@@ -32,9 +32,16 @@ buildScript: |
 
 multiPackage:
     dev:
-        packageScript: autotoolsPackageDev
+        packageScript: |
+            autotoolsPackageDev
+            mkdir -p usr/bin
+            cp -a $1/install/usr/bin/curl-config usr/bin/
         provideDeps: [ "*-dev" ]
+        provideTools:
+            curl: usr/bin
 
     tgt:
-        packageScript: autotoolsPackageTgt
+        packageScript: |
+            autotoolsPackageTgt
+            rm -f usr/bin/curl-config
         provideDeps: [ "*-tgt" ]

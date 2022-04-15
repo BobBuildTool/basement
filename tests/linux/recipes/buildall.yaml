@@ -13,10 +13,8 @@ packageTools:
     - autotools
     - bison
     - cmake
-    - cpio
     - flex
+    - make
     - meson
     - ninja
     - pkg-config
-    - squashfs-tools
-    - e2fsprogs
