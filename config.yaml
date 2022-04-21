@@ -5,7 +5,3 @@ plugins:
     - paths
     - vsenv
     - msbuild
-
-layers:
-    - gnu-linux
-    - win32-bin
