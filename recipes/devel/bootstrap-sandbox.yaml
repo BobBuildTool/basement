@@ -51,7 +51,7 @@ depends:
 
     # stuff that goes into the sandbox image
     - core::coreutils
-    - core::util-linux
+    - core::util-linux-tgt
     - devel::diffutils
     - devel::m4
     - devel::patch

@@ -32,7 +32,10 @@ buildScript: |
         bindir=/usr/bin \
         sbindir=/usr/sbin
 
-packageScript: |
-    autotoolsPackageTgt
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
 
-provideDeps: [ "*-tgt" ]
+    tgt:
+        packageScript: autotoolsPackageTgt
+        provideDeps: [ "*-tgt" ]
