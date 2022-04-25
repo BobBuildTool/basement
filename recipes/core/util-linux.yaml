@@ -1,8 +1,8 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION_MAJOR: "2.35"
-    PKG_VERSION: "2.35.2"
+    PKG_VERSION_MAJOR: "2.38"
+    PKG_VERSION: "2.38"
 
 depends:
     - libs::ncurses-dev
@@ -16,7 +16,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${KERNEL_MIRROR}/linux/utils/util-linux/v${PKG_VERSION_MAJOR}/util-linux-${PKG_VERSION}.tar.xz
-    digestSHA256: "21b7431e82f6bcd9441a01beeec3d57ed33ee948f8a5b41da577073c372eb58a"
+    digestSHA256: "6d111cbe4d55b336db2f1fbeffbc65b89908704c01136371d32aa9bec373eb64"
     stripComponents: 1
 
 buildScript: |
