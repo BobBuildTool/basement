@@ -1,24 +1,26 @@
 inherit: [make, install]
 
 metaEnvironment:
-    PKG_VERSION: "2.25"
+    PKG_VERSION: "2.64"
 
 checkoutSCM:
     scm: url
-    url: ${KERNEL_MIRROR}/linux/libs/security/linux-privs/libcap2/libcap-${PKG_VERSION}.tar.gz
-    digestSHA1: "0d6e242d70e80c243a7abeb787e007835b3f0d3d"
+    url: ${KERNEL_MIRROR}/linux/libs/security/linux-privs/libcap2/libcap-${PKG_VERSION}.tar.xz
+    digestSHA256: "c8465e1f0b068d5fc06199231135ccac7adb56d662b1de93589252e8cd071e13"
     extract: False
 
-buildTools: [target-toolchain]
-buildVars: [AR, CC, RANLIB, PKG_VERSION]
+buildTools: [host-toolchain, target-toolchain]
+buildVars: [AR, CC, OBJCOPY, RANLIB, PKG_VERSION]
 buildScript: |
-    tar -xzf $1/libcap-${PKG_VERSION}.tar.gz
+    tar -xf $1/libcap-${PKG_VERSION}.tar.xz
     mkdir -p install
     makeParallel -C libcap-${PKG_VERSION} \
         prefix=/usr \
         lib=lib \
+        BUILD_CC=gcc \
         AR=$AR \
         CC=$CC \
+        OBJCOPY=$OBJCOPY \
         RANLIB=$RANLIB \
         RAISE_SETFCAP=no \
         DESTDIR="$PWD/install" \
