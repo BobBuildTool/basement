@@ -27,7 +27,7 @@ provideTools:
             CPPFLAGS: ""
             CFLAGS: "-O$(if-then-else,$(eq,${BASEMENT_OPTIMIZE},0),d,${BASEMENT_OPTIMIZE})$(if-then-else,${BASEMENT_DEBUG}, -Zi,) -MD$(if-then-else,${BASEMENT_DEBUG},d,) -W3"
             CXXFLAGS: "-O$(if-then-else,$(eq,${BASEMENT_OPTIMIZE},0),d,${BASEMENT_OPTIMIZE})$(if-then-else,${BASEMENT_DEBUG}, -Zi,) -MD$(if-then-else,${BASEMENT_DEBUG},d,) -W3"
-            LDFLAGS: ""
+            LDFLAGS: "$(if-then-else,${BASEMENT_DEBUG}, -debug,)"
 
 multiPackage:
     vc140:
