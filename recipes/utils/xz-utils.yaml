@@ -1,17 +1,23 @@
-inherit: [autotools]
+inherit: [autotools, patch]
 
 metaEnvironment:
-    PKG_VERSION: "5.2.2"
+    PKG_VERSION: "5.2.5"
 
 checkoutSCM:
     scm: url
     url: ${SOURCEFORGE_MIRROR}/lzmautils/xz-${PKG_VERSION}.tar.xz
-    digestSHA1: "72c567d3263345844191a7e618779b179d1f49e0"
+    digestSHA256: "3e1e518ffc912f86608a8cb35e4bd41ad1aec210df2a47aaa1f95e7f5576ef56"
     stripComponents: 1
+
+checkoutDeterministic: true
+checkoutScript: patchApplySeries $<<xz-utils/*.patch>>
 
 buildScript: |
     autotoolsBuild $1
 
-packageScript: |
-    autotoolsPackageTgt
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
 
+    tgt:
+        packageScript: autotoolsPackageTgt

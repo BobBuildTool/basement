@@ -81,7 +81,7 @@ depends:
     - utils::tar
     - utils::unzip
     - utils::which
-    - utils::xz-utils
+    - utils::xz-utils-tgt
 
     # native toolchain installed in /toolchain
     - environment:
