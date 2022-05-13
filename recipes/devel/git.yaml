@@ -41,7 +41,16 @@ buildScript: |
     make DESTDIR=${PWD}/../install install
     popd
 
-packageScript: |
-    installPackageTgt "$1/install/"
+multiPackage:
+    "":
+        packageScript: |
+            installPackageTgt "$1/install/"
 
-provideDeps: [ "*-tgt" ]
+        provideDeps: [ "*-tgt" ]
+
+    tools:
+        packageScript: |
+            installPackageBin "$1/install/"
+
+        provideTools:
+            git: "usr/bin"
