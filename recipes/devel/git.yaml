@@ -1,4 +1,4 @@
-inherit: [make, install]
+inherit: [make, install, pkg-config]
 
 metaEnvironment:
     PKG_VERSION: "2.36.1"
@@ -37,7 +37,7 @@ buildScript: |
                 --with-curl=${BOB_DEP_PATHS[net::curl-dev]}/usr \
                 --without-python \
                 --without-expat
-    makeParallel
+    makeParallel LIB_4_CRYPTO="$(pkg-config --libs libssl libcrypto)"
     make DESTDIR=${PWD}/../install install
     popd
 
