@@ -1,7 +1,7 @@
 inherit: [make, install]
 
 metaEnvironment:
-    PKG_VERSION: "2.24.0"
+    PKG_VERSION: "2.36.1"
 
 depends:
     - libs::zlib-dev
@@ -18,7 +18,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${KERNEL_MIRROR}/software/scm/git/git-${PKG_VERSION}.tar.xz
-    digestSHA1: "851537fc03f5a99419ef20e9b836de965c7928bd"
+    digestSHA256: "405d4a0ff6e818d1f12b3e92e1ac060f612adcb454f6299f70583058cb508370"
     extract: False
 
 buildTools: [target-toolchain, curl]
