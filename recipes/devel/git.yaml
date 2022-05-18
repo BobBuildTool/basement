@@ -1,4 +1,4 @@
-inherit: [make, install, pkg-config]
+inherit: [cpackage, install, make, pkg-config]
 
 metaEnvironment:
     PKG_VERSION: "2.36.1"
@@ -22,12 +22,8 @@ checkoutSCM:
     extract: False
 
 buildTools: [target-toolchain, curl]
-buildVars: [PKG_VERSION, AUTOCONF_HOST,
-    CPPFLAGS, CFLAGS, LDFLAGS]
+buildVars: [AUTOCONF_HOST, PKG_VERSION]
 buildScript: |
-    export CFLAGS="-I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include -I${BOB_DEP_PATHS[libs::openssl-dev]}/usr/include"
-    export LDFLAGS="-L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib -L${BOB_DEP_PATHS[libs::openssl-dev]}/usr/lib -Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib -Wl,-rpath-link=${BOB_DEP_PATHS[libs::openssl-dev]}/usr/lib"
-
     mkdir -p install
     tar -xf $1/git-${PKG_VERSION}.tar.xz
 
