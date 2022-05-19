@@ -1,7 +1,7 @@
-inherit: [make, install]
+inherit: [cpackage, install, make, pkg-config]
 
 metaEnvironment:
-    PKG_VERSION: "2.24.0"
+    PKG_VERSION: "2.36.1"
 
 depends:
     - libs::zlib-dev
@@ -18,16 +18,12 @@ depends:
 checkoutSCM:
     scm: url
     url: ${KERNEL_MIRROR}/software/scm/git/git-${PKG_VERSION}.tar.xz
-    digestSHA1: "851537fc03f5a99419ef20e9b836de965c7928bd"
+    digestSHA256: "405d4a0ff6e818d1f12b3e92e1ac060f612adcb454f6299f70583058cb508370"
     extract: False
 
 buildTools: [target-toolchain, curl]
-buildVars: [PKG_VERSION, AUTOCONF_HOST,
-    CPPFLAGS, CFLAGS, LDFLAGS]
+buildVars: [AUTOCONF_HOST, PKG_VERSION]
 buildScript: |
-    export CFLAGS="-I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include -I${BOB_DEP_PATHS[libs::openssl-dev]}/usr/include"
-    export LDFLAGS="-L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib -L${BOB_DEP_PATHS[libs::openssl-dev]}/usr/lib -Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib -Wl,-rpath-link=${BOB_DEP_PATHS[libs::openssl-dev]}/usr/lib"
-
     mkdir -p install
     tar -xf $1/git-${PKG_VERSION}.tar.xz
 
@@ -37,11 +33,20 @@ buildScript: |
                 --with-curl=${BOB_DEP_PATHS[net::curl-dev]}/usr \
                 --without-python \
                 --without-expat
-    makeParallel
+    makeParallel LIB_4_CRYPTO="$(pkg-config --libs libssl libcrypto)"
     make DESTDIR=${PWD}/../install install
     popd
 
-packageScript: |
-    installPackageTgt "$1/install/"
+multiPackage:
+    "":
+        packageScript: |
+            installPackageTgt "$1/install/"
 
-provideDeps: [ "*-tgt" ]
+        provideDeps: [ "*-tgt" ]
+
+    tools:
+        packageScript: |
+            installPackageBin "$1/install/"
+
+        provideTools:
+            git: "usr/bin"
