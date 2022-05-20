@@ -55,8 +55,10 @@ buildSetup: |
         done
         shift $(( OPTIND -1 ))
 
+        rm -rf install
         mkdir -p build install
         pushd build
+
         if [[ $1/configure -nt .configure.stamp ]] ; then
             $1/configure \
                 ${AUTOCONF_BUILD:+--build=${AUTOCONF_BUILD}} \
