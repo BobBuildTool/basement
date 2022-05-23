@@ -21,8 +21,7 @@ buildScript: |
         if [[ -d $i ]] ; then
             mkdir -p usr/$i
             for l in $i/* ; do
-                [[ -L $l ]] || { echo "$l is not a symlink! Bailing out..." ; exit 1; }
-                ln -rs "$(readlink -f "$l")" usr/$l
+                mv $l usr/$l
             done
             rm -rf $i
             ln -sf usr/$i $i
