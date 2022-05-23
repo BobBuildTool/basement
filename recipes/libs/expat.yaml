@@ -10,7 +10,7 @@ checkoutSCM:
    stripComponents: 1
 
 buildScript: |
-   autotoolsBuild $1
+   autotoolsBuild $1 --without-docbook
 
 multiPackage:
     dev:
