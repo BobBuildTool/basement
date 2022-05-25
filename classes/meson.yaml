@@ -90,8 +90,10 @@ buildSetup: |
     # $1 : source path
     mesonBuild()
     {
+        rm -rf install
         mkdir -p build install
         pushd build
+
         if [[ ! -e .meson-done ]] ; then
             declare -a MESON_OPTIONS=( "$1" "$PWD")
             if [[ -e $BOB_CWD/cross_file.txt ]] ; then
