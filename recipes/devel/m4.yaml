@@ -1,17 +1,13 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "1.4.18"
+    PKG_VERSION: "1.4.19"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/m4/m4-${PKG_VERSION}.tar.xz
-    digestSHA256: "f2c1e86ca0a404ff281631bdc8377638992744b175afb806e25871a24a934e07"
+    digestSHA256: "63aede5c6d33b6d9b13511cd0be2cac046f2e70fd0a07aa9573a04a82783af96"
     stripComponents: 1
-
-checkoutDeterministic: True
-checkoutScript: |
-    patchApplySeries $<<m4/*.patch>>
 
 buildScript: |
     autotoolsBuild $1

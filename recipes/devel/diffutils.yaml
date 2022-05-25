@@ -1,12 +1,12 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "3.3"
+    PKG_VERSION: "3.8"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/diffutils/diffutils-${PKG_VERSION}.tar.xz
-    digestSHA1: "6463cce7d3eb73489996baefd0e4425928ecd61e"
+    digestSHA1: "3a726894b2cf71a790913f236ec790d830c6aef8"
     stripComponents: 1
 
 buildScript: |

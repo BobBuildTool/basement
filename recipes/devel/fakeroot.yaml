@@ -1,7 +1,7 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "1.20.2"
+    PKG_VERSION: "1.28"
 
 depends:
     - libs::libcap-dev
@@ -12,8 +12,8 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: http://ftp.debian.org/debian/pool/main/f/fakeroot/fakeroot_${PKG_VERSION}.orig.tar.bz2
-    digestSHA1: "367040df07043edb630942b21939e493f3fad888"
+    url: http://ftp.debian.org/debian/pool/main/f/fakeroot/fakeroot_${PKG_VERSION}.orig.tar.gz
+    digestSHA1: "29da337af47ff44da39768875603dc644ee8b8a8"
     stripComponents: 1
 
 buildScript: |

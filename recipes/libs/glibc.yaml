@@ -7,12 +7,12 @@ depends:
         use: [tools]
 
 metaEnvironment:
-    PKG_VERSION: "2.30"
+    PKG_VERSION: "2.35"
 
 checkoutSCM:
     scm: url
     url: http://ftp.gnu.org/gnu/glibc/glibc-${PKG_VERSION}.tar.xz
-    digestSHA256: "e2c4114e569afbe7edbc29131a43be833850ab9a459d81beb2588016d2bbb8af"
+    digestSHA256: "5123732f6b67ccd319305efd399971d58592122bcc2a6518a1bd2510dd0cf52e"
     stripComponents: 1
 
 checkoutDeterministic: True
