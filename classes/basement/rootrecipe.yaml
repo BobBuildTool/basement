@@ -6,7 +6,7 @@ depends:
       depends:
         # Setup sandbox with corresponding toolchain
         - name: devel::sandbox
-          use: [sandbox, environment]
+          use: [sandbox]
           forward: True
         - name: devel::sandbox-toolchain
           use: [environment, tools]

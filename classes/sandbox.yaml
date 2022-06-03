@@ -71,4 +71,7 @@ provideSandbox:
     mount:
         - "/etc/resolv.conf"
         - "/dev/pts"
+    environment:
+        AUTOCONF_HOST: "${SANDBOX_AUTOCONF_HOST:-${AUTOCONF_HOST}}"
+        AUTOCONF_BUILD: "${SANDBOX_AUTOCONF_BUILD:-${AUTOCONF_BUILD}}"
 
