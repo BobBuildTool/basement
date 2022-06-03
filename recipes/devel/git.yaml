@@ -21,7 +21,7 @@ checkoutSCM:
     digestSHA1: "851537fc03f5a99419ef20e9b836de965c7928bd"
     extract: False
 
-buildTools: [target-toolchain, host-toolchain]
+buildTools: [target-toolchain, curl, host-toolchain]
 buildVars: [PKG_VERSION, AUTOCONF_HOST, AUTOCONF_BUILD,
     CC, CPPFLAGS, CFLAGS, LDFLAGS]
 buildScript: |
