@@ -21,9 +21,17 @@ checkoutSCM:
     digestSHA256: "405d4a0ff6e818d1f12b3e92e1ac060f612adcb454f6299f70583058cb508370"
     extract: False
 
-buildTools: [target-toolchain, curl]
-buildVars: [AUTOCONF_HOST, PKG_VERSION]
+buildTools: [target-toolchain, curl, host-toolchain]
+buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, PKG_VERSION]
 buildScript: |
+
+    EXTRA=( )
+    if cpackageCrossCompiling ; then
+        export ac_cv_fread_reads_directories=yes
+        export ac_cv_snprintf_returns_bogus=yes
+        EXTRA+=( "--build=${AUTOCONF_BUILD}" )
+    fi
+
     mkdir -p install
     tar -xf $1/git-${PKG_VERSION}.tar.xz
 
@@ -32,7 +40,9 @@ buildScript: |
                 --prefix=/usr \
                 --with-curl=${BOB_DEP_PATHS[net::curl-dev]}/usr \
                 --without-python \
-                --without-expat
+                --without-expat \
+                --without-iconv \
+                ${EXTRA:+"${EXTRA[@]}"}
     makeParallel LIB_4_CRYPTO="$(pkg-config --libs libssl libcrypto)"
     make DESTDIR=${PWD}/../install install
     popd
