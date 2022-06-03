@@ -146,6 +146,7 @@ buildSetup: |
             -DCMAKE_BUILD_TYPE=Bob \
             -DCMAKE_INSTALL_PREFIX="$CMAKE_INSTALL_PREFIX" \
             -DCMAKE_INSTALL_SYSCONFDIR="$CMAKE_INSTALL_SYSCONFDIR" \
+            -DCMAKE_INSTALL_LIBDIR="lib" \
             -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS \
             -DCMAKE_MSVC_RUNTIME_LIBRARY="" \
             "${@:2}"
