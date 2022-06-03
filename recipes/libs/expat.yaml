@@ -9,6 +9,7 @@ checkoutSCM:
    digestSHA256: a00ae8a6b96b63a3910ddc1100b1a7ef50dc26dceb65ced18ded31ab392f132b
    stripComponents: 1
 
+buildTools: [host-toolchain]
 buildScript: |
    autotoolsBuild $1
 
