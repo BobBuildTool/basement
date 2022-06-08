@@ -3,7 +3,7 @@ diff -Nurp a/po/Makefile b/po/Makefile
 +++ b/po/Makefile	2022-04-08 12:29:53.611030632 +0200
 @@ -50,7 +50,7 @@ generated += $(ALL_LINGUAS:%=%.mo)
  include ../Rules
-
+ 
  # Generate the translation template from all the source files.
 -libc.pot: pot.header libc.pot.files
 +libc.pot: pot.header $(objpfx)libc.pot.files
@@ -12,7 +12,7 @@ diff -Nurp a/po/Makefile b/po/Makefile
  	sed -e 's/VERSION/$(version)/' \
 @@ -74,7 +74,7 @@ po-sed-cmd = \
    '/\/tst-/d;$(foreach S,[ch] cxx sh ksh bash,$(subst .,\.,/.$S\(.in\)*$$/p;))'
-
+ 
  # Omit tst-* files, and get only files with the given suffixes.
 -libc.pot.files: FORCE
 +$(objpfx)libc.pot.files: FORCE
