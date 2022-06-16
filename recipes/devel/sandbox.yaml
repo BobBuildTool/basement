@@ -47,8 +47,8 @@ depends:
     -
         name: devel::cross-toolchain
         environment:
-            AUTOCONF_TARGET: "x86_64-bob-linux-gnu"
-            ARCH: x86_64
+            AUTOCONF_TARGET: "${SANDBOX_AUTOCONF_HOST:-$(gen-autoconf,bob)}"
+            ARCH: "${SANDBOX_ARCH:-$(host-arch)}"
             GCC_LIBC: glibc
             BASEMENT_OPTIMIZE: "s"
             BASEMENT_DEBUG: "0"
@@ -90,4 +90,3 @@ depends:
       depends:
         - devel::binutils
         - devel::gcc-native
-
