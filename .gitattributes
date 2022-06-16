@@ -1,0 +1,2 @@
+.git*   eol=lf export-ignore
+*       eol=lf
