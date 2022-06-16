@@ -42,11 +42,24 @@ def hostAutoconf(args, **options):
         raise ParseError("Unsupported system: " + system)
 
 # set or replace vendor field in autoconf triplet
+# Without a triplet the host triplet of the build machine is used. Pass an
+# explicit triplet if the vendor of some *other* triplet shall be replaced.
 def genAutoconf(args, **options):
-    if len(args) != 1:
-        raise ParseError("$(gen-autoconf,vendor) expects one argument")
-    machine, _, system = hostAutoconf(None).partition("-")
-    return machine + '-' + args[0] + '-' + system
+    if len(args) == 1:
+        base = hostAutoconf(None)
+    elif len(args) == 2:
+        base = args[1]
+    else:
+        raise ParseError("$(gen-autoconf,vendor[,triplet]) expects one or two arguments")
+
+    parts = base.split("-")
+    if len(parts) == 4:
+        # <machine>-<vendor>-<kernel>-<libc>: replace the existing vendor
+        machine, system = parts[0], parts[2:]
+    else:
+        # <machine>-<system...>: insert the vendor, just like the 1-arg form
+        machine, system = parts[0], parts[1:]
+    return "-".join([machine, args[0], *system])
 
 RUST_TARGETS = (
     ("aarch64-unknown-linux-gnu",       "aarch64-",     "-linux-gnu"),

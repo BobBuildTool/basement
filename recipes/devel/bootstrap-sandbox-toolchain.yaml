@@ -2,3 +2,7 @@ inherit: ["basement::bits::sandbox-toolchain"]
 
 privateEnvironment:
     SANDBOX_AUTOCONF_BUILD: "$(gen-autoconf,wendy)"
+
+    # The bootstrap sandbox always runs on the build machine. Do not let the
+    # SANDBOX_ARCH of the sandbox that is *built* leak into this toolchain.
+    SANDBOX_ARCH: "$(host-arch)"

@@ -1,4 +1,5 @@
 inherit: ["basement::bits::sandbox-toolchain"]
 
 privateEnvironment:
-    SANDBOX_AUTOCONF_BUILD: "$(gen-autoconf,bob)"
+    SANDBOX_AUTOCONF_BUILD: "${SANDBOX_AUTOCONF_BUILD:-$(gen-autoconf,bob)}"
+    SANDBOX_ARCH: "${SANDBOX_ARCH:-$(host-arch)}"
