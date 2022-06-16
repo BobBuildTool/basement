@@ -1,4 +1,5 @@
 inherit: ["basement::bits::sandbox-toolchain"]
 
 privateEnvironment:
+    # The bootstrap sandbox always runs on the build machine.
     SANDBOX_AUTOCONF_BUILD: "$(gen-autoconf,wendy)"

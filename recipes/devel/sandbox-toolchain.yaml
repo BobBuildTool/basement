@@ -1,4 +1,6 @@
 inherit: ["basement::bits::sandbox-toolchain"]
 
 privateEnvironment:
-    SANDBOX_AUTOCONF_BUILD: "$(gen-autoconf,bob)"
+    # Use $AUTOCONF_BUILD as baseline because the sandbox could be for a
+    # foreign architecture.
+    SANDBOX_AUTOCONF_BUILD: "$(gen-autoconf,bob,$AUTOCONF_BUILD)"

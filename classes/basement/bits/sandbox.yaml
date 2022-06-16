@@ -66,3 +66,6 @@ provideSandbox:
     paths: ["/usr/bin"]
     mount:
         - "/etc/resolv.conf"
+    environment:
+        ARCH: "$(get-tool-env,target-toolchain,ARCH)"
+        AUTOCONF_BUILD: "$(get-tool-env,target-toolchain,AUTOCONF_HOST)"
