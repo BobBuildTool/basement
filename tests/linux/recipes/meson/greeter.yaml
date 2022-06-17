@@ -1,5 +1,8 @@
 inherit: [ "basement::rootrecipe", meson ]
 
+root: !expr |
+  "${BOB_HOST_PLATFORM}" == "linux"
+
 checkoutSCM:
     scm: import
     url: src/greeter/
