@@ -1,10 +1,10 @@
 metaEnvironment:
-    PKG_VERSION: "0.56.0"
+    PKG_VERSION: "0.59.4"
 
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/mesonbuild/meson/archive/${PKG_VERSION}.tar.gz
-    digestSHA256: a9ca7adf66dc69fbb7e583f7c7aef16b9fe56ec2874a3d58747e69a3affdf300
+    digestSHA256: 032276804563e78b037f55148e26bf890ed0101a8c9ea740a7c6682b33ef076a
     extract: false
 
 # TODO: fingerprint Python version? The result will have .pyc files that depend
