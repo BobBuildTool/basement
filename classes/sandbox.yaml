@@ -16,12 +16,16 @@ buildScript: |
     ln -sf bash usr/bin/sh
 
     # Everything should be in /usr. The only exception allowed here is the
-    # dynamic linker. Move it if exists.
+    # dynamic linker. Move remaining stuff to /usr/...
     for i in lib lib32 lib64 ; do
         if [[ -d $i ]] ; then
             mkdir -p usr/$i
             for l in $i/* ; do
-                mv $l usr/$l
+                if [[ -L $l ]] ; then
+                    ln -rs "$(readlink -f "$l")" usr/$l
+                else
+                    mv $l usr/$l
+                fi
             done
             rm -rf $i
             ln -sf usr/$i $i
