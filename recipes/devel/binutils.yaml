@@ -1,22 +1,22 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "2.35.1"
+    PKG_VERSION: "2.39"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/binutils/binutils-${PKG_VERSION}.tar.xz
-    digestSHA1: "45f7a96a2580a422f44b78317f0abf13935fecb6"
+    digestSHA1: "f17653e7b1d1fa5242a408919845da23e8cc5141"
     stripComponents: 1
 
 # Some parts are compiled for the host during compilation. Hence we need the
 # host toolchain too.
-buildTools: [host-toolchain]
+buildTools: [host-toolchain, bison]
 
 buildVars: [AUTOCONF_HOST, AUTOCONF_TARGET, BINUTILS_PREFIX]
 buildScript: |
-    export ac_cv_prog_MAKEINFO=missing
-    autotoolsBuild $1 \
+    export MAKEINFO=true
+    autotoolsBuild -o MAKEINFO=true -O MAKEINFO=true $1 \
         ${BINUTILS_PREFIX:+--prefix=${BINUTILS_PREFIX}} \
         --with-sysroot=${BINUTILS_PREFIX:-/usr}/sysroots/${AUTOCONF_TARGET:-$AUTOCONF_HOST} \
         --enable-deterministic-archives \
