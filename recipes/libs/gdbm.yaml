@@ -1,12 +1,12 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "1.11"
+    PKG_VERSION: "1.23"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gdbm/gdbm-${PKG_VERSION}.tar.gz
-    digestSHA1: "ce433d0f192c21d41089458ca5c8294efe9806b4"
+    digestSHA1: "50ba1b1d45ce33fd44e4fdaaf3b55a9d8f3dc418"
     stripComponents: 1
 
 buildScript: |
