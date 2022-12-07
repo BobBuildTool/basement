@@ -1,12 +1,12 @@
 inherit: [patch]
 
 metaEnvironment:
-    PKG_VERSION: "3.17.3"
+    PKG_VERSION: "3.25.1"
 
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/Kitware/CMake/releases/download/v${PKG_VERSION}/cmake-${PKG_VERSION}.tar.gz
-    digestSHA256: 0bd60d512275dc9f6ef2a2865426a184642ceb3761794e6b65bff233b91d8c40
+    digestSHA256: 1c511d09516af493694ed9baf13c55947a36389674d657a2d5e0ccedc6b291d8
     stripComponents: 1
 
 checkoutDeterministic: True
