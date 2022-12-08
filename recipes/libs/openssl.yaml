@@ -80,7 +80,14 @@ buildScript: |
 
 multiPackage:
     dev:
-        packageScript: installPackageDev "$1/install/"
+        # Static library builds need to explicitly link with libz but the
+        # pkgconfig file is not referenced. Fix that up.
+        packageScript: |
+            installPackageDev "$1/install/"
+            sed -i -e '/^Libs:.*-lz/{
+            s/-lz//
+            a Requires: zlib
+            }' usr/lib/pkgconfig/libcrypto.pc
         provideDeps: [ "*-dev" ]
     tgt:
         packageScript: installPackageTgt "$1/install/"
