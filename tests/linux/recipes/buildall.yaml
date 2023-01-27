@@ -21,3 +21,4 @@ packageTools:
     - meson
     - ninja
     - pkg-config
+    - util-linux
