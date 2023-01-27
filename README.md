@@ -1,9 +1,9 @@
 # Basement
 
-These basement project is a collection of useful recipes and classes that can be
-used by other projects. Most importantly it provides standard classes
-to handle common build systems and other standard tasks. Additionally a
-standard sandbox and common GCC toolchains are ready-to-use.
+This basement project is a collection of useful recipes that can be included by
+other projects. Most importantly it provides pre-made classes to handle common
+build systems and other recurring tasks. Additionally a sandbox and common GCC
+toolchains are ready-to-use.
 
 # Prerequisites
 
