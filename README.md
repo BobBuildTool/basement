@@ -19,7 +19,7 @@ standard sandbox and common GCC toolchains are ready-to-use.
   * bzip2
   * rsync
   * xz-utils
-* Bleeding edge Bob Build Tool (https://github.com/BobBuildTool/bob)
+* Bob Build Tool (https://github.com/BobBuildTool/bob)
 
 # How to build
 
