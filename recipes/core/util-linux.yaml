@@ -39,3 +39,8 @@ multiPackage:
     tgt:
         packageScript: autotoolsPackageTgt
         provideDeps: [ "*-tgt" ]
+
+    tools:
+        packageScript: autotoolsPackageBin
+        provideTools:
+            util-linux: "usr/sbin"

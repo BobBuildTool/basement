@@ -1,9 +1,9 @@
 # Basement
 
-These basement project is a collection of useful recipes and classes that can be
-used by other projects. Most importantly it provides standard classes
-to handle common build systems and other standard tasks. Additionally a
-standard sandbox and common GCC toolchains are ready-to-use.
+This basement project is a collection of useful recipes that can be included by
+other projects. Most importantly it provides pre-made classes to handle common
+build systems and other recurring tasks. Additionally a sandbox and common GCC
+toolchains are ready-to-use.
 
 # Prerequisites
 
@@ -19,7 +19,7 @@ standard sandbox and common GCC toolchains are ready-to-use.
   * bzip2
   * rsync
   * xz-utils
-* Bleeding edge Bob Build Tool (https://github.com/BobBuildTool/bob)
+* Bob Build Tool (https://github.com/BobBuildTool/bob)
 
 # How to build
 
@@ -65,6 +65,7 @@ The following tools can be used by naming them in `{checkout,build,package}Tools
 * pkg-config
 * squashfs-tools
 * e2fsprogs
+* util-linux
 
 The following cross compiling toolchains are available pre-configured. If you need
 other targets you can depend on `devel::cross-toolchain` directly and configure it
