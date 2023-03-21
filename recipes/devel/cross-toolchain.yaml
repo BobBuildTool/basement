@@ -92,3 +92,11 @@ multiPackage:
             ARCH: "arm64"
             GCC_TARGET_ARCH: "armv8-a"
             GCC_LIBC: "glibc"
+
+    # ARMv8-A/R AArch64 bare metal toolchain
+    aarch64-none-elf:
+        environment:
+            AUTOCONF_TARGET: "aarch64-none-elf"
+            ARCH: "arm64"
+            GCC_TARGET_ARCH: "armv8-a"
+            GCC_LIBC: "newlib"

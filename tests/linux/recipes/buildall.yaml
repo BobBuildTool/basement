@@ -8,6 +8,7 @@ depends:
     - devel::cross-toolchain-arm-linux-gnueabihf
     - devel::cross-toolchain-arm-none-eabi
     - devel::cross-toolchain-aarch64-linux-gnu
+    - devel::cross-toolchain-aarch64-none-elf
 
 buildScript: |
     true

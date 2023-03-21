@@ -72,6 +72,8 @@ other targets you can depend on `devel::cross-toolchain` directly and configure 
 as you like.
 
 * `devel::cross-toolchain-aarch64-linux-gnu`: ARMv8-A AArch64 Linux with glibc.
+* `devel::cross-toolchain-aarch64-none-elf`: ARMv8-A/R AArch64 bare metal
+  toolchain with newlib libc.
 * `devel::cross-toolchain-arm-linux-gnueabihf`: ARMv7-A Linux with glibc. Hard
   floating point ABI.
 * `devel::cross-toolchain-arm-none-eabi`: ARMv7 bare metal toolchain with
