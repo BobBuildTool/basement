@@ -12,7 +12,7 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: http://ftp.debian.org/debian/pool/main/f/fakeroot/fakeroot_${PKG_VERSION}.orig.tar.gz
+    url: https://snapshot.debian.org/archive/debian/20220621T210004Z/pool/main/f/fakeroot/fakeroot_${PKG_VERSION}.orig.tar.gz
     digestSHA256: 8fbbafb780c9173e3ace4a04afbc1d900f337f3216883939f5c7db3431be7c20
     stripComponents: 1
 
