@@ -17,6 +17,7 @@ checkoutSCM:
 buildTools: [host-toolchain, target-toolchain]
 buildVars: [AUTOCONF_TARGET]
 buildScript: |
+    rm -rf install
     mkdir -p build install
     pushd build
     $1/configure \
