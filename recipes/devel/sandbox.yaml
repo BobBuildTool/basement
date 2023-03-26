@@ -67,7 +67,6 @@ depends:
     - devel::gettext
     - net::make-ca
     - perl::perl
-    - python::python3
     - utils::bash
     - utils::bc
     - utils::bzip2
