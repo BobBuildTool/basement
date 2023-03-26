@@ -80,6 +80,7 @@ multiPackage:
         depends:
            - libs::expat-dev
            - libs::libffi-dev
+           - libs::zlib-dev
 
         buildScript: |
             autotoolsBuild $PWD/src \
