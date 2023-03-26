@@ -21,6 +21,7 @@ checkoutScript: |
 
 buildVars: [AS, CC, CXX, LD, AUTOCONF_TARGET, GCC_MULTILIB]
 buildTools: [host-toolchain, target-toolchain, bison]
+buildToolsWeak: [python3]
 buildScript: |
     EXTRA=
     [ -e $1/usr/include/selinux/selinux.h ] || EXTRA+=" --without-selinux"
