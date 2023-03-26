@@ -41,6 +41,8 @@ buildScript: |
 
 packageScript: |
     cp -a "$1"/* .
+    # We certainly won't debug the toolchain...
+    find . -type d -name .debug | xargs /bin/rm -rf
 
 # This fingerprintScript checks for the minimum libc/libstdc++ version on the
 # host. It will output nothing but will fail if the host is not able to run the
