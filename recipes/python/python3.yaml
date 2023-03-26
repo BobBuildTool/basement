@@ -84,21 +84,32 @@ multiPackage:
 
         buildScript: |
             autotoolsBuild $PWD/src \
-                --without-ensurepip \
-                --without-cxx-main \
-                --disable-sqlite3 \
-                --disable-tk \
-                --disable-curses \
+                --disable-bzip2 \
                 --disable-codecs-cjk \
-                --disable-nis \
-                --enable-unicodedata \
-                --disable-test-modules \
+                --disable-curses \
                 --disable-idle3 \
+                --disable-lib2to3 \
+                --disable-nis \
+                --disable-openssl \
                 --disable-ossaudiodev \
-                --disable-pyc-build
+                --disable-pyc-build \
+                --disable-pydoc \
+                --disable-readline \
+                --disable-sqlite3 \
+                --disable-test-modules \
+                --disable-tk \
+                --disable-uuid \
+                --disable-xz \
+                --enable-unicodedata \
+                --enable-zlib \
+                --with-expat=system \
+                --with-libmpdec=none \
+                --with-system-ffi \
+                --without-cxx-main \
+                --without-ensurepip
+
         packageScript: |
             autotoolsPackageTgt
 
         provideTools:
             python3: usr/bin
-
