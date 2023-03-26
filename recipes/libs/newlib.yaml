@@ -1,4 +1,4 @@
-inherit: [make]
+inherit: [make, strip]
 
 depends:
     -
@@ -37,3 +37,4 @@ buildScript: |
 
 packageScript: |
     cp -a $1/install/* .
+    stripAll .
