@@ -12,7 +12,7 @@ buildScript: |
     cp -an $2/* .
     mkdir -p usr/sysroots/$AUTOCONF_TARGET/usr/lib
     if [[ ${GCC_LIBC:+true} ]] ; then
-       cp -an ${BOB_DEP_PATHS[libs::${GCC_LIBC}-dev]}/* usr/sysroots/$AUTOCONF_TARGET
+       cp -an ${BOB_DEP_PATHS[libs::${GCC_LIBC}]}/* usr/sysroots/$AUTOCONF_TARGET
        rsync -aHSK usr/$AUTOCONF_TARGET/lib/ \
          usr/sysroots/$AUTOCONF_TARGET/usr/lib/ \
          --include '*.so.*' \

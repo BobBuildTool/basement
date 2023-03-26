@@ -68,14 +68,5 @@ buildScript: |
     popd
     cp -a $2/usr/include install/usr/
 
-multiPackage:
-    dev:
-        packageScript: |
-            cp -a $1/install/* .
-
-    tgt:
-        packageScript: |
-            cp -a $1/install/{etc,lib,sbin,var} .
-            mkdir usr
-            cp -a $1/install/usr/{bin,libexec,sbin,share} usr/
-
+packageScript: |
+    cp -a $1/install/* .
