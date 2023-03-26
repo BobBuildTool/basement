@@ -1,4 +1,4 @@
-inherit: [make, patch]
+inherit: [make, patch, strip]
 
 depends:
     - kernel::linux-libc-headers
@@ -70,3 +70,4 @@ buildScript: |
 
 packageScript: |
     cp -a $1/install/* .
+    stripAll .
