@@ -61,15 +61,28 @@ multiPackage:
             export ac_cv_working_tzset=yes
 
             autotoolsBuild $PWD/src \
-                --without-ensurepip \
-                --without-cxx-main \
-                --disable-pydoc \
-                --disable-test-modules \
-                --disable-lib2to3 \
-                --disable-tk \
-                --disable-nis \
+                --disable-bzip2 \
+                --disable-codecs-cjk \
                 --disable-idle3 \
-                --disable-pyc-build
+                --disable-lib2to3 \
+                --disable-nis \
+                --disable-ossaudiodev \
+                --disable-pyc-build \
+                --disable-pydoc \
+                --disable-sqlite3 \
+                --disable-test-modules \
+                --disable-tk \
+                --disable-uuid \
+                --enable-curses \
+                --enable-readline \
+                --enable-unicodedata \
+                --enable-zlib \
+                --with-expat=system \
+                --with-libmpdec=none \
+                --with-openssl="${BOB_DEP_PATHS[libs::openssl-dev]}/usr" \
+                --with-system-ffi \
+                --without-cxx-main \
+                --without-ensurepip \
 
             rsync -a "${BOB_DEP_PATHS[python::python3-setuptools]}/" install/
 
