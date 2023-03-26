@@ -176,6 +176,7 @@ multiPackage:
 
         packageScript: |
             installStripAll usr/bin
+            installStripAll usr/libexec
 
         provideDeps:
             - libs::glibc
@@ -201,5 +202,6 @@ multiPackage:
 
         packageScript: |
             installStripAll toolchain/bin
+            installStripAll toolchain/libexec
 
         provideDeps: [ "*-tgt" ]
