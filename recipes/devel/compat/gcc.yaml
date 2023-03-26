@@ -144,6 +144,7 @@ multiPackage:
 
         packageScript: |
             installStripAll usr/bin
+            installStripAll usr/libexec
 
         provideDeps:
             - libs::compat::glibc
@@ -169,5 +170,6 @@ multiPackage:
 
         packageScript: |
             installStripAll usr/bin
+            installStripAll usr/libexec
 
         provideDeps: [ "*-tgt" ]
