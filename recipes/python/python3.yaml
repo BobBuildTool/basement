@@ -38,6 +38,7 @@ multiPackage:
            - libs::libffi-dev
            - libs::ncurses-dev
            - libs::openssl-dev
+           - libs::readline-dev
            - libs::zlib-dev
            - python::python3-setuptools
 
@@ -48,6 +49,7 @@ multiPackage:
               - libs::libffi-tgt
               - libs::ncurses-tgt
               - libs::openssl-tgt
+              - libs::readline-tgt
               - libs::zlib-tgt
 
         buildTools: [python3]
