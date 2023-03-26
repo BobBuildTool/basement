@@ -10,6 +10,7 @@ checkoutSCM:
     stripComponents: 1
 
 buildVars: [CC, CXX]
+buildToolsWeak: [python3]
 buildScript: |
     python3 "$1/configure.py" --bootstrap
     ./ninja
