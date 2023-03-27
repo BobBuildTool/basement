@@ -6,7 +6,7 @@ buildScript: |
     rm -rf *
     cp -an $2/* .
     mkdir -p usr/sysroots/$AUTOCONF_TARGET/usr/lib
-    cp -an ${BOB_DEP_PATHS[libs::compat::glibc-dev]}/* usr/sysroots/$AUTOCONF_TARGET
+    cp -an ${BOB_DEP_PATHS[libs::compat::glibc]}/* usr/sysroots/$AUTOCONF_TARGET
     rsync -aHSK usr/$AUTOCONF_TARGET/lib/ \
       usr/sysroots/$AUTOCONF_TARGET/usr/lib/ \
       --include '*.so.*' \

@@ -128,14 +128,14 @@ multiPackage:
         depends:
             - name: devel::compat::binutils
               use: [result, tools]
-            - libs::compat::glibc-dev
+            - libs::compat::glibc
 
         buildTools: [binutils]
         buildVars: [GCC_ENABLE_LANGUAGES]
         buildScript: |
             buildGcc \
                 --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET} \
-                --with-build-sysroot=${BOB_DEP_PATHS[libs::compat::glibc-dev]} \
+                --with-build-sysroot=${BOB_DEP_PATHS[libs::compat::glibc]}  \
                 --enable-linker-build-id                                    \
                 --disable-multilib                                          \
                 --disable-host-shared                                        \
@@ -144,9 +144,10 @@ multiPackage:
 
         packageScript: |
             installStripAll usr/bin
+            installStripAll usr/libexec
 
         provideDeps:
-            - libs::compat::glibc-dev
+            - libs::compat::glibc
 
     native:
         buildTools: [target-toolchain]
@@ -169,5 +170,6 @@ multiPackage:
 
         packageScript: |
             installStripAll usr/bin
+            installStripAll usr/libexec
 
         provideDeps: [ "*-tgt" ]

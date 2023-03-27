@@ -41,6 +41,8 @@ buildScript: |
 
 packageScript: |
     cp -a "$1"/* .
+    # We certainly won't debug the toolchain...
+    find . -type d -name .debug | xargs /bin/rm -rf
 
 # This fingerprintScript checks for the minimum libc/libstdc++ version on the
 # host. It will output nothing but will fail if the host is not able to run the
@@ -56,7 +58,7 @@ fingerprintScript: &check-host |
         echo "These recipes assume that your host is using glibc!" >&2
         exit 1
     fi
-    if [[ $MAJOR -ne 2 || $MINOR -lt 23 ]] ; then
+    if [[ $MAJOR -ne 2 || $MINOR -lt 27 ]] ; then
         echo "Your host glibc version is too old!" >&2
         exit 1
     fi
@@ -67,7 +69,7 @@ fingerprintScript: &check-host |
         echo "These recipes assume that your host is using libstdc++!" >&2
         exit 1
     fi
-    if [[ $STAMP -lt 20160603 ]] ; then
+    if [[ $STAMP -lt 20181206 ]] ; then
         echo "Your host libstdc++ version is too old!" >&2
         exit 1
     fi

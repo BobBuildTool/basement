@@ -3,6 +3,10 @@ packageSetup: |
     # $1: binary file
     stripBinary()
     {
+        if [[ $1 == *.o ]] ; then
+            return 0
+        fi
+
         local type="$(file -b "$1")"
         if [[ $type == ELF*not\ stripped ]] ; then
             echo "Stripping ${1} ..."

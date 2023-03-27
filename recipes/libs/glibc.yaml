@@ -1,4 +1,4 @@
-inherit: [make, patch]
+inherit: [make, patch, strip]
 
 depends:
     - kernel::linux-libc-headers
@@ -21,6 +21,7 @@ checkoutScript: |
 
 buildVars: [AS, CC, CXX, LD, AUTOCONF_TARGET, GCC_MULTILIB]
 buildTools: [host-toolchain, target-toolchain, bison]
+buildToolsWeak: [python3]
 buildScript: |
     EXTRA=
     [ -e $1/usr/include/selinux/selinux.h ] || EXTRA+=" --without-selinux"
@@ -68,14 +69,6 @@ buildScript: |
     popd
     cp -a $2/usr/include install/usr/
 
-multiPackage:
-    dev:
-        packageScript: |
-            cp -a $1/install/* .
-
-    tgt:
-        packageScript: |
-            cp -a $1/install/{etc,lib,sbin,var} .
-            mkdir usr
-            cp -a $1/install/usr/{bin,libexec,sbin,share} usr/
-
+packageScript: |
+    cp -a $1/install/* .
+    stripAll .

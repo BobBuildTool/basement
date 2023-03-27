@@ -41,6 +41,15 @@ depends:
         - name: devel::cmake-bootstrap  # CMake is self-hosted and has a circular
           use: [tools]                  # dependency to itself in proper builds.
           forward: True
+        - name: devel::pkg-config-tool
+          use: [tools]
+          forward: True
+        - name: python::python3-minimal
+          use: [tools]
+          forward: True
+        - name: python::python3
+          use: [tools]
+          forward: True
         - name: devel::ninja
           use: [tools]
           forward: True
@@ -48,9 +57,6 @@ depends:
           use: [tools]
           forward: True
         - name: devel::flex
-          use: [tools]
-          forward: True
-        - name: devel::pkg-config-tool
           use: [tools]
           forward: True
         - name: devel::cmake            # Overwrite "cmake" tool with properly
