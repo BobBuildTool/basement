@@ -81,7 +81,6 @@ multiPackage:
                 --enable-zlib \
                 --with-expat=system \
                 --with-libmpdec=none \
-                --with-openssl="${BOB_DEP_PATHS[libs::openssl-dev]}/usr" \
                 --with-system-ffi \
                 --without-cxx-main \
                 --without-ensurepip \
