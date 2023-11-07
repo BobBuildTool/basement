@@ -15,7 +15,7 @@ buildSetup: |
     # It is necessary to add the sysroot path of gcc/g++ if available too
     # because our host-compat-toolchain has a non-standard sysroot
     # even though it's a native compiler
-    if [[ "$CC" == "gcc" ]] ; then
+    if [[ "$CC" == *"gcc" ]] ; then
         SYSROOT="$($CC -print-sysroot)"
     fi
     [ -z "${SYSROOT:+true}" ] || CMAKE_FIND_ROOT_PATH+="${CMAKE_FIND_ROOT_PATH:+;}${SYSROOT}"
