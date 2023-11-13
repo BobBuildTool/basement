@@ -61,6 +61,8 @@ multiPackage:
             export ac_cv_have_long_long_format=yes
             export ac_cv_prog_HAS_HG=/bin/false
             export ac_cv_working_tzset=yes
+            # force cross-compiling in setup.py
+            export _PYTHON_HOST_PLATFORM=linux
 
             autotoolsBuild $PWD/src \
                 --disable-bzip2 \
@@ -104,6 +106,8 @@ multiPackage:
            - libs::zlib-dev
 
         buildScript: |
+            # force cross-compiling in setup.py
+            export _PYTHON_HOST_PLATFORM=linux
             autotoolsBuild $PWD/src \
                 --disable-bzip2 \
                 --disable-codecs-cjk \
