@@ -1,12 +1,12 @@
 inherit: [python3-pkg]
 
 metaEnvironment:
-    PKG_VERSION: "0.59.4"
+    PKG_VERSION: "0.60.3"
 
 checkoutSCM:
     scm: url
-    url: ${GITHUB_MIRROR}/mesonbuild/meson/archive/${PKG_VERSION}.tar.gz
-    digestSHA256: 032276804563e78b037f55148e26bf890ed0101a8c9ea740a7c6682b33ef076a
+    url: ${GITHUB_MIRROR}/mesonbuild/meson/releases/download/${PKG_VERSION}/meson-${PKG_VERSION}.tar.gz
+    digestSHA256: 87ca5fa9358a01864529392bd64e027158eb94afca7c7766b1866ef27eccb98e
     stripComponents: 1
 
 buildScript: |
