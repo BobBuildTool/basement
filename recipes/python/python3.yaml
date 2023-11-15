@@ -90,12 +90,15 @@ multiPackage:
             rsync -a "${BOB_DEP_PATHS[python::python3-wheel]}/" install/
 
         packageScript: |
-            autotoolsPackageTgt
+            autotoolsPackageBin
+            autotoolsPackageDev
             ln -sf python3 usr/bin/python
 
         provideDeps: [ "*-tgt" ]
         provideTools:
-            python3: usr/bin
+            python3:
+                path: usr/bin
+                netAccess: True
 
     minimal:
         depends:
