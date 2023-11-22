@@ -54,7 +54,7 @@ This will make your recipe a root recipe and already setup the sandbox with a
 proper host toolchain. See the next chapter what tools and toolchains are readily
 available.
 
-# Provided tools and toolchains
+# Provided tools and C/C++ toolchains
 
 The following tools can be used by naming them in `{checkout,build,package}Tools`:
 
@@ -87,3 +87,41 @@ To use a cross compiling toolchain include it where needed via:
           use: [tools, environment]
           forward: True
 
+Regarding the C/C++ toolchains the following tools are defined and used in the
+recipes:
+
+* `target-toolchain`: This is the main toolchain. Every C/C++ package uses it.
+  It represents the compiler that builds for the target system where the
+  package should run in the end. Usually, but not necessarily, this is a cross
+  compiler even on the same architecture.
+
+  In autotools speak this is the compiler for the `--host=` system.
+* `host-toolchain`: This toolchain represents the native host machine compiler.
+  Even though it builds host executables, it does never
+  [fingerprint](https://bob-build-tool.readthedocs.io/en/latest/manual/configuration.html#host-dependency-fingerprinting)
+  the results. Instead, it is intended to be used in the `buildScript` if the
+  package *also* needs the host compiler during build time where none of the
+  host build object code is part of the result. Points to the host gcc or the
+  gcc of the sandbox. Only selected packages need it when being built in the
+  sandbox.
+
+  In autotools speak this is the compiler of the `--build=` system.
+* `host-compat-toolchain`: A toolchain that builds portable host executables
+  that should be able to run on the oldest supported Ubuntu LTS. Even though it
+  builds for the host architecture, it is a cross compiler with a backwards
+  compatible glibc version. When using the `basement::rootrecipe` class, this
+  is the default `target-toolchain`. It is defined as a dedicated name to be
+  able to compile specifically for the host when needed:
+
+      depends:
+        - ...
+        - name: some::package
+          tools:
+            target-toolchain: host-compat-toolchain
+
+  This will build `some::package` for the host regardless of the currently
+  defined target toolchain.
+* `host-native-toolchain`: This toolchain represents the native host machine
+  compiler. In contrast to `host-toolchain` it *does* fingerprint the system.
+  Used if a package needs to be compiled natively and the object code is part
+  of the package result.

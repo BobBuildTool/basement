@@ -47,6 +47,12 @@ depends:
         - name: python::python3-minimal
           use: [tools]
           forward: True
+          tools:
+            # To build python3 a working python interpreter is required. Build
+            # a bootstrap python3 interpreter with the native host toolchain.
+            # The real interpreter is then built with the
+            # host-compat-toolchain.
+            target-toolchain: host-native-toolchain
         - name: python::python3
           use: [tools]
           forward: True

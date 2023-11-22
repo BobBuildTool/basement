@@ -22,22 +22,33 @@ depends:
       use: [tools]
       forward: True
 
-    # Cross toolchain for the current architecture -> ARCH is left as is. The
-    # AUTOCONF_TARGET is set above in "environment" already.
+    # Cross toolchain for the current architecture -> ARCH is left as is.
     - name: devel::compat::cross-toolchain
       use: [environment, tools]
       forward: True
       environment:
-        BASEMENT_OPTIMIZE: "s"
-        BASEMENT_DEBUG: "0"
+        AUTOCONF_TARGET: "$(gen-autoconf,bob_isolation)"
 
+    # Canadian cross toolchain. Built with above cross toolchain for the real
+    # $AUTOCONF_TARGET as set in environment above.
     - devel::compat::binutils
-    - devel::compat::gcc-native
+    - devel::compat::gcc-canadian-cross
 
+buildTools: [target-toolchain]
+buildVars: [TOOLCHAIN_SYSROOT, AUTOCONF_TARGET]
 buildScript: |
-    for i in "${@:2}" ; do
-        cp -a "$i"/* .
-    done
+    rm -rf *
+
+    cp -an ${BOB_DEP_PATHS[devel::compat::binutils]}/* .
+    cp -an ${BOB_DEP_PATHS[devel::compat::gcc-canadian-cross]}/* .
+
+    mkdir -p usr/sysroots/$AUTOCONF_TARGET/usr/lib
+    # Reuse libc from bob_isolation cross-toolchain. No need to build again with a bob_compat toolchain.
+    cp -an ${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT/* usr/sysroots/$AUTOCONF_TARGET
+    rsync -aHSK usr/$AUTOCONF_TARGET/lib/ \
+      usr/sysroots/$AUTOCONF_TARGET/usr/lib/ \
+      --include '*.so.*' \
+      --exclude '*'
 
 packageScript: |
     cp -a "$1"/* .
@@ -75,18 +86,38 @@ fingerprintScript: &check-host |
     fi
 
 provideTools:
-    host-toolchain:
-        path: "usr/bin"
-
-    target-toolchain:
+    target-toolchain: &toolchain-def
         path: "usr/bin"
         # make sure host can run created binaries
         fingerprintIf: True
         fingerprintScript: *check-host
+        environment:
+            # usual compiler variables
+            AR: "${AUTOCONF_TARGET}-ar"
+            AS: "${AUTOCONF_TARGET}-as"
+            CC: "${AUTOCONF_TARGET}-gcc"
+            CPP: "${AUTOCONF_TARGET}-cpp"
+            CXX: "${AUTOCONF_TARGET}-g++"
+            GDB: "${AUTOCONF_TARGET}-gdb"
+            LD: "${AUTOCONF_TARGET}-ld"
+            NM: "${AUTOCONF_TARGET}-nm"
+            OBJCOPY: "${AUTOCONF_TARGET}-objcopy"
+            OBJDUMP: "${AUTOCONF_TARGET}-objdump"
+            RANLIB: "${AUTOCONF_TARGET}-ranlib"
+            STRIP: "${AUTOCONF_TARGET}-strip"
 
-provideVars:
-    # Define our build and host systems because we define the host- and
-    # target-toolchain. ARCH is unchaged, though.
-    AUTOCONF_BUILD: "$AUTOCONF_TARGET"
-    AUTOCONF_HOST:  "$AUTOCONF_TARGET"
-    LDFLAGS: "$LDFLAGS  -Wl,--hash-style=gnu"
+            # meta information
+            ARCH: "${ARCH}"
+            AUTOCONF_HOST: "${AUTOCONF_TARGET}"
+            CROSS_COMPILE: "${AUTOCONF_TARGET}-"
+            TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
+
+            # compiler flags
+            CPPFLAGS:   "-Wdate-time"
+            CFLAGS:     "-Os -pipe -fPIC"
+            CXXFLAGS:   "-Os -pipe -fPIC"
+            LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
+
+    # Provide as "host-compat-toolchain". Used by recipes to explicitly compile
+    # for the host, overriding their currently set default target toolchain.
+    host-compat-toolchain: *toolchain-def

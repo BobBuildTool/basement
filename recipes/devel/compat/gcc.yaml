@@ -12,13 +12,6 @@ depends:
         - libs::mpc-dev
         - libs::compat::isl-dev
 
-        - use: []
-          depends:
-            - libs::gmp-tgt
-            - libs::mpfr-tgt
-            - libs::mpc-tgt
-            - libs::compat::isl-tgt
-
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gcc/gcc-${PKG_VERSION}/gcc-${PKG_VERSION}.tar.xz
@@ -149,27 +142,27 @@ multiPackage:
         provideDeps:
             - libs::compat::glibc
 
-    native:
+    canadian-cross:
         buildTools: [target-toolchain]
-        buildVars: [TOOLCHAIN_SYSROOT, GCC_PREFIX, GCC_ENABLE_LANGUAGES]
+        buildVars: [TOOLCHAIN_SYSROOT, GCC_ENABLE_LANGUAGES]
         buildScript: |
-            TARGET_SYSROOT="${GCC_PREFIX:-/usr}/sysroots/${AUTOCONF_HOST}"
+            # Normally there should be a AUTOCONF_BUILD -> AUTOCONF_TARGET
+            # cross toolchain around. But the compat stuff is special in that
+            # we can reuse the AUTOCONF_HOST toolchain for that purpose.
+            mkdir -p fake-${AUTOCONF_TARGET}
+            for i in "${BOB_TOOL_PATHS[target-toolchain]}"/* ; do
+                ln -sf "$i" "fake-${AUTOCONF_TARGET}/${AUTOCONF_TARGET}${i##*/$AUTOCONF_HOST}"
+            done
+            export PATH="$PATH:$PWD/fake-${AUTOCONF_TARGET}"
+
             buildGcc \
-                ${GCC_PREFIX:+--prefix=${GCC_PREFIX}} \
-                --with-sysroot="${TARGET_SYSROOT}" \
+                --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET} \
                 --with-build-sysroot=${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT \
                 --enable-linker-build-id                                                    \
-                --enable-threads=posix                                                      \
                 --disable-multilib                                                          \
                 --disable-host-shared                                                       \
                 --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
 
-            # add sysroot
-            mkdir -p "install/${TARGET_SYSROOT}"
-            cp -an ${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT/* "install/${TARGET_SYSROOT}"
-
         packageScript: |
             installStripAll usr/bin
             installStripAll usr/libexec
-
-        provideDeps: [ "*-tgt" ]

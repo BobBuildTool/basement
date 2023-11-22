@@ -4,9 +4,11 @@
 
 provideTools:
     host-toolchain: "."
-    target-toolchain:
+    target-toolchain: &target-toolchain
         path: "."
         fingerprintIf: True
         fingerprintScript: |
             bob-libc-version gcc
             bob-libstdc++-version g++
+    host-compat-toolchain: *target-toolchain
+    host-native-toolchain: *target-toolchain
