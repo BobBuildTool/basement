@@ -145,7 +145,7 @@ multiPackage:
                     AUTOCONF_HOST: "${AUTOCONF_TARGET}"
                     CROSS_COMPILE: "${AUTOCONF_TARGET}-"
 
-                    # compiler flags
+                    # Reset compiler flags
                     CPPFLAGS:   "-Wdate-time"
                     CFLAGS:     "-Os -pipe"
                     CXXFLAGS:   "-Os -pipe"

@@ -86,7 +86,7 @@ fingerprintScript: &check-host |
     fi
 
 provideTools:
-    target-toolchain: &toolchain-def
+    target-toolchain:
         path: "usr/bin"
         # make sure host can run created binaries
         fingerprintIf: True
@@ -112,12 +112,39 @@ provideTools:
             CROSS_COMPILE: "${AUTOCONF_TARGET}-"
             TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
 
-            # compiler flags
+    # Provide as "host-compat-toolchain". Used by recipes to explicitly compile
+    # for the host, overriding their currently set default target toolchain.
+    # Compared to the target-toolchain it explicitly overrides the various
+    # compiler flags to be able to safely use it as override for selected
+    # packages.
+    host-compat-toolchain:
+        path: "usr/bin"
+        # make sure host can run created binaries
+        fingerprintIf: True
+        fingerprintScript: *check-host
+        environment:
+            # usual compiler variables
+            AR: "${AUTOCONF_TARGET}-ar"
+            AS: "${AUTOCONF_TARGET}-as"
+            CC: "${AUTOCONF_TARGET}-gcc"
+            CPP: "${AUTOCONF_TARGET}-cpp"
+            CXX: "${AUTOCONF_TARGET}-g++"
+            GDB: "${AUTOCONF_TARGET}-gdb"
+            LD: "${AUTOCONF_TARGET}-ld"
+            NM: "${AUTOCONF_TARGET}-nm"
+            OBJCOPY: "${AUTOCONF_TARGET}-objcopy"
+            OBJDUMP: "${AUTOCONF_TARGET}-objdump"
+            RANLIB: "${AUTOCONF_TARGET}-ranlib"
+            STRIP: "${AUTOCONF_TARGET}-strip"
+
+            # meta information
+            ARCH: "${ARCH}"
+            AUTOCONF_HOST: "${AUTOCONF_TARGET}"
+            CROSS_COMPILE: "${AUTOCONF_TARGET}-"
+            TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
+
+            # Override compiler flags to mask active settings.
             CPPFLAGS:   "-Wdate-time"
             CFLAGS:     "-Os -pipe -fPIC"
             CXXFLAGS:   "-Os -pipe -fPIC"
             LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
-
-    # Provide as "host-compat-toolchain". Used by recipes to explicitly compile
-    # for the host, overriding their currently set default target toolchain.
-    host-compat-toolchain: *toolchain-def

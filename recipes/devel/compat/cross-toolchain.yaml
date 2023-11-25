@@ -39,8 +39,9 @@ provideTools:
             CROSS_COMPILE: "${AUTOCONF_TARGET}-"
             TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
 
-            # compiler flags
-            CPPFLAGS:   "-Wdate-time"
-            CFLAGS:     "-Os -pipe"
-            CXXFLAGS:   "-Os -pipe"
-            LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
+provideVars:
+    # Set some more constrained compiler flags
+    CPPFLAGS:   ""
+    CFLAGS:     "-Os -pipe"
+    CXXFLAGS:   "-Os -pipe"
+    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
