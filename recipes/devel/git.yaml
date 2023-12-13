@@ -44,7 +44,7 @@ buildScript: |
                 --without-iconv \
                 ${EXTRA:+"${EXTRA[@]}"}
     makeParallel LIB_4_CRYPTO="$(pkg-config --libs libssl libcrypto)"
-    make DESTDIR=${PWD}/../install install
+    make DESTDIR=${PWD}/../install install NO_INSTALL_HARDLINKS=1
     popd
 
 multiPackage:
