@@ -9,7 +9,7 @@ checkoutSCM:
     digestSHA256: d00033813993116a4e14f835df813daee9916b107333d88dbb798a22f8671b1f
     stripComponents: 1
 
-buildVars: [CC, CXX]
+buildVars: [AR, CC, CXX]
 buildToolsWeak: [python3]
 buildScript: |
     python3 "$1/configure.py" --bootstrap

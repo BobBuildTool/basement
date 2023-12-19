@@ -2,9 +2,6 @@ inherit: [make, patch, strip]
 
 depends:
     - kernel::linux-libc-headers
-    -
-        name: devel::gcc-cross-bare
-        use: [tools]
 
 metaEnvironment:
     PKG_VERSION: "2.36"
@@ -19,7 +16,7 @@ checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<<glibc/*.diff>>
 
-buildVars: [AS, CC, CXX, LD, AUTOCONF_TARGET, GCC_MULTILIB]
+buildVars: [AS, CC, CXX, LD, AUTOCONF_HOST, GCC_MULTILIB]
 buildTools: [host-toolchain, target-toolchain, bison]
 buildToolsWeak: [python3]
 buildScript: |
@@ -54,7 +51,7 @@ buildScript: |
     if [[ $1/configure -nt .configure.stamp ]] ; then
         $1/configure \
             --prefix=/usr                    \
-            --host=${AUTOCONF_TARGET}        \
+            --host=${AUTOCONF_HOST}          \
             --build=$($1/scripts/config.guess) \
             --enable-kernel=4.3.3             \
             --with-headers=$2/usr/include \

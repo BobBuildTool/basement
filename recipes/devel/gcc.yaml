@@ -114,7 +114,14 @@ multiPackage:
             installStripAll usr/bin
 
         provideTools:
-            target-toolchain:
+            # To be used when building the real cross-compiler to compile
+            # libgcc and the like.
+            cross-ambient-toolchain:
+                path: usr/bin
+
+            # To be used when compiling the target libc. Replaces the
+            # target-toolchain.
+            cross-target-toolchain:
                 path: usr/bin
                 environment:
                     # usual compiler variables
@@ -138,7 +145,7 @@ multiPackage:
                     AUTOCONF_HOST: "${AUTOCONF_TARGET}"
                     CROSS_COMPILE: "${AUTOCONF_TARGET}-"
 
-                    # compiler flags
+                    # Reset compiler flags
                     CPPFLAGS:   "-Wdate-time"
                     CFLAGS:     "-Os -pipe"
                     CXXFLAGS:   "-Os -pipe"
@@ -148,12 +155,19 @@ multiPackage:
         depends:
             - name: devel::binutils
               use: [result, tools]
+            - name: devel::gcc-cross-bare
+              use: [tools]
+              forward: True
             - name: libs::glibc
               if: "$(eq,${GCC_LIBC},glibc)"
+              tools:
+                target-toolchain: cross-target-toolchain
             - name: libs::newlib
               if: "$(eq,${GCC_LIBC},newlib)"
+              tools:
+                target-toolchain: cross-target-toolchain
 
-        buildTools: [binutils]
+        buildTools: [binutils, cross-ambient-toolchain]
         buildVars: [GCC_LIBC, GCC_ENABLE_LANGUAGES]
         buildScript: |
             if [[ -z "${GCC_MULTILIB:-}" ]] ; then

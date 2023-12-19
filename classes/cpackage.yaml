@@ -26,14 +26,15 @@ buildSetup: |
 
     # Get desired library type: "static", "shared" or "both".
     #
-    # By default shared libraries are built when cross-compiling and static
-    # libraries on host builds. This can be overridded by setting BASEMENT_LIBS
-    # to "static", "shared" or "both".
+    # By default, shared libraries are built when cross-compiling and static
+    # libraries on host builds (including the bob_compat cross-toolchain).
+    # This can be overridded by setting BASEMENT_LIBS to "static", "shared" or
+    # "both".
     cpackageLibraryType()
     {
         if [[ -n "${BASEMENT_LIBS:-}" ]] ; then
             echo "$BASEMENT_LIBS"
-        elif cpackageCrossCompiling ; then
+        elif [[ "$AUTOCONF_HOST" != *bob_compat* ]] && cpackageCrossCompiling ; then
             echo shared
         else
             echo static

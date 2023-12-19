@@ -47,7 +47,7 @@ packageScript: |
 
 provideTools:
     host-toolchain: "."
-    target-toolchain:
+    target-toolchain: &target-toolchain
         path: "."
         fingerprintIf: True
         fingerprintScript: |
@@ -55,6 +55,8 @@ provideTools:
             export PATH="$PATH:/toolchain/bin"
             bob-libc-version gcc
             bob-libstdc++-version g++
+    host-compat-toolchain: *target-toolchain
+    host-native-toolchain: *target-toolchain
 
 provideVars:
     # Define our own build- and host-architecture. They are distinct from the

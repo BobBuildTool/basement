@@ -51,11 +51,12 @@ provideTools:
             CROSS_COMPILE: "${AUTOCONF_TARGET}-"
             TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
 
-            # compiler flags
-            CPPFLAGS:   "-Wdate-time"
-            CFLAGS:     "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
-            CXXFLAGS:   "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
-            LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
+provideVars:
+    # Set default compiler flags
+    CPPFLAGS:   "-Wdate-time"
+    CFLAGS:     "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
+    CXXFLAGS:   "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
+    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
 
 multiPackage:
     # Keep an unconfigured package that can be tweaked by the consumer. This is

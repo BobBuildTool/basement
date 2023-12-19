@@ -43,6 +43,12 @@ multiPackage:
     tool:
         inherit: [autotools]
         buildScript: |
+            if cpackageCrossCompiling ; then
+                export ac_cv_func_posix_getgrgid_r=yes
+                export ac_cv_func_posix_getpwuid_r=yes
+                export glib_cv_stack_grows=no
+                export glib_cv_uscore=no
+            fi
             autotoolsBuild $1 \
                --disable-host-tool \
                --with-internal-glib \

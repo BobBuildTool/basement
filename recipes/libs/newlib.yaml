@@ -1,10 +1,5 @@
 inherit: [make, strip]
 
-depends:
-    -
-        name: devel::gcc-cross-bare
-        use: [tools]
-
 metaEnvironment:
     PKG_VERSION: "4.1.0"
 
@@ -15,14 +10,14 @@ checkoutSCM:
     stripComponents: 1
 
 buildTools: [host-toolchain, target-toolchain]
-buildVars: [AUTOCONF_TARGET]
+buildVars: [AUTOCONF_HOST]
 buildScript: |
     rm -rf install
     mkdir -p build install
     pushd build
     $1/configure \
         --prefix=/usr \
-        --target=${AUTOCONF_TARGET} \
+        --target=${AUTOCONF_HOST} \
         --libdir=/usr/lib \
         --disable-newlib-supplied-syscalls \
         --enable-lite-exit \
@@ -31,8 +26,8 @@ buildScript: |
     makeSequential install DESTDIR=${PWD}/../install
     popd
     pushd install
-    mv usr/$AUTOCONF_TARGET/* usr/
-    rmdir usr/$AUTOCONF_TARGET
+    mv usr/$AUTOCONF_HOST/* usr/
+    rmdir usr/$AUTOCONF_HOST
     popd
 
 packageScript: |
