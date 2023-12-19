@@ -89,13 +89,19 @@ multiPackage:
             rsync -a "${BOB_DEP_PATHS[python::python3-pip]}/" install/
             rsync -a "${BOB_DEP_PATHS[python::python3-wheel]}/" install/
 
-        packageScript: |
-            autotoolsPackageTgt
-            ln -sf python3 usr/bin/python
+        multiPackage:
+            "":
+                provideDeps: [ "*-tgt" ]
+                provideTools:
+                    python3: usr/bin
 
-        provideDeps: [ "*-tgt" ]
-        provideTools:
-            python3: usr/bin
+                packageScript: |
+                    autotoolsPackageTgt
+                    ln -sf python3 usr/bin/python
+            dev:
+                packageScript: |
+                    autotoolsPackageDev
+
 
     minimal:
         depends:
