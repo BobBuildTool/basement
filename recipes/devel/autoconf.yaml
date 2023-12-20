@@ -1,12 +1,12 @@
 inherit: [autotools-noarch, patch]
 
 metaEnvironment:
-    PKG_VERSION: "2.69"
+    PKG_VERSION: "2.71"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/autoconf/autoconf-${PKG_VERSION}.tar.xz
-    digestSHA1: "e891c3193029775e83e0534ac0ee0c4c711f6d23"
+    digestSHA256: "f14c83cfebcc9427f2c3cea7258bd90df972d92eb26752da4ddad81c87a0faa4"
     stripComponents: 1
 
 checkoutDeterministic: True
