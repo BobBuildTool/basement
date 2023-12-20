@@ -12,9 +12,13 @@ checkoutSCM:
 checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<<autoconf/*.patch>>
+    # We patch some files that would trigger the rebuild of the manpages.
+    # Prevent that...
+    touch man/*.1
 
 buildScript: |
     export EMACS="no"
+    export HELP2MAN=false
     export ac_cv_path_M4=m4
     export ac_cv_prog_gnu_m4_gnu=no
     autotoolsNoarchBuild $1
