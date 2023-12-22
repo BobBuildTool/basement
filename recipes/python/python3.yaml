@@ -87,16 +87,28 @@ multiPackage:
 
         multiPackage:
             "":
-                provideDeps: [ "*-tgt" ]
+                # Host tool to build other python packages
+                packageScript: |
+                    autotoolsPackageDev
+                    autotoolsPackageTgt
+                    ln -sf python3 usr/bin/python
                 provideTools:
                     python3: usr/bin
 
+            dev:
+                packageScript: |
+                    MAJOR_MINOR="${PKG_VERSION%\.*}"
+                    autotoolsPackageDev
+                    mkdir -p usr/lib/python${MAJOR_MINOR}
+                    cp $1/install/usr/lib/python${MAJOR_MINOR}/_sysconfigdata_*.py usr/lib/python${MAJOR_MINOR}
+                    python3 -m compileall usr/lib/python${MAJOR_MINOR}
+                provideDeps: [ "*-dev" ]
+
+            tgt:
                 packageScript: |
                     autotoolsPackageTgt
                     ln -sf python3 usr/bin/python
-            dev:
-                packageScript: |
-                    autotoolsPackageDev
+                provideDeps: [ "*-tgt" ]
 
 
     minimal:
