@@ -1,4 +1,4 @@
-inherit: [make, install]
+inherit: [make, cpackage, install]
 
 metaEnvironment:
     PKG_VERSION: "1.3.5"
@@ -7,22 +7,31 @@ checkoutSCM:
     scm: url
     url: ${SOURCEFORGE_MIRROR}/rhash/rhash-${PKG_VERSION}-src.tar.gz
     digestSHA256: 98e0688acae29e68c298ffbcdbb0f838864105f9b2bd8857980664435b1f1f2e
-    extract: false
+    stripComponents: 1
 
 buildTools: [target-toolchain]
-buildVars: [PKG_VERSION, CC, CFLAGS, LDFLAGS, AUTOCONF_BUILD, AUTOCONF_HOST]
+buildVars: [AR, CC]
 buildScript: |
-    # build everything static on host builds
-    if [[ "${AUTOCONF_BUILD:-unknown}" == "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
-        TARGET=install-lib-static
-    else
-        TARGET=install-lib-shared install-so-link
-    fi
+    case "$(cpackageLibraryType)" in
+        static)
+            BUILD_TARGETS=( lib-static )
+            INSTALL_TARGETS=( install-lib-static )
+            ;;
+        shared)
+            BUILD_TARGETS=( lib-shared )
+            INSTALL_TARGETS=( install-lib-shared install-so-link install-headers )
+            ;;
+        both)
+            BUILD_TARGETS=( lib-static lib-shared )
+            INSTALL_TARGETS=( install-lib-static install-lib-shared install-so-link install-headers )
+            ;;
+    esac
 
     mkdir -p build install
     pushd build
-    tar -xf "$1/rhash-${PKG_VERSION}-src.tar.gz" --strip-components=1
-    make PREFIX="/usr" DESTDIR="$PWD/../install" $TARGET
+    rsync -aH "$1/" .
+    make PREFIX="/usr" "${BUILD_TARGETS[@]}"
+    make -C librhash PREFIX="/usr" DESTDIR="$PWD/../install" "${INSTALL_TARGETS[@]}"
     popd
 
 multiPackage:
