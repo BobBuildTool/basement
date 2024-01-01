@@ -1,28 +1,23 @@
-autoconf: make installation relocatable
-
-Remove all absolute paths from the autoconf scripts so that the installation
-can be moved anywhere. It is assumed that all tools are in $PATH, that the
-relative paths are not changes (bin vs. share) and that the standard
-directories (e.g. pkgdatadir) are not changed either, though.
-
-Signed-off-by: Jan Klötzke <jan@kloetzke.net>
-
-diff -Nurp autoconf-2.69/bin/autoconf.as autoconf-2.69-patched/bin/autoconf.as
---- autoconf-2.69/bin/autoconf.as	2012-01-21 14:46:38.000000000 +0100
-+++ autoconf-2.69-patched/bin/autoconf.as	2020-06-12 16:46:39.887520041 +0200
-@@ -84,7 +84,7 @@ exit_missing_arg='
+Index: autoconf/bin/autoconf.as
+===================================================================
+--- autoconf.orig/bin/autoconf.as	2024-01-01 11:21:50.522251005 +0100
++++ autoconf/bin/autoconf.as	2024-01-01 14:06:26.729053991 +0100
+@@ -89,8 +89,8 @@
  # restore font-lock: '
  
  # Variables.
 -: ${AUTOM4TE='@bindir@/@autom4te-name@'}
+-: ${trailer_m4='@pkgdatadir@/autoconf/trailer.m4'}
 +: ${AUTOM4TE='@autom4te-name@'}
++: ${trailer_m4="$(realpath -m "$(dirname "$as_myself")/../share/autoconf/autoconf/trailer.m4")"}
  autom4te_options=
  outfile=
  verbose=false
-diff -Nurp autoconf-2.69/bin/autoheader.in autoconf-2.69-patched/bin/autoheader.in
---- autoconf-2.69/bin/autoheader.in	2012-04-25 04:37:26.000000000 +0200
-+++ autoconf-2.69-patched/bin/autoheader.in	2020-06-12 18:11:27.403268887 +0200
-@@ -28,7 +28,10 @@ eval 'case $# in 0) exec @PERL@ -S "$0";
+Index: autoconf/bin/autoheader.in
+===================================================================
+--- autoconf.orig/bin/autoheader.in	2024-01-01 11:21:50.522251005 +0100
++++ autoconf/bin/autoheader.in	2024-01-01 11:21:50.518250939 +0100
+@@ -32,7 +32,10 @@
  
  BEGIN
  {
@@ -34,20 +29,21 @@ diff -Nurp autoconf-2.69/bin/autoheader.in autoconf-2.69-patched/bin/autoheader.
    unshift @INC, "$pkgdatadir";
  
    # Override SHELL.  On DJGPP SHELL may not be set to a shell
-@@ -50,7 +53,8 @@ use strict;
- use vars qw ($config_h %verbatim %symbol);
+@@ -54,7 +57,8 @@
+ our ($config_h, %symbol, %verbatim);
  
  # Lib files.
 -my $autom4te = $ENV{'AUTOM4TE'} || '@bindir@/@autom4te-name@';
 +my $prefix = File::Basename::dirname(File::Spec->rel2abs($0)) . '/..';
 +my $autom4te = $ENV{'AUTOM4TE'} || "$prefix/bin/@autom4te-name@";
- local $config_h;
  my $config_h_in;
  my @prepend_include;
-diff -Nurp autoconf-2.69/bin/autom4te.in autoconf-2.69-patched/bin/autom4te.in
---- autoconf-2.69/bin/autom4te.in	2012-04-25 04:37:26.000000000 +0200
-+++ autoconf-2.69-patched/bin/autom4te.in	2020-06-12 22:00:57.163510963 +0200
-@@ -24,7 +24,10 @@ eval 'case $# in 0) exec @PERL@ -S "$0";
+ my @include;
+Index: autoconf/bin/autom4te.in
+===================================================================
+--- autoconf.orig/bin/autom4te.in	2024-01-01 11:21:50.522251005 +0100
++++ autoconf/bin/autom4te.in	2024-01-01 11:21:50.518250939 +0100
+@@ -28,7 +28,10 @@
  
  BEGIN
  {
@@ -59,8 +55,8 @@ diff -Nurp autoconf-2.69/bin/autom4te.in autoconf-2.69-patched/bin/autom4te.in
    unshift @INC, $pkgdatadir;
  
    # Override SHELL.  On DJGPP SHELL may not be set to a shell
-@@ -44,7 +47,8 @@ use File::Basename;
- use strict;
+@@ -48,7 +51,8 @@
+ use Autom4te::XFile;
  
  # Data directory.
 -my $pkgdatadir = $ENV{'AC_MACRODIR'} || '@pkgdatadir@';
@@ -69,7 +65,7 @@ diff -Nurp autoconf-2.69/bin/autom4te.in autoconf-2.69-patched/bin/autom4te.in
  
  # $LANGUAGE{LANGUAGE} -- Automatic options for LANGUAGE.
  my %language;
-@@ -285,7 +289,11 @@ sub load_configuration ($)
+@@ -288,7 +292,11 @@
  	{
  	  fatal "$file:$.: no current language"
  	    unless defined $lang;
@@ -82,11 +78,12 @@ diff -Nurp autoconf-2.69/bin/autom4te.in autoconf-2.69-patched/bin/autom4te.in
  	}
        else
  	{
-diff -Nurp autoconf-2.69/bin/autoreconf.in autoconf-2.69-patched/bin/autoreconf.in
---- autoconf-2.69/bin/autoreconf.in	2012-04-25 00:00:28.000000000 +0200
-+++ autoconf-2.69-patched/bin/autoreconf.in	2020-06-12 18:11:27.415269571 +0200
-@@ -26,7 +26,10 @@ eval 'case $# in 0) exec @PERL@ -S "$0";
- 
+Index: autoconf/bin/autoreconf.in
+===================================================================
+--- autoconf.orig/bin/autoreconf.in	2024-01-01 11:21:50.522251005 +0100
++++ autoconf/bin/autoreconf.in	2024-01-01 11:21:50.522251005 +0100
+@@ -32,10 +32,14 @@
+ my $buildauxdir;
  BEGIN
  {
 -  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '@pkgdatadir@';
@@ -96,25 +93,31 @@ diff -Nurp autoconf-2.69/bin/autoreconf.in autoconf-2.69-patched/bin/autoreconf.
 +    File::Basename::dirname(File::Spec->rel2abs($0)), '..', 'share', 'autoconf');
    unshift @INC, $pkgdatadir;
  
+-  $buildauxdir = $ENV{'autom4te_buildauxdir'} || $pkgdatadir . '/build-aux';
++  $buildauxdir = $ENV{'autom4te_buildauxdir'} || File::Spec->catdir(
++    File::Basename::dirname(File::Spec->rel2abs($0)), '..', 'share', 'autoconf', 'build-aux');
+ 
    # Override SHELL.  On DJGPP SHELL may not be set to a shell
-@@ -106,9 +109,10 @@ Written by David J. MacKenzie and Akim D
+   # that can handle redirection and quote arguments correctly,
+@@ -117,9 +121,10 @@
  ";
  
  # Lib files.
--my $autoconf   = $ENV{'AUTOCONF'}   || '@bindir@/@autoconf-name@';
--my $autoheader = $ENV{'AUTOHEADER'} || '@bindir@/@autoheader-name@';
--my $autom4te   = $ENV{'AUTOM4TE'}   || '@bindir@/@autom4te-name@';
+-my $autoconf    = $ENV{'AUTOCONF'}    || '@bindir@/@autoconf-name@';
+-my $autoheader  = $ENV{'AUTOHEADER'}  || '@bindir@/@autoheader-name@';
+-my $autom4te    = $ENV{'AUTOM4TE'}    || '@bindir@/@autom4te-name@';
 +my $prefix = File::Basename::dirname(File::Spec->rel2abs($0)) . '/..';
-+my $autoconf   = $ENV{'AUTOCONF'}   || "$prefix/bin/@autoconf-name@";
-+my $autoheader = $ENV{'AUTOHEADER'} || "$prefix/bin/@autoheader-name@";
-+my $autom4te   = $ENV{'AUTOM4TE'}   || "$prefix/bin/@autom4te-name@";
- my $automake   = $ENV{'AUTOMAKE'}   || 'automake';
- my $aclocal    = $ENV{'ACLOCAL'}    || 'aclocal';
- my $libtoolize = $ENV{'LIBTOOLIZE'} || 'libtoolize';
-diff -Nurp autoconf-2.69/bin/autoscan.in autoconf-2.69-patched/bin/autoscan.in
---- autoconf-2.69/bin/autoscan.in	2012-04-25 04:37:26.000000000 +0200
-+++ autoconf-2.69-patched/bin/autoscan.in	2020-06-12 18:11:27.423270027 +0200
-@@ -25,7 +25,10 @@ eval 'case $# in 0) exec @PERL@ -S "$0";
++my $autoconf    = $ENV{'AUTOCONF'}    || "$prefix/bin/@autoconf-name@";
++my $autoheader  = $ENV{'AUTOHEADER'}  || "$prefix/bin/@autoheader-name@";
++my $autom4te    = $ENV{'AUTOM4TE'}    || "$prefix/bin/@autom4te-name@";
+ my $automake    = $ENV{'AUTOMAKE'}    || 'automake';
+ my $aclocal     = $ENV{'ACLOCAL'}     || 'aclocal';
+ my $libtoolize  = $ENV{'LIBTOOLIZE'}  || 'libtoolize';
+Index: autoconf/bin/autoscan.in
+===================================================================
+--- autoconf.orig/bin/autoscan.in	2024-01-01 11:21:50.522251005 +0100
++++ autoconf/bin/autoscan.in	2024-01-01 11:21:50.522251005 +0100
+@@ -30,7 +30,10 @@
  
  BEGIN
  {
@@ -126,7 +129,7 @@ diff -Nurp autoconf-2.69/bin/autoscan.in autoconf-2.69-patched/bin/autoscan.in
    unshift @INC, $pkgdatadir;
  
    # Override SHELL.  On DJGPP SHELL may not be set to a shell
-@@ -91,10 +94,11 @@ my $configure_scan = 'configure.scan';
+@@ -95,10 +98,11 @@
  my $log;
  
  # Autoconf and lib files.
@@ -140,10 +143,11 @@ diff -Nurp autoconf-2.69/bin/autoscan.in autoconf-2.69-patched/bin/autoscan.in
  
  # $help
  # -----
-diff -Nurp autoconf-2.69/bin/autoupdate.in autoconf-2.69-patched/bin/autoupdate.in
---- autoconf-2.69/bin/autoupdate.in	2012-04-25 04:37:26.000000000 +0200
-+++ autoconf-2.69-patched/bin/autoupdate.in	2020-06-12 18:11:27.431270481 +0200
-@@ -26,7 +26,10 @@ eval 'case $# in 0) exec @PERL@ -S "$0";
+Index: autoconf/bin/autoupdate.in
+===================================================================
+--- autoconf.orig/bin/autoupdate.in	2024-01-01 11:21:50.522251005 +0100
++++ autoconf/bin/autoupdate.in	2024-01-01 11:21:50.522251005 +0100
+@@ -31,7 +31,10 @@
  
  BEGIN
  {
@@ -155,8 +159,8 @@ diff -Nurp autoconf-2.69/bin/autoupdate.in autoconf-2.69-patched/bin/autoupdate.
    unshift @INC, $pkgdatadir;
  
    # Override SHELL.  On DJGPP SHELL may not be set to a shell
-@@ -46,14 +49,15 @@ use File::Basename;
- use strict;
+@@ -51,14 +54,15 @@
+ use Autom4te::XFile;
  
  # Lib files.
 -my $autom4te = $ENV{'AUTOM4TE'} || '@bindir@/@autom4te-name@';
@@ -174,10 +178,11 @@ diff -Nurp autoconf-2.69/bin/autoupdate.in autoconf-2.69-patched/bin/autoupdate.
  
  
  # $HELP
-diff -Nurp autoconf-2.69/bin/ifnames.in autoconf-2.69-patched/bin/ifnames.in
---- autoconf-2.69/bin/ifnames.in	2012-04-25 04:37:26.000000000 +0200
-+++ autoconf-2.69-patched/bin/ifnames.in	2020-06-12 16:03:25.609906265 +0200
-@@ -31,7 +31,10 @@ eval 'case $# in 0) exec @PERL@ -S "$0";
+Index: autoconf/bin/ifnames.in
+===================================================================
+--- autoconf.orig/bin/ifnames.in	2024-01-01 11:21:50.522251005 +0100
++++ autoconf/bin/ifnames.in	2024-01-01 11:21:50.522251005 +0100
+@@ -35,7 +35,10 @@
  
  BEGIN
  {
@@ -189,10 +194,11 @@ diff -Nurp autoconf-2.69/bin/ifnames.in autoconf-2.69-patched/bin/ifnames.in
    unshift @INC, $pkgdatadir;
  
    # Override SHELL.  On DJGPP SHELL may not be set to a shell
-diff -Nurp autoconf-2.69/lib/autom4te.in autoconf-2.69-patched/lib/autom4te.in
---- autoconf-2.69/lib/autom4te.in	2012-01-21 14:46:39.000000000 +0100
-+++ autoconf-2.69-patched/lib/autom4te.in	2020-06-12 22:02:34.972234953 +0200
-@@ -106,7 +106,7 @@ end-language: "Autoreconf-preselections"
+Index: autoconf/lib/autom4te.in
+===================================================================
+--- autoconf.orig/lib/autom4te.in	2024-01-01 11:21:50.522251005 +0100
++++ autoconf/lib/autom4te.in	2024-01-01 11:21:50.522251005 +0100
+@@ -115,7 +115,7 @@
  # This intermediate language is used by aclocal to build aclocal.m4.
  
  begin-language: "Autoconf-without-aclocal-m4"
@@ -201,7 +207,7 @@ diff -Nurp autoconf-2.69/lib/autom4te.in autoconf-2.69-patched/lib/autom4te.in
  args: --cache=autom4te.cache
  args: autoconf/autoconf.m4f
  args: acsite.m4?
-@@ -133,7 +133,7 @@ end-language: "Autoconf"
+@@ -142,7 +142,7 @@
  ## -------- ##
  
  begin-language: "Autotest"
@@ -210,7 +216,7 @@ diff -Nurp autoconf-2.69/lib/autom4te.in autoconf-2.69-patched/lib/autom4te.in
  args: autotest/autotest.m4f
  args: package.m4?
  args: local.at?
-@@ -147,7 +147,7 @@ end-language: "Autotest"
+@@ -156,7 +156,7 @@
  ## ---- ##
  
  begin-language: "M4sh"
@@ -219,12 +225,11 @@ diff -Nurp autoconf-2.69/lib/autom4te.in autoconf-2.69-patched/lib/autom4te.in
  args: m4sugar/m4sh.m4f
  args: --mode 777
  args: --language M4sugar
-@@ -159,7 +159,7 @@ end-language: "M4sh"
+@@ -168,6 +168,6 @@
  ## ------- ##
  
  begin-language: "M4sugar"
 -args: --prepend-include '@pkgdatadir@'
 +args: --prepend-include '~/share/autoconf'
  args: m4sugar/m4sugar.m4f
- args: --warnings syntax
  end-language: "M4sugar"

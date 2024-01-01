@@ -24,6 +24,8 @@ checkoutScript: |
     fi
 
 buildScript: |
+    # Force configure script to use pkg-config, even when cross compiling.
+    export PKGTEST=yes
     autotoolsBuild $1 \
        --enable-threaded-resolver \
        --with-ssl \

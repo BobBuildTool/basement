@@ -1,4 +1,4 @@
-inherit: [strip]
+inherit: [strip, "basement::bits::libs"]
 
 # The install class provides the common methods to
 #  * copy the relevant parts for the different packages,
@@ -10,26 +10,16 @@ inherit: [strip]
 # be adapted to promote *.private dependencies to regular dependencies (We do
 # not pass --static to pkg-config.  Executables are still linked dynamically
 # because glibc cannot be linked statically).
-packageVars: [BASEMENT_LIBS]
 packageSetup: |
-    # Install shared libraries only when cross compiling. On host builds only
-    # static libraries are installed.
-    if [[ "${AUTOCONF_BUILD:-unknown}" != "${AUTOCONF_HOST:-${AUTOCONF_BUILD:-unknown}}" ]]; then
-        INSTALL_SHARED=yes
-    fi
-
-    # The user can override the defaults above
-    case "${BASEMENT_LIBS:-__unset__}" in
+    case "$(basementBitsLibraryType)" in
         shared|both)
             INSTALL_SHARED=yes
             ;;
         static)
             INSTALL_SHARED=
             ;;
-        __unset__)
-            ;;
         *)
-            echo "Invalid BASEMENT_LIBS value: $BASEMENT_LIBS" >&2
+            echo "ERROR: invalid basementBitsLibraryType value" >&2
             exit 1
             ;;
     esac
