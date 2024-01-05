@@ -1,12 +1,12 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "2.6.0"
+    PKG_VERSION: "2.6.3"
 
 checkoutSCM:
     scm: url
-    url: ${SOURCEFORGE_MIRROR}/flex/flex-${PKG_VERSION}.tar.gz
-    digestSHA1: "cfe10b5de4893ced356adc437e78018e715818c3"
+    url: ${GITHUB_MIRROR}/westes/flex/releases/download/v${PKG_VERSION}/flex-${PKG_VERSION}.tar.gz
+    digestSHA256: 68b2742233e747c462f781462a2a1e299dc6207401dac8f0bbb316f48565c2aa
     stripComponents: 1
 
 buildTools: [bison]
