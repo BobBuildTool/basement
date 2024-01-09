@@ -22,7 +22,8 @@ checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries -p1 \
         $<<gcc/0001-squash-multilib-libdir-suffix.patch>> \
-        $<<gcc/buildroot-libtool-v2.2.patch>>
+        $<<gcc/buildroot-libtool-v2.2.patch>> \
+        $<<gcc/0003-fix-canadian-cross-includes.patch>>
 
 buildTools: [host-toolchain]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
