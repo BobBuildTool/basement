@@ -1,15 +1,23 @@
 shared: True
 
 depends:
-    - name: devel::gcc-cross
-      if: "${GCC_LIBC}"
-    - name: devel::gcc-cross-bare
-      if: "$(not,${GCC_LIBC})"
+    # If AUTOCONF_BUILD == AUTOCONF_HOST then this is regular cross toolchain
+    # that is executable on the build machine. Note that it will be built with
+    # the host-native-toolchain!
+    - name: devel::gcc-cross-host
+      if: !expr |
+        "$AUTOCONF_BUILD" == get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_HOST")
+
+    # If AUTOCONF_BUILD != AUTOCONF_HOST, we build a canadian cross.
+    - name: devel::gcc-cross-canadian
+      if: !expr |
+        "$AUTOCONF_BUILD" != get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_HOST")
 
 buildVars: [AUTOCONF_TARGET, GCC_LIBC]
 buildScript: |
     rm -rf *
     cp -an $2/* .
+    cp -an ${BOB_DEP_PATHS[devel::binutils]}/* .
     mkdir -p usr/sysroots/$AUTOCONF_TARGET/usr/lib
     if [[ ${GCC_LIBC:+true} ]] ; then
        cp -an ${BOB_DEP_PATHS[libs::${GCC_LIBC}]}/* usr/sysroots/$AUTOCONF_TARGET
