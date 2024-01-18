@@ -41,7 +41,7 @@ depends:
     -
         name: devel::cross-toolchain
         environment:
-            AUTOCONF_TARGET: "x86_64-wendy-linux-gnu"
+            AUTOCONF_TARGET: "$(gen-autoconf,wendy)"
             ARCH: x86_64
             GCC_LIBC: glibc
             BASEMENT_OPTIMIZE: "s"

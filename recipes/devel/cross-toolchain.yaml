@@ -92,7 +92,7 @@ multiPackage:
     # ARMv8-A AArch64 Linux toolchain
     aarch64-linux-gnu:
         environment:
-            AUTOCONF_TARGET: "aarch64-linux-gnu"
+            AUTOCONF_TARGET: "aarch64-cross-linux-gnu"
             ARCH: "arm64"
             GCC_TARGET_ARCH: "armv8-a"
             GCC_LIBC: "glibc"
