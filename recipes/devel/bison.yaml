@@ -1,7 +1,7 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "3.4.2"
+    PKG_VERSION: "3.8.2"
 
 # parallel make sometimes failes in examples/c/reccalc/...
 jobServer: False
@@ -11,7 +11,7 @@ privateEnvironment:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/bison/bison-${PKG_VERSION}.tar.xz
-    digestSHA256: "27d05534699735dc69e86add5b808d6cb35900ad3fd63fa82e3eb644336abfa0"
+    digestSHA256: 9bba0214ccf7f1079c5d59210045227bcf619519840ebfa80cd3849cff5a5bf2
     stripComponents: 1
 
 buildScript: |
