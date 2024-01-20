@@ -1,7 +1,7 @@
 inherit: [make, install, patch, libtool]
 
 metaEnvironment:
-    PKG_VERSION: "12.2.0"
+    PKG_VERSION: "12.3.0"
 
 depends:
     - libs::gmp-dev
@@ -19,7 +19,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gcc/gcc-${PKG_VERSION}/gcc-${PKG_VERSION}.tar.xz
-    digestSHA256: "e549cf9cf3594a00e27b6589d4322d70e0720cdd213f39beb4181e06926230ff"
+    digestSHA256: "949a5d4f99e786421a93b532b22ffab5578de7321369975b91aec97adfda8c3b"
     stripComponents: 1
 
 checkoutDeterministic: True
