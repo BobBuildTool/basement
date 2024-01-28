@@ -18,6 +18,7 @@ packageTools:
     - bison
     - cmake
     - flex
+    - gettext
     - make
     - meson
     - ninja
