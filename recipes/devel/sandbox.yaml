@@ -68,7 +68,6 @@ depends:
     - devel::m4
     - devel::patch
     - devel::texinfo
-    - devel::gettext
     - net::make-ca
     - perl::perl
     - utils::bash
