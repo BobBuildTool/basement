@@ -1,7 +1,7 @@
 inherit: [make, install, patch, libtool]
 
 metaEnvironment:
-    PKG_VERSION: "12.2.0"
+    PKG_VERSION: "12.3.0"
 
 depends:
     - libs::gmp-dev
@@ -19,7 +19,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gcc/gcc-${PKG_VERSION}/gcc-${PKG_VERSION}.tar.xz
-    digestSHA256: "e549cf9cf3594a00e27b6589d4322d70e0720cdd213f39beb4181e06926230ff"
+    digestSHA256: "949a5d4f99e786421a93b532b22ffab5578de7321369975b91aec97adfda8c3b"
     stripComponents: 1
 
 checkoutDeterministic: True
@@ -27,15 +27,15 @@ checkoutScript: |
     patchApplySeries -p1 \
         $<<gcc/0001-squash-multilib-libdir-suffix.patch>>
 
-buildTools: [host-toolchain]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU,
             GCC_MULTILIB]
 buildScript: |
     GCC_SRC=$1
-    buildGcc()
+    mkdir -p build install
+
+    configureGcc()
     {
-        mkdir -p build install
         pushd build
         if [[ $GCC_SRC/configure -nt .configure.stamp ]] ; then
             $GCC_SRC/configure \
@@ -54,6 +54,7 @@ buildScript: |
                 --disable-docs \
                 --disable-documentation \
                 --disable-debug \
+                --disable-nls \
                 --with-xmlto=no \
                 --with-fop=no \
                 --with-gmp-include=${BOB_DEP_PATHS[libs::gmp-dev]}/usr/include \
@@ -66,9 +67,14 @@ buildScript: |
                 --with-isl-lib=${BOB_DEP_PATHS[libs::isl-dev]}/usr/lib
             touch .configure.stamp
         fi
-        makeParallel
-        makeSequential install DESTDIR=${PWD}/../install
         popd
+    }
+
+    buildGcc()
+    {
+        configureGcc "$@"
+        makeParallel -C build
+        makeSequential -C build install DESTDIR="$PWD/install"
     }
 
 packageScript: |
@@ -76,26 +82,21 @@ packageScript: |
     installPackageDev "$1/install/" "*"
 
 multiPackage:
+    # The internal gcc-cross-bare toolchain. This is a minimal, bare-metal
+    # cross compiler that is built with the native host compiler. It is just
+    # used to compile libc. This is not intended to be used by other recipes.
     cross-bare:
         depends:
             -
                 name: devel::binutils
                 use: [result, tools]
-        buildTools: [binutils]
+        buildTools: [host-native-toolchain, binutils]
         buildScript: |
-            if [[ -z "${GCC_MULTILIB:-}" ]] ; then
-                MULTILIB=--disable-multilib
-            else
-                MULTILIB="--with-multilib-list=$GCC_MULTILIB"
-            fi
-
             buildGcc \
                 --with-glibc-version=2.11                      \
                 --with-sysroot=/does/not/exist                 \
                 --with-newlib                                  \
                 --without-headers                              \
-                --disable-nls                                  \
-                "$MULTILIB"                                    \
                 --disable-decimal-float                        \
                 --disable-threads                              \
                 --disable-libatomic                            \
@@ -107,18 +108,13 @@ multiPackage:
                 --disable-libstdcxx                            \
                 --disable-shared                               \
                 --disable-bootstrap                            \
-                --enable-languages=c,c++
+                --enable-languages=c
             cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
 
         packageScript: |
             installStripAll usr/bin
 
         provideTools:
-            # To be used when building the real cross-compiler to compile
-            # libgcc and the like.
-            cross-ambient-toolchain:
-                path: usr/bin
-
             # To be used when compiling the target libc. Replaces the
             # target-toolchain.
             cross-target-toolchain:
@@ -167,7 +163,7 @@ multiPackage:
               tools:
                 target-toolchain: cross-target-toolchain
 
-        buildTools: [binutils, cross-ambient-toolchain]
+        buildTools: [binutils]
         buildVars: [GCC_LIBC, GCC_ENABLE_LANGUAGES]
         buildScript: |
             if [[ -z "${GCC_MULTILIB:-}" ]] ; then
@@ -180,24 +176,60 @@ multiPackage:
                 OPTIONS+=( --with-newlib )
             fi
 
-            buildGcc \
+            configureGcc \
                 --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET} \
                 --with-build-sysroot=${BOB_DEP_PATHS[libs::${GCC_LIBC}]}     \
                 --enable-linker-build-id                                     \
                 "${OPTIONS[@]}"                                              \
                 --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
-            cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
 
         packageScript: |
             installStripAll usr/bin
             installStripAll usr/libexec
 
         provideDeps:
+            - devel::binutils
             - libs::glibc
             - libs::newlib
 
+        multiPackage:
+            # Straigtforward cross compiler. This is a regular cross compiler
+            # built by the native host compiler. As such, it is usually not
+            # intended to be used directly but to bootstrap the canadian cross
+            # compiler below.
+            host:
+                buildTools: [host-native-toolchain]
+                buildScript: |
+                    makeParallel -C build
+                    makeSequential -C build install DESTDIR="$PWD/install"
+                provideTools:
+                    # Required by the canadian cross compiler to dump specs.
+                    cross-ambient-toolchain:
+                        path: usr/bin
+
+            # A canadian cross compiler. This uses most of the result of the
+            # native cross compiler above. Only the compiler itself is built as
+            # canadian cross, replacing the binaries from the first-stage cross
+            # compiler.
+            canadian:
+                depends:
+                    - name: devel::gcc-cross-host
+                      # This is very subtle. The devel::gcc-cross-host package
+                      # is tainted and fingerprinted by the host libc version.
+                      # We do now want to inherit this fingerprint but instead
+                      # explicitly cut it because we replace all fingerprinted
+                      # bineries with the canadian cross build. Hence do *not*
+                      # use "result" but instead reference the first-stage
+                      # through "tools" only.
+                      use: [tools]
+                buildTools: [host-toolchain, target-toolchain, cross-ambient-toolchain]
+                buildScript: |
+                    cp -a "${BOB_TOOL_PATHS[cross-ambient-toolchain]}/../.."/* install/
+                    makeParallel -C build all-gcc
+                    makeSequential -C build install-gcc DESTDIR="$PWD/install"
+
     native:
-        buildTools: [target-toolchain]
+        buildTools: [host-toolchain, target-toolchain]
         buildVars: [TOOLCHAIN_SYSROOT, GCC_PREFIX, GCC_ENABLE_LANGUAGES]
         buildScript: |
             TARGET_SYSROOT="${GCC_PREFIX:-/usr}/sysroots/${AUTOCONF_HOST}"
