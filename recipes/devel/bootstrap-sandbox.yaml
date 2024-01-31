@@ -21,6 +21,10 @@ depends:
         use: [tools]
         forward: True
     -
+        name: devel::gettext
+        use: [tools]
+        forward: True
+    -
         name: devel::pkg-config-tool
         use: [tools]
         forward: True
@@ -55,7 +59,6 @@ depends:
     - devel::diffutils
     - devel::m4
     - devel::patch
-    - devel::gettext
     - net::make-ca
     - perl::perl
     - utils::bash

@@ -1,16 +1,17 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "0.19.7"
+    PKG_VERSION: "0.22.4"
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/gettext/gettext-${PKG_VERSION}.tar.gz
-    digestSHA1: "d8fc932196cc78b83ca1b63c8687ec3d513b40b6"
+    url: ${GNU_MIRROR}/gettext/gettext-${PKG_VERSION}.tar.xz
+    digestSHA256: "29217f1816ee2e777fa9a01f9956a14139c0c23cc1b20368f06b2888e8a34116"
     stripComponents: 1
 
 buildScript: |
-    autotoolsBuild $1
+    autotoolsBuild $1 \
+        --enable-relocatable
 
 packageScript: |
     autotoolsPackageTgt

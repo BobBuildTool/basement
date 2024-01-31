@@ -35,6 +35,9 @@ depends:
         - name: devel::autotools
           use: [tools]
           forward: True
+        - name: devel::gettext
+          use: [tools]
+          forward: True
         - name: devel::bison
           use: [tools]
           forward: True
