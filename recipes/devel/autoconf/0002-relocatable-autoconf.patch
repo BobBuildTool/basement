@@ -1,22 +1,35 @@
-Index: autoconf/bin/autoconf.as
+Index: workspace/bin/autoconf.in
 ===================================================================
---- autoconf.orig/bin/autoconf.as	2024-01-01 11:21:50.522251005 +0100
-+++ autoconf/bin/autoconf.as	2024-01-01 14:06:26.729053991 +0100
-@@ -89,8 +89,8 @@
- # restore font-lock: '
+--- workspace.orig/bin/autoconf.in	2024-02-13 21:02:22.288274633 +0100
++++ workspace/bin/autoconf.in	2024-02-13 21:11:58.190830868 +0100
+@@ -29,7 +29,10 @@
  
- # Variables.
--: ${AUTOM4TE='@bindir@/@autom4te-name@'}
--: ${trailer_m4='@pkgdatadir@/autoconf/trailer.m4'}
-+: ${AUTOM4TE='@autom4te-name@'}
-+: ${trailer_m4="$(realpath -m "$(dirname "$as_myself")/../share/autoconf/autoconf/trailer.m4")"}
- autom4te_options=
- outfile=
- verbose=false
-Index: autoconf/bin/autoheader.in
+ BEGIN
+ {
+-  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '@pkgdatadir@';
++  use File::Basename;
++  use File::Spec;
++  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || File::Spec->catdir(
++    File::Basename::dirname(File::Spec->rel2abs($0)), '..', 'share', 'autoconf');
+   unshift @INC, $pkgdatadir;
+ 
+   # Override SHELL.  On DJGPP SHELL may not be set to a shell
+@@ -44,8 +47,9 @@
+ use Autom4te::General;
+ 
+ # Lib files.
+-my $autom4te = $ENV{'AUTOM4TE'} || '@bindir@/@autom4te-name@';
+-my $trailer_m4 = $ENV{'trailer_m4'} || '@pkgdatadir@/autoconf/trailer.m4';
++my $prefix = File::Basename::dirname(File::Spec->rel2abs($0)) . '/..';
++my $autom4te = $ENV{'AUTOM4TE'} || "$prefix/bin/@autom4te-name@";
++my $trailer_m4 = $ENV{'trailer_m4'} || "$prefix/share/autoconf/autoconf/trailer.m4";
+ 
+ # $HELP
+ # -----
+Index: workspace/bin/autoheader.in
 ===================================================================
---- autoconf.orig/bin/autoheader.in	2024-01-01 11:21:50.522251005 +0100
-+++ autoconf/bin/autoheader.in	2024-01-01 11:21:50.518250939 +0100
+--- workspace.orig/bin/autoheader.in	2024-02-13 21:02:22.288274633 +0100
++++ workspace/bin/autoheader.in	2024-02-13 21:02:22.284274491 +0100
 @@ -32,7 +32,10 @@
  
  BEGIN
@@ -39,10 +52,10 @@ Index: autoconf/bin/autoheader.in
  my $config_h_in;
  my @prepend_include;
  my @include;
-Index: autoconf/bin/autom4te.in
+Index: workspace/bin/autom4te.in
 ===================================================================
---- autoconf.orig/bin/autom4te.in	2024-01-01 11:21:50.522251005 +0100
-+++ autoconf/bin/autom4te.in	2024-01-01 11:21:50.518250939 +0100
+--- workspace.orig/bin/autom4te.in	2024-02-13 21:02:22.288274633 +0100
++++ workspace/bin/autom4te.in	2024-02-13 21:02:22.284274491 +0100
 @@ -28,7 +28,10 @@
  
  BEGIN
@@ -65,7 +78,7 @@ Index: autoconf/bin/autom4te.in
  
  # $LANGUAGE{LANGUAGE} -- Automatic options for LANGUAGE.
  my %language;
-@@ -288,7 +292,11 @@
+@@ -338,7 +342,11 @@
  	{
  	  fatal "$file:$.: no current language"
  	    unless defined $lang;
@@ -78,10 +91,10 @@ Index: autoconf/bin/autom4te.in
  	}
        else
  	{
-Index: autoconf/bin/autoreconf.in
+Index: workspace/bin/autoreconf.in
 ===================================================================
---- autoconf.orig/bin/autoreconf.in	2024-01-01 11:21:50.522251005 +0100
-+++ autoconf/bin/autoreconf.in	2024-01-01 11:21:50.522251005 +0100
+--- workspace.orig/bin/autoreconf.in	2024-02-13 21:02:22.288274633 +0100
++++ workspace/bin/autoreconf.in	2024-02-13 21:02:22.284274491 +0100
 @@ -32,10 +32,14 @@
  my $buildauxdir;
  BEGIN
@@ -99,7 +112,7 @@ Index: autoconf/bin/autoreconf.in
  
    # Override SHELL.  On DJGPP SHELL may not be set to a shell
    # that can handle redirection and quote arguments correctly,
-@@ -117,9 +121,10 @@
+@@ -116,9 +120,10 @@
  ";
  
  # Lib files.
@@ -113,10 +126,10 @@ Index: autoconf/bin/autoreconf.in
  my $automake    = $ENV{'AUTOMAKE'}    || 'automake';
  my $aclocal     = $ENV{'ACLOCAL'}     || 'aclocal';
  my $libtoolize  = $ENV{'LIBTOOLIZE'}  || 'libtoolize';
-Index: autoconf/bin/autoscan.in
+Index: workspace/bin/autoscan.in
 ===================================================================
---- autoconf.orig/bin/autoscan.in	2024-01-01 11:21:50.522251005 +0100
-+++ autoconf/bin/autoscan.in	2024-01-01 11:21:50.522251005 +0100
+--- workspace.orig/bin/autoscan.in	2024-02-13 21:02:22.288274633 +0100
++++ workspace/bin/autoscan.in	2024-02-13 21:02:22.284274491 +0100
 @@ -30,7 +30,10 @@
  
  BEGIN
@@ -143,10 +156,10 @@ Index: autoconf/bin/autoscan.in
  
  # $help
  # -----
-Index: autoconf/bin/autoupdate.in
+Index: workspace/bin/autoupdate.in
 ===================================================================
---- autoconf.orig/bin/autoupdate.in	2024-01-01 11:21:50.522251005 +0100
-+++ autoconf/bin/autoupdate.in	2024-01-01 11:21:50.522251005 +0100
+--- workspace.orig/bin/autoupdate.in	2024-02-13 21:02:22.288274633 +0100
++++ workspace/bin/autoupdate.in	2024-02-13 21:02:22.288274633 +0100
 @@ -31,7 +31,10 @@
  
  BEGIN
@@ -178,10 +191,10 @@ Index: autoconf/bin/autoupdate.in
  
  
  # $HELP
-Index: autoconf/bin/ifnames.in
+Index: workspace/bin/ifnames.in
 ===================================================================
---- autoconf.orig/bin/ifnames.in	2024-01-01 11:21:50.522251005 +0100
-+++ autoconf/bin/ifnames.in	2024-01-01 11:21:50.522251005 +0100
+--- workspace.orig/bin/ifnames.in	2024-02-13 21:02:22.288274633 +0100
++++ workspace/bin/ifnames.in	2024-02-13 21:02:22.288274633 +0100
 @@ -35,7 +35,10 @@
  
  BEGIN
@@ -194,10 +207,10 @@ Index: autoconf/bin/ifnames.in
    unshift @INC, $pkgdatadir;
  
    # Override SHELL.  On DJGPP SHELL may not be set to a shell
-Index: autoconf/lib/autom4te.in
+Index: workspace/lib/autom4te.in
 ===================================================================
---- autoconf.orig/lib/autom4te.in	2024-01-01 11:21:50.522251005 +0100
-+++ autoconf/lib/autom4te.in	2024-01-01 11:21:50.522251005 +0100
+--- workspace.orig/lib/autom4te.in	2024-02-13 21:02:22.288274633 +0100
++++ workspace/lib/autom4te.in	2024-02-13 21:02:22.288274633 +0100
 @@ -115,7 +115,7 @@
  # This intermediate language is used by aclocal to build aclocal.m4.
  
