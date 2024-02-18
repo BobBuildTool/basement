@@ -14,8 +14,22 @@ checkoutSetup: |
     {
         if [[ ( ! -e configure ) || ( ! -e .autoreconf.stamp ) ||
               ( configure.ac -nt .autoreconf.stamp ) ]] ; then
-            autoreconf -vfi
-            rm -rf autom4te.cache *.h.in~
+            (
+                # Work around a stupid perl limitation that does not retain
+                # sub-second file timestamps when moving files across file
+                # system boundaries. Make sure rename() always works.
+                # Otherwise files may appear older than they are and trigger
+                # reconfigurations in the build step.
+                export TMPDIR="$BOB_CWD"
+
+                # We don't want to retain any backups. Give them a unique
+                # suffix so that they can be garbage collected.
+                export SIMPLE_BACKUP_SUFFIX=.bob-backup
+
+                autoreconf -vfi
+            )
+            rm -rf autom4te.cache
+            find . -name '*.bob-backup' -delete
             touch .autoreconf.stamp
         fi
     }
