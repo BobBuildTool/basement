@@ -22,9 +22,14 @@ checkoutSetup: |
                 # reconfigurations in the build step.
                 export TMPDIR="$BOB_CWD"
 
+                # We don't want to retain any backups. Give them a unique
+                # suffix so that they can be garbage collected.
+                export SIMPLE_BACKUP_SUFFIX=.bob-backup
+
                 autoreconf -vfi
             )
-            rm -rf autom4te.cache *.h.in~
+            rm -rf autom4te.cache
+            find . -name '*.bob-backup' -delete
             touch .autoreconf.stamp
         fi
     }
