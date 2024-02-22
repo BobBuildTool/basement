@@ -66,5 +66,4 @@ provideSandbox:
     paths: ["/usr/bin"]
     mount:
         - "/etc/resolv.conf"
-        - "/dev/pts"
 
