@@ -48,7 +48,7 @@ def genAutoconf(args, **options):
     return machine + '-' + args[0] + '-' + system
 
 manifest = {
-    'apiVersion' : "0.15",
+    'apiVersion' : "0.18",
     'stringFunctions' : {
         "gen-autoconf" : genAutoconf,
         "host-arch" : hostArch,

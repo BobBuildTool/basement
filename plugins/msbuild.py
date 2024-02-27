@@ -30,7 +30,7 @@ def msbuild(args, **options):
         raise ParseError("$(msbuild) failed: " + str(e))
 
 manifest = {
-    'apiVersion' : "0.15",
+    'apiVersion' : "0.18",
     'stringFunctions' : {
         "msbuild": msbuild
     },

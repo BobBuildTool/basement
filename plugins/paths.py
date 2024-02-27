@@ -21,7 +21,7 @@ def jenkinsFormatter(step, states):
     return join(commonFormatter(step, states), step.getLabel())
 
 manifest = {
-    'apiVersion' : "0.3",
+    'apiVersion' : "0.18",
     'hooks' : {
         'releaseNameFormatter' : releaseFormatter,
         'developNameFormatter' : developFormatter,

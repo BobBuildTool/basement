@@ -49,7 +49,7 @@ def vsvars2019(args, **options):
         raise ParseError("$(vsvars2019) failed: " + str(e))
 
 manifest = {
-    'apiVersion' : "0.15",
+    'apiVersion' : "0.18",
     'stringFunctions' : {
         "vsvars2019" : vsvars2019
     },
