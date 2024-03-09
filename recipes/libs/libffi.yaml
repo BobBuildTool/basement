@@ -11,7 +11,7 @@ checkoutSCM:
 
 checkoutDeterministic: True
 checkoutScript: |
-    patchApplySeries $<<libffi/*.diff>>
+    patchApplySeries $<@libffi/*.diff@>
 
 buildScript: |
    autotoolsBuild $1

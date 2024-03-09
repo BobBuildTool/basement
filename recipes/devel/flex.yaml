@@ -12,7 +12,7 @@ checkoutSCM:
 checkoutDeterministic: True
 checkoutTools: [gettext]
 checkoutScript: |
-    patchApplySeries $<<flex/*.patch>>
+    patchApplySeries $<@flex/*.patch@>
     autoconfReconfigure
     # prevent Makefile from updating the file because it's older than "configure"
     touch doc/stamp-vti

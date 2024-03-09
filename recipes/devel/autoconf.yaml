@@ -11,7 +11,7 @@ checkoutSCM:
 
 checkoutDeterministic: True
 checkoutScript: |
-    patchApplySeries $<<autoconf/*.patch>>
+    patchApplySeries $<@autoconf/*.patch@>
     # We patch some files that would trigger the rebuild of the manpages.
     # Prevent that...
     touch man/*.1

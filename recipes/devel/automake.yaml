@@ -14,7 +14,7 @@ checkoutSCM:
 
 checkoutDeterministic: True
 checkoutScript: |
-    patchApplySeries $<<automake/*.patch>>
+    patchApplySeries $<@automake/*.patch@>
 
 buildScript: |
     export PATH="${BOB_DEP_PATHS[devel::autoconf]}/usr/bin:$PATH"

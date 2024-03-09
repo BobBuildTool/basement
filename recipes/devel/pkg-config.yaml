@@ -14,7 +14,7 @@ checkoutSCM:
 
 checkoutDeterministic: True
 checkoutScript: |
-    patchApplySeries $<<pkg-config/*.patch>>
+    patchApplySeries $<@pkg-config/*.patch@>
 
 multiPackage:
     "":

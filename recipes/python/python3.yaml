@@ -20,7 +20,7 @@ checkoutScript: |
     rm -rf !("Python-${PKG_VERSION}.tar.xz")
     shopt -u dotglob extglob
     tar -x --no-same-owner --no-same-permissions -f Python-${PKG_VERSION}.tar.xz --strip-components=1
-    patchApplySeries $<<python3/*>>
+    patchApplySeries $<@python3/*@>
     autoconfReconfigure
 
 # We cannot use out-of-tree builds directly from the source workspace because

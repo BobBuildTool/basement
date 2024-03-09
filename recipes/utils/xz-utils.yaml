@@ -10,7 +10,7 @@ checkoutSCM:
     stripComponents: 1
 
 checkoutDeterministic: true
-checkoutScript: patchApplySeries $<<xz-utils/*.patch>>
+checkoutScript: patchApplySeries $<@xz-utils/*.patch@>
 
 buildScript: |
     autotoolsBuild $1

@@ -14,7 +14,7 @@ checkoutSCM:
 
 checkoutDeterministic: True
 checkoutScript: |
-    patchApplySeries $<<glibc/*.diff>>
+    patchApplySeries $<@glibc/*.diff@>
 
 buildVars: [AS, CC, CXX, LD, AUTOCONF_HOST, GCC_MULTILIB]
 buildTools: [host-toolchain, target-toolchain, bison]
