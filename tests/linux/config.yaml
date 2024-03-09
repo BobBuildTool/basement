@@ -1,4 +1,4 @@
-bobMinimumVersion: "0.18.0"
+bobMinimumVersion: "0.24.0"
 
 layers:
     - self
