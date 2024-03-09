@@ -2,15 +2,18 @@ checkoutDeterministic: True
 checkoutSetup: |
     patchApplySeries()
     {
-        local i p=1 name=""
+        local i p=1 fuzz=0 name=""
 
         # parse arguments
         OPTIND=1
         local opt
-        while getopts "n:p:" opt ; do
+        while getopts "n:p:F:" opt ; do
             case "$opt" in
                 n)
                     name="-$OPTARG"
+                    ;;
+                F)
+                    fuzz="$OPTARG"
                     ;;
                 p)
                     p="$OPTARG"
@@ -72,7 +75,7 @@ checkoutSetup: |
                                             p; q                    # one is enough
                                         }' "$fn" )"
             subject="$(printf "%04d-%s.patch" $i "$subject")"
-            patch -p $p -F 0 -f < "$fn"
+            patch -p $p -F $fuzz -f < "$fn"
             cp "$fn" "$name/$subject"
             echo "$subject" >> "$name/series"
         done
