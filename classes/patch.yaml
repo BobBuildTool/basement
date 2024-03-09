@@ -26,24 +26,54 @@ checkoutSetup: |
         # Skip if series is already applied. Otherwise try to remove old series if
         # it does not match.
         name=".applied$name"
-        if [ -e "$name" ] ; then
-            if cmp <( for (( idx=$# ; idx>0 ; idx-- )) ; do cat "${@:$idx:1}" ; done ) "$name" ; then
-                # The patch is allegedly applied and was not changed. Check if
-                # it is still applied as expected...
-                if patch -p $p -F 0 -Rfs --dry-run < "$name" ; then
-                    return
-                fi
-                echo "Patch was (partially) squashed? Trying to recover..." >&2
-            fi
-            # Remove old patch
+        if [ -f "$name" ] ; then
+            # Remove old patch that was applied by an older version of this
+            # class. It's tracking is incompatible with the current version!
             patch -p $p -F 0 -Rf < "$name" || true
             rm "$name"
+        elif [ -r "$name/series" ] ; then
+            local -a applied
+            local need_revert=no
+
+            readarray -t applied < "$name/series"
+            if [[ $# -ne ${#applied[@]} ]] ; then
+                # Different number of patches -> revert
+                need_revert=yes
+            else
+                # Compare each patch to see if still unchanged
+                for (( i=0 ; i<$# ; i++ )) ; do
+                    cmp "$name/${applied[$i]}" "${@:((i+1)):1}" || need_revert=yes
+                done
+            fi
+
+            if [[ $need_revert = yes ]] ; then
+                # Remove old patch series in reverse order
+                for (( i=${#applied[@]}-1; i>=0; i--)) ; do
+                    patch -p $p -Rf < "$name/${applied[$i]}"
+                    rm "$name/${applied[$i]}"
+                    unset applied[$i]
+                    printf "%s\n" "${applied[@]}" > "$name/series"
+                done
+                rm "$name/series"
+            else
+                # Patch is presumably still applied. Move on...
+                return 0
+            fi
         fi
 
-        for i in "$@" ; do
-            patch -p $p -F 0 -f < $i
-            touch "$name"
-            cat $i "$name" > "$name".new
-            mv "$name".new "$name"
+        # Apply patches and track them in the series file
+        mkdir -p "$name"
+        for (( i=1 ; i<=$# ; i++ )) ; do
+            local fn="${@:$i:1}"
+            local subject="$( sed -n -e '/^Subject: /{
+                                            s/^Subject: //          # strip subject
+                                            s/^\[PATCH[^]]*\] //    # strip any PATCH tag
+                                            s/[^a-zA-Z0-9]/-/g      # only keep letters and numbers
+                                            p; q                    # one is enough
+                                        }' "$fn" )"
+            subject="$(printf "%04d-%s.patch" $i "$subject")"
+            patch -p $p -F 0 -f < "$fn"
+            cp "$fn" "$name/$subject"
+            echo "$subject" >> "$name/series"
         done
     }
