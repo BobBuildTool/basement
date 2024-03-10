@@ -10,6 +10,17 @@ privateEnvironment:
 checkoutDeterministic: True
 checkoutTools: [autotools]
 checkoutSetup: |
+    # Other classes can add paths to this array to pick up additional aclocal
+    # m4 files.
+    declare -a AUTOCONF_EXTRA_PKGS
+
+    # Automatically gather other aclocal macros on standard path.
+    for i in "$@" ; do
+        if [[ -d "$i/usr/share/aclocal" ]] ; then
+            AUTOCONF_EXTRA_PKGS+=( "$i/usr/share/aclocal" )
+        fi
+    done
+
     autoconfReconfigure()
     {
         if [[ ( ! -e configure ) || ( ! -e .autoreconf.stamp ) ||
@@ -26,7 +37,7 @@ checkoutSetup: |
                 # suffix so that they can be garbage collected.
                 export SIMPLE_BACKUP_SUFFIX=.bob-backup
 
-                autoreconf -vfi
+                autoreconf -vfi ${AUTOCONF_EXTRA_PKGS[@]+"${AUTOCONF_EXTRA_PKGS[@]/#/-I}"}
             )
             rm -rf autom4te.cache
             find . -name '*.bob-backup' -delete
