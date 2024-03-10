@@ -4,6 +4,7 @@
 
 depends:
     - devel::autoconf
+    - devel::autoconf-archive
     - devel::automake
     - devel::libtool
     - devel::pkg-config-aclocal
