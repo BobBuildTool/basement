@@ -57,7 +57,7 @@ multiPackage:
             export ac_cv_prog_HAS_HG=/bin/false
             export ac_cv_working_tzset=yes
 
-            autotoolsBuild $PWD/src \
+            autotoolsBuild ../src \
                 --with-build-python="python${PKG_VERSION%\.*}" \
                 --disable-bzip2 \
                 --disable-codecs-cjk \
@@ -101,6 +101,8 @@ multiPackage:
                     autotoolsPackageDev
                     mkdir -p usr/lib/python${MAJOR_MINOR}
                     cp $1/install/usr/lib/python${MAJOR_MINOR}/_sysconfigdata_*.py usr/lib/python${MAJOR_MINOR}
+                    # remove any absolute include-/library-paths
+                    sed -E -e "s|-[LI]/[^ ']+||" usr/lib/python${MAJOR_MINOR}/_sysconfigdata_*.py
                     python3 -m compileall usr/lib/python${MAJOR_MINOR}
                 provideDeps: [ "*-dev" ]
 
@@ -118,7 +120,7 @@ multiPackage:
            - libs::zlib-dev
 
         buildScript: |
-            autotoolsBuild $PWD/src \
+            autotoolsBuild ../src \
                 --disable-bzip2 \
                 --disable-codecs-cjk \
                 --disable-curses \
