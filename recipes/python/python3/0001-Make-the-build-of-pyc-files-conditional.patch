@@ -1,4 +1,4 @@
-From 586a67bb448290a98df45e9f61d803952d2aa761 Mon Sep 17 00:00:00 2001
+From 51ed7f93cc0333efa8fccd9b88db713c48993df9 Mon Sep 17 00:00:00 2001
 From: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
 Date: Wed, 22 Feb 2017 16:21:31 -0800
 Subject: [PATCH] Make the build of pyc files conditional
@@ -14,11 +14,11 @@ Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
  configure.ac    | 6 ++++++
  2 files changed, 8 insertions(+)
 
-diff --git a/Makefile.pre.in b/Makefile.pre.in
-index 502317aa0c..f9011c132a 100644
---- a/Makefile.pre.in
-+++ b/Makefile.pre.in
-@@ -1455,6 +1455,7 @@ libinstall:	build_all $(srcdir)/Modules/xxmodule.c
+Index: Python-3.11.8/Makefile.pre.in
+===================================================================
+--- Python-3.11.8.orig/Makefile.pre.in	2024-03-08 22:30:00.722451494 +0100
++++ Python-3.11.8/Makefile.pre.in	2024-03-08 22:30:00.722451494 +0100
+@@ -2139,6 +2139,7 @@
  		$(INSTALL_DATA) $(srcdir)/Modules/xxmodule.c \
  			$(DESTDIR)$(LIBDEST)/distutils/tests ; \
  	fi
@@ -26,7 +26,7 @@ index 502317aa0c..f9011c132a 100644
  	-PYTHONPATH=$(DESTDIR)$(LIBDEST)  $(RUNSHARED) \
  		$(PYTHON_FOR_BUILD) -Wi $(DESTDIR)$(LIBDEST)/compileall.py \
  		-j0 -d $(LIBDEST) -f \
-@@ -1482,6 +1483,7 @@ libinstall:	build_all $(srcdir)/Modules/xxmodule.c
+@@ -2166,6 +2167,7 @@
  		$(PYTHON_FOR_BUILD) -Wi -OO $(DESTDIR)$(LIBDEST)/compileall.py \
  		-j0 -d $(LIBDEST)/site-packages -f \
  		-x badsyntax $(DESTDIR)$(LIBDEST)/site-packages
@@ -34,11 +34,11 @@ index 502317aa0c..f9011c132a 100644
  	-PYTHONPATH=$(DESTDIR)$(LIBDEST) $(RUNSHARED) \
  		$(PYTHON_FOR_BUILD) -m lib2to3.pgen2.driver $(DESTDIR)$(LIBDEST)/lib2to3/Grammar.txt
  	-PYTHONPATH=$(DESTDIR)$(LIBDEST) $(RUNSHARED) \
-diff --git a/configure.ac b/configure.ac
-index a189d42c2c..4690cdba9f 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1085,6 +1085,12 @@ fi
+Index: Python-3.11.8/configure.ac
+===================================================================
+--- Python-3.11.8.orig/configure.ac	2024-03-08 22:30:00.722451494 +0100
++++ Python-3.11.8/configure.ac	2024-03-08 22:30:00.722451494 +0100
+@@ -1459,6 +1459,12 @@
  
  AC_MSG_CHECKING(LDLIBRARY)
  
@@ -51,6 +51,3 @@ index a189d42c2c..4690cdba9f 100644
  # MacOSX framework builds need more magic. LDLIBRARY is the dynamic
  # library that we build, but we do not want to link against it (we
  # will find it with a -framework option). For this reason there is an
--- 
-2.20.1
-
