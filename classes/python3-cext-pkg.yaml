@@ -1,0 +1,31 @@
+# Class for building python packages with cpython extension
+
+inherit: [python3-pkg, cpackage, strip]
+
+depends:
+    - python::python3-dev # We need the cpython headers
+
+buildVars: [ARCH]
+buildTools: [target-toolchain]
+buildSetup: |
+    if cpackageCrossCompiling ; then
+        export _PYTHON_HOST_PLATFORM="linux-$ARCH"
+        export _PYTHON_SYSCONFIGDATA_NAME=$(basename "${BOB_DEP_PATHS[python::python3-dev]}"/usr/lib/python3.*/_sysconfigdata_*.py .py)
+    fi
+
+    python3CExtInstallPip()
+    {
+        python3InstallPip "$@"
+    }
+
+    python3CExtBuildSetuptools()
+    {
+        python3BuildSetuptools "$@"
+    }
+
+packageSetup: |
+    python3CExtPackageTgt()
+    {
+        python3PackageTgt
+        stripAll .
+    }
