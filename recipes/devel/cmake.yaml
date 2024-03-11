@@ -11,7 +11,7 @@ checkoutSCM:
 
 checkoutDeterministic: True
 checkoutScript: |
-    patchApplySeries $<<cmake/*.patch>>
+    patchApplySeries $<@cmake/*.patch@>
 
 multiPackage:
     "":

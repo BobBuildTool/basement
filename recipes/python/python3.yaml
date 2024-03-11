@@ -1,7 +1,7 @@
 inherit: [autotools, autoconf, make, patch]
 
 metaEnvironment:
-    PKG_VERSION: "3.8.0"
+    PKG_VERSION: "3.11.8"
 
 privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"
@@ -9,18 +9,12 @@ privateEnvironment:
 checkoutSCM:
     scm: url
     url: https://www.python.org/ftp/python/${PKG_VERSION}/Python-${PKG_VERSION}.tar.xz
-    digestSHA256: "b356244e13fb5491da890b35b13b2118c3122977c2cd825e3eb6e7d462030d84"
-    extract: False
+    digestSHA256: "9e06008c8901924395bc1da303eac567a729ae012baa182ab39269f650383bb3"
+    stripComponents: 1
 
-# The applied patch cannot be reversed. Instead we always start from scratch.
-checkoutVars: [PKG_VERSION]
 checkoutDeterministic: True
 checkoutScript: |
-    shopt -s dotglob extglob
-    rm -rf !("Python-${PKG_VERSION}.tar.xz")
-    shopt -u dotglob extglob
-    tar -x --no-same-owner --no-same-permissions -f Python-${PKG_VERSION}.tar.xz --strip-components=1
-    patchApplySeries $<<python3/*>>
+    patchApplySeries $<@python3/*@>
     autoconfReconfigure
 
 # We cannot use out-of-tree builds directly from the source workspace because
@@ -55,6 +49,7 @@ multiPackage:
               - libs::zlib-tgt
 
         buildTools: [python3]
+        buildVars: [PKG_VERSION]
         buildScript: |
             export ac_cv_file__dev_ptc=yes
             export ac_cv_file__dev_ptmx=yes
@@ -62,7 +57,8 @@ multiPackage:
             export ac_cv_prog_HAS_HG=/bin/false
             export ac_cv_working_tzset=yes
 
-            autotoolsBuild $PWD/src \
+            autotoolsBuild ../src \
+                --with-build-python="python${PKG_VERSION%\.*}" \
                 --disable-bzip2 \
                 --disable-codecs-cjk \
                 --disable-idle3 \
@@ -91,16 +87,30 @@ multiPackage:
 
         multiPackage:
             "":
-                provideDeps: [ "*-tgt" ]
+                # Host tool to build other python packages
+                packageScript: |
+                    autotoolsPackageDev
+                    autotoolsPackageTgt
+                    ln -sf python3 usr/bin/python
                 provideTools:
                     python3: usr/bin
 
+            dev:
+                packageScript: |
+                    MAJOR_MINOR="${PKG_VERSION%\.*}"
+                    autotoolsPackageDev
+                    mkdir -p usr/lib/python${MAJOR_MINOR}
+                    cp $1/install/usr/lib/python${MAJOR_MINOR}/_sysconfigdata_*.py usr/lib/python${MAJOR_MINOR}
+                    # remove any absolute include-/library-paths
+                    sed -E -e "s|-[LI]/[^ ']+||" usr/lib/python${MAJOR_MINOR}/_sysconfigdata_*.py
+                    python3 -m compileall usr/lib/python${MAJOR_MINOR}
+                provideDeps: [ "*-dev" ]
+
+            tgt:
                 packageScript: |
                     autotoolsPackageTgt
                     ln -sf python3 usr/bin/python
-            dev:
-                packageScript: |
-                    autotoolsPackageDev
+                provideDeps: [ "*-tgt" ]
 
 
     minimal:
@@ -110,7 +120,7 @@ multiPackage:
            - libs::zlib-dev
 
         buildScript: |
-            autotoolsBuild $PWD/src \
+            autotoolsBuild ../src \
                 --disable-bzip2 \
                 --disable-codecs-cjk \
                 --disable-curses \

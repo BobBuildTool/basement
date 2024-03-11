@@ -17,7 +17,7 @@ checkoutSCM:
 
 checkoutDeterministic: true
 checkoutScript: |
-    patchApplySeries $<<readline/*.patch>>
+    patchApplySeries $<@readline/*.patch@>
 
 buildScript: |
     export bash_cv_func_sigsetjmp=yes

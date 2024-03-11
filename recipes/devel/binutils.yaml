@@ -11,7 +11,7 @@ checkoutSCM:
 
 checkoutDeterministic: True
 checkoutScript: |
-    patchApplySeries $<<binutils/*.patch>>
+    patchApplySeries $<@binutils/*.patch@>
 
 # Some parts are compiled for the host during compilation. Hence we need the
 # host toolchain too.

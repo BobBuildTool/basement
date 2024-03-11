@@ -1,4 +1,4 @@
-From e3221e3b714374e1e53dc11c9556733bd2807c2c Mon Sep 17 00:00:00 2001
+From 755fb526a62df2a73560f42184db8aadb6899bb0 Mon Sep 17 00:00:00 2001
 From: Matt Weber <matthew.weber@rockwellcollins.com>
 Date: Fri, 6 Oct 2017 09:54:15 -0500
 Subject: [PATCH] python-config.sh: don't reassign ${prefix}
@@ -26,11 +26,11 @@ Signed-off-by: Matthew Weber <matthew.weber@rockwellcollins.com>
  Misc/python-config.sh.in | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Misc/python-config.sh.in b/Misc/python-config.sh.in
-index a1bc3cd5f7..164d2d3603 100644
---- a/Misc/python-config.sh.in
-+++ b/Misc/python-config.sh.in
-@@ -31,7 +31,7 @@ prefix_real=$(installed_prefix "$0")
+Index: Python-3.11.8/Misc/python-config.sh.in
+===================================================================
+--- Python-3.11.8.orig/Misc/python-config.sh.in	2024-03-08 22:30:03.122437598 +0100
++++ Python-3.11.8/Misc/python-config.sh.in	2024-03-08 22:30:03.122437598 +0100
+@@ -31,7 +31,7 @@
  # locations. Keep prefix & exec_prefix using their original values in case
  # they are referenced in other configure variables, to prevent double
  # substitution, issue #22140.
@@ -39,7 +39,7 @@ index a1bc3cd5f7..164d2d3603 100644
  exec_prefix=$(echo "$exec_prefix_build" | sed "s#^$exec_prefix_build#$prefix_real#")
  exec_prefix_real=${prefix_real}
  includedir=$(echo "@includedir@" | sed "s#^$prefix_build#$prefix_real#")
-@@ -49,7 +49,7 @@ LDLIBRARY="@LDLIBRARY@"
+@@ -49,7 +49,7 @@
  OPT="@OPT@"
  PY_ENABLE_SHARED="@PY_ENABLE_SHARED@"
  LDVERSION="@LDVERSION@"
@@ -48,6 +48,3 @@ index a1bc3cd5f7..164d2d3603 100644
  LIBPL=$(echo "@LIBPL@" | sed "s#^$prefix_build#$prefix_real#")
  SO="@EXT_SUFFIX@"
  PYTHONFRAMEWORK="@PYTHONFRAMEWORK@"
--- 
-2.20.1
-

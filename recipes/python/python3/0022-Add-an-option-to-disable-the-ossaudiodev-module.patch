@@ -1,4 +1,4 @@
-From c68234aba844cb1034fdcfb50aef03da454723f9 Mon Sep 17 00:00:00 2001
+From d48d9da534cec7891ae444b4ab94a76ac67f5daa Mon Sep 17 00:00:00 2001
 From: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
 Date: Wed, 23 Dec 2015 11:51:58 +0100
 Subject: [PATCH] Add an option to disable the ossaudiodev module
@@ -8,13 +8,13 @@ Signed-off-by: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
  configure.ac | 6 ++++++
  1 file changed, 6 insertions(+)
 
-diff --git a/configure.ac b/configure.ac
-index e6255babb6..5809233aac 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -3021,6 +3021,12 @@ else
- fi
- AC_SUBST(MPDEC)
+Index: Python-3.11.8/configure.ac
+===================================================================
+--- Python-3.11.8.orig/configure.ac	2024-03-08 22:30:02.754439729 +0100
++++ Python-3.11.8/configure.ac	2024-03-08 22:30:02.754439729 +0100
+@@ -3728,6 +3728,12 @@
+ 
+ AC_MSG_RESULT($with_decimal_contextvar)
  
 +AC_ARG_ENABLE(ossaudiodev,
 +	AS_HELP_STRING([--disable-ossaudiodev], [disable OSSAUDIODEV]),
@@ -22,9 +22,6 @@ index e6255babb6..5809233aac 100644
 +	  DISABLED_EXTENSIONS="${DISABLED_EXTENSIONS} ossaudiodev"
 +	  fi])
 +
- # Check for support for loadable sqlite extensions
- AC_MSG_CHECKING(for --enable-loadable-sqlite-extensions)
- AC_ARG_ENABLE(loadable-sqlite-extensions,
--- 
-2.20.1
-
+ # Check for libmpdec machine flavor
+ AC_MSG_CHECKING(for decimal libmpdec machine)
+ AS_CASE([$ac_sys_system],
