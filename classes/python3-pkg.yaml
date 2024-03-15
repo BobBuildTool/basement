@@ -1,6 +1,14 @@
 inherit: [python3-usr]
 
 buildSetup: |
+    # add current pip install directory to PYTHONPATH for instant
+    # usage of packages installed by pip; inserting at front of
+    # list, so it is possible to use different version than system
+    for j in "" "lib-dynload" "site-packages" "dist-packages" ; do
+        PYTHONPATH="${BOB_CWD}/install${PYTHON3_DESTLIB}${j:+/$j}${PYTHONPATH:+:$PYTHONPATH}"
+    done
+    export PYTHONPATH
+
     # Make sure scripts do not hard code python3 path
     # $1: install path
     python3FixupScripts()
