@@ -1,0 +1,13 @@
+diff --git a/Configure b/Configure
+index cca1ac8d..18e1ab40 100755
+--- a/Configure
++++ b/Configure
+@@ -1444,7 +1444,7 @@ if ($config{prefix} && !$config{CROSS_COMPILE}) {
+ }
+ 
+ if (grep { $_ =~ /(?:^|\s)-static(?:\s|$)/ } @{$config{LDFLAGS}}) {
+-    disable('static', 'pic', 'threads');
++    disable('static', 'pic');
+ }
+ 
+ # Allow overriding the build file name

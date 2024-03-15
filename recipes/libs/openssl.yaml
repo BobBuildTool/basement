@@ -1,7 +1,7 @@
-inherit: [cpackage, make, install]
+inherit: [cpackage, make, install, patch]
 
 metaEnvironment:
-    PKG_VERSION: "1.1.1i"
+    PKG_VERSION: "3.2.1"
 
 depends:
     - libs::zlib-dev
@@ -12,18 +12,21 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: https://www.openssl.org/source/old/1.1.1/openssl-${PKG_VERSION}.tar.gz
-    digestSHA256: e8be6a35fe41d10603c3cc635e93289ed00bf34b79671a3a4de64fcee00d5242
-    extract: False
+    url: https://www.openssl.org/source/openssl-${PKG_VERSION}.tar.gz
+    digestSHA256: 83c7329fe52c850677d75e5d0b0ca245309b97e8ecbcfdc1dfdc4ab9fac35b39
+    stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<@openssl/*.patch@>
 
 buildTools: [target-toolchain]
-buildVars: [PKG_VERSION, CC, AR, RANLIB, ARCH, AUTOCONF_HOST]
+buildVars: [CC, AR, RANLIB, ARCH, AUTOCONF_HOST]
 buildScript: |
     export TARGETMACH=${AUTOCONF_HOST}
 
-    mkdir -p install
-    tar -xzf $1/openssl-${PKG_VERSION}.tar.gz
-    pushd openssl-${PKG_VERSION}
+    mkdir -p install build
+    pushd build
 
     SHARED_ONLY="false"
     case $(cpackageLibraryType) in
@@ -58,11 +61,12 @@ buildScript: |
             ;;
     esac
 
-    ./Configure \
+    $1/Configure \
         --prefix=/usr \
         --openssldir=/etc/ssl \
         --libdir=lib \
         "${SHARED_STATIC[@]}" \
+        "threads" \
         "-I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include" \
         "-Wl,-L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib" \
         "-Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib" \
