@@ -52,6 +52,12 @@ archive:
     url: http://ci.bobbuildtool.dev/artifacts/
     flags: [download]
 
+fallbackMirrorAppend:
+    # OpenSSL unfortunately moves its older releases in another location. :(
+    - scm: url
+      url: "https://www.openssl.org/source/openssl-([0-9]+\\.[0-9]+)(.+)"
+      mirror: "https://www.openssl.org/source/old/\\1/openssl-\\1\\2"
+
 include:
     - user
 
