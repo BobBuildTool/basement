@@ -10,6 +10,7 @@ inherit: [strip, "basement::bits::libs"]
 # be adapted to promote *.private dependencies to regular dependencies (We do
 # not pass --static to pkg-config.  Executables are still linked dynamically
 # because glibc cannot be linked statically).
+packageVars: [READELF]
 packageSetup: |
     case "$(basementBitsLibraryType)" in
         shared|both)
@@ -132,10 +133,27 @@ packageSetup: |
     installPackageLib()
     {
         if [[ ${INSTALL_SHARED:-} ]] ; then
+            # Copy Windows DLLs unconditionally
             installCopy "$@" /usr/ \
-                /usr/lib/ "/usr/lib/*.so.*" "/usr/lib/lib*-*.so" \
                 /usr/bin/ "/usr/bin/*.dll" "/usr/bin/*.pdb" \
                 "!*"
+            # Be a bit more carefull for UNIX shared objects. Only copy real
+            # files. If the SONAME differs from the file name, create the
+            # symlink too.
+            local d f
+            for d ; do
+                [[ -d "$d/usr/lib" ]] || continue
+                find "$d/usr/lib" -maxdepth 1 -type f -name '*.so*' -print0 \
+                | while IFS= read -r -d $'\0' f ; do
+                    mkdir -p usr/lib
+                    cp -a "$f" "usr/lib/${f##*/}"
+                    soname="$($READELF -d "$f" | sed -En -e '/SONAME/s/[^[]+\[([^]]+)\]/\1/p' || true)"
+                    if [[ -n $soname && $soname != ${f##*/} ]] ; then
+                        ln -sf "${f##*/}" usr/lib/"$soname"
+                    fi
+                done
+            done
+
             installStripAll .
         fi
     }
