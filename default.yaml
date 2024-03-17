@@ -33,6 +33,7 @@ environment:
     OBJCOPY: "objcopy"
     OBJDUMP: "objdump"
     RANLIB: "ranlib"
+    READELF: "readelf"
     STRIP: "strip"
 
     # Default host compilation flags. Only cross-compiling target toolchains
