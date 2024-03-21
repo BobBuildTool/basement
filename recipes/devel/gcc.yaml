@@ -132,6 +132,7 @@ multiPackage:
                     OBJCOPY: "${AUTOCONF_TARGET}-objcopy"
                     OBJDUMP: "${AUTOCONF_TARGET}-objdump"
                     RANLIB: "${AUTOCONF_TARGET}-ranlib"
+                    READELF: "${AUTOCONF_TARGET}-readelf"
                     STRIP: "${AUTOCONF_TARGET}-strip"
 
                     # Host system definition. Note that we do not touch the build

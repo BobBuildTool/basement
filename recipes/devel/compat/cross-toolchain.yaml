@@ -31,6 +31,7 @@ provideTools:
             OBJCOPY: "${AUTOCONF_TARGET}-objcopy"
             OBJDUMP: "${AUTOCONF_TARGET}-objdump"
             RANLIB: "${AUTOCONF_TARGET}-ranlib"
+            READELF: "${AUTOCONF_TARGET}-readelf"
             STRIP: "${AUTOCONF_TARGET}-strip"
 
             # meta information
