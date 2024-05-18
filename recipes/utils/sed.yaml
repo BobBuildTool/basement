@@ -1,12 +1,12 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "4.2.2"
+    PKG_VERSION: "4.9"
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/sed/sed-${PKG_VERSION}.tar.bz2
-    digestSHA1: "f17ab6b1a7bcb2ad4ed125ef78948092d070de8f"
+    url: ${GNU_MIRROR}/sed/sed-${PKG_VERSION}.tar.xz
+    digestSHA1: "8ded1b543f1f558cbd5d7b713602f6a8ee84bde4"
     stripComponents: 1
 
 buildScript: |
