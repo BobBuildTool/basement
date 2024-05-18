@@ -1,7 +1,7 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "4.3.30"
+    PKG_VERSION: "5.2.21"
 
 depends:
     - libs::ncurses-dev
@@ -17,7 +17,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/bash/bash-${PKG_VERSION}.tar.gz
-    digestSHA1: "33b1bcc5dca1b72f28b2baeca6efa0d422097964"
+    digestSHA1: "7f70b6e91ab5a85479b6b778ac10ab6db9db3282"
     stripComponents: 1
 
 buildTools: [host-toolchain]
