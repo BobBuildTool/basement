@@ -59,6 +59,7 @@ depends:
     - devel::diffutils
     - devel::m4
     - devel::patch
+    - editors::ed
     - net::make-ca
     - perl::perl
     - utils::bash

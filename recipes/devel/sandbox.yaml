@@ -68,6 +68,7 @@ depends:
     - devel::m4
     - devel::patch
     - devel::texinfo
+    - editors::ed
     - net::make-ca
     - perl::perl
     - utils::bash
