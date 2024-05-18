@@ -1,8 +1,8 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION_MAJOR: "2.38"
-    PKG_VERSION: "2.38"
+    PKG_VERSION_MAJOR: "2.40"
+    PKG_VERSION: "2.40.1"
 
 depends:
     - libs::ncurses-dev
@@ -16,7 +16,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${KERNEL_MIRROR}/linux/utils/util-linux/v${PKG_VERSION_MAJOR}/util-linux-${PKG_VERSION}.tar.xz
-    digestSHA256: "6d111cbe4d55b336db2f1fbeffbc65b89908704c01136371d32aa9bec373eb64"
+    digestSHA256: "59e676aa53ccb44b6c39f0ffe01a8fa274891c91bef1474752fad92461def24f"
     stripComponents: 1
 
 buildScript: |
@@ -29,6 +29,7 @@ buildScript: |
         --disable-widechar \
         --without-ncursesw \
         --with-ncurses \
+        --disable-liblastlog2 \
         bindir=/usr/bin \
         sbindir=/usr/sbin
 
