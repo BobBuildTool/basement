@@ -1,7 +1,7 @@
 inherit: [make, install, patch, libtool]
 
 metaEnvironment:
-    PKG_VERSION: "12.3.0"
+    PKG_VERSION: "13.2.0"
 
 depends:
     - libs::gmp-dev
@@ -19,13 +19,14 @@ depends:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gcc/gcc-${PKG_VERSION}/gcc-${PKG_VERSION}.tar.xz
-    digestSHA256: "949a5d4f99e786421a93b532b22ffab5578de7321369975b91aec97adfda8c3b"
+    digestSHA256: "e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da"
     stripComponents: 1
 
 checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries -p1 \
-        $<<gcc/0001-squash-multilib-libdir-suffix.patch>>
+        $<<gcc/0001-squash-multilib-libdir-suffix.patch>> \
+        $<<gcc/0003-Remove-crypt-and-crypt_r-interceptors.patch>>
 
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU,
