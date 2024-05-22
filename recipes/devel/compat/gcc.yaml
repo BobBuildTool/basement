@@ -1,7 +1,7 @@
 inherit: [make, install, patch]
 
 metaEnvironment:
-    PKG_VERSION: "7.4.0"
+    PKG_VERSION: "9.5.0"
 
 depends:
     - environment:
@@ -15,7 +15,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gcc/gcc-${PKG_VERSION}/gcc-${PKG_VERSION}.tar.xz
-    digestSHA256: "eddde28d04f334aec1604456e536416549e9b1aa137fc69204e65eb0c009fe51"
+    digestSHA256: "27769f64ef1d4cd5e2be8682c0c93f9887983e6cfd1a927ce5a0a2915a95cf8f"
     stripComponents: 1
 
 checkoutDeterministic: True
