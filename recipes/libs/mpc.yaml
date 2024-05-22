@@ -1,7 +1,7 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "1.0.3"
+    PKG_VERSION: "1.3.1"
 
 depends:
     - libs::gmp-dev
@@ -15,7 +15,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/mpc/mpc-${PKG_VERSION}.tar.gz
-    digestSHA1: "b8be66396c726fdc36ebb0f692ed8a8cca3bcc66"
+    digestSHA1: "bac1c1fa79f5602df1e29e4684e103ad55714e02"
     stripComponents: 1
 
 buildScript: |
