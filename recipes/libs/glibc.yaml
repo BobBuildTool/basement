@@ -1,10 +1,14 @@
 inherit: [make, patch, strip]
 
 depends:
-    - kernel::linux-libc-headers
+    - name: kernel::linux-libc-headers
+      use: [result, environment]
 
 metaEnvironment:
     PKG_VERSION: "2.39"
+
+privateEnvironment:
+    GLIBC_ENABLE_KERNEL: "${GLIBC_ENABLE_KERNEL:-$KERNEL_LINUX_VERSION}"
 
 checkoutSCM:
     scm: url
@@ -12,7 +16,7 @@ checkoutSCM:
     digestSHA256: "f77bd47cf8170c57365ae7bf86696c118adb3b120d3259c64c502d3dc1e2d926"
     stripComponents: 1
 
-buildVars: [AS, CC, CXX, LD, AUTOCONF_HOST, GCC_MULTILIB]
+buildVars: [AS, CC, CXX, LD, AUTOCONF_HOST, GCC_MULTILIB, GLIBC_ENABLE_KERNEL]
 buildTools: [host-toolchain, target-toolchain, bison]
 buildToolsWeak: [python3]
 buildScript: |
@@ -30,7 +34,7 @@ buildScript: |
               --prefix=/usr                    \
               --host=i686-cross-linux-gnu        \
               --build=$($1/scripts/config.guess) \
-              --enable-kernel=4.3.3             \
+              --enable-kernel=$GLIBC_ENABLE_KERNEL \
               --with-headers=$2/usr/include \
               --enable-obsolete-rpc \
               --libdir=/usr/lib32 \
@@ -49,7 +53,7 @@ buildScript: |
             --prefix=/usr                    \
             --host=${AUTOCONF_HOST}          \
             --build=$($1/scripts/config.guess) \
-            --enable-kernel=4.3.3             \
+            --enable-kernel=$GLIBC_ENABLE_KERNEL \
             --with-headers=$2/usr/include \
             --enable-obsolete-rpc \
             --libdir=/usr/lib \
