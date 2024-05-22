@@ -33,7 +33,7 @@ buildScript: |
             --prefix=/usr                    \
             --host=${AUTOCONF_TARGET}        \
             --build=$($1/scripts/config.guess) \
-            --enable-kernel=4.15.0           \
+            --enable-kernel=5.4           \
             --with-headers=$2/usr/include \
             --enable-obsolete-rpc \
             --libdir=/usr/lib \
