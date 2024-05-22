@@ -1,17 +1,13 @@
 inherit: [autotools, patch]
 
 metaEnvironment:
-    PKG_VERSION: "2.39"
+    PKG_VERSION: "2.42"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/binutils/binutils-${PKG_VERSION}.tar.xz
-    digestSHA1: "f17653e7b1d1fa5242a408919845da23e8cc5141"
+    digestSHA1: "44da41792c60419863d7e13fa1deaf6b24dd69b8"
     stripComponents: 1
-
-checkoutDeterministic: True
-checkoutScript: |
-    patchApplySeries $<@binutils/*.patch@>
 
 # Some parts are compiled for the host during compilation. Hence we need the
 # host toolchain too.
