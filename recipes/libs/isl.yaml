@@ -1,9 +1,7 @@
 inherit: [autotools]
 
 metaEnvironment:
-    # The latest 0.15 version is not yet compatible with cloog 0.18.3, so
-    # bumping isl is not possible until a new version of cloog is published.
-    PKG_VERSION: "0.21"
+    PKG_VERSION: "0.26"
 
 privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"
@@ -18,9 +16,10 @@ depends:
 checkoutSCM:
     scm: url
     url: ${SOURCEFORGE_MIRROR}/libisl/isl-${PKG_VERSION}.tar.xz
-    digestSHA256: "777058852a3db9500954361e294881214f6ecd4b594c00da5eee974cd6a54960"
+    digestSHA256: "a0b5cb06d24f9fa9e77b55fabbe9a3c94a336190345c2555f9915bb38e976504"
     stripComponents: 1
 
+buildTools: [host-toolchain]
 buildScript: |
     autotoolsBuild $1
 
