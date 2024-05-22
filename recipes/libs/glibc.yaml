@@ -4,17 +4,13 @@ depends:
     - kernel::linux-libc-headers
 
 metaEnvironment:
-    PKG_VERSION: "2.36"
+    PKG_VERSION: "2.39"
 
 checkoutSCM:
     scm: url
     url: http://ftp.gnu.org/gnu/glibc/glibc-${PKG_VERSION}.tar.xz
-    digestSHA256: "1c959fea240906226062cb4b1e7ebce71a9f0e3c0836c09e7e3423d434fcfe75"
+    digestSHA256: "f77bd47cf8170c57365ae7bf86696c118adb3b120d3259c64c502d3dc1e2d926"
     stripComponents: 1
-
-checkoutDeterministic: True
-checkoutScript: |
-    patchApplySeries $<@glibc/*.diff@>
 
 buildVars: [AS, CC, CXX, LD, AUTOCONF_HOST, GCC_MULTILIB]
 buildTools: [host-toolchain, target-toolchain, bison]
