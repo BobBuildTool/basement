@@ -27,6 +27,14 @@ depends:
     - name: devel::flex
       use: [tools]
       forward: True
+    - name: python::python3-minimal
+      use: [tools]
+      forward: True
+      tools:
+        # To cross-compile python3, a working python interpreter is required.
+        # Instead, build the interpreter with the native host toolchain. It's
+        # just used for building glibc and won't be needed otherwise.
+        target-toolchain: host-native-toolchain
 
     # Cross toolchain for the current architecture -> ARCH is left as is.
     - name: devel::compat::cross-toolchain
