@@ -1,7 +1,7 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "7.67.0"
+    PKG_VERSION: "8.7.1"
 
 depends:
     - libs::openssl-dev
@@ -13,7 +13,7 @@ depends:
 checkoutSCM:
     scm: url
     url: https://curl.haxx.se/download/curl-${PKG_VERSION}.tar.xz
-    digestSHA1: "61ddc68157c2cd1e2c2461b3fbdc0b24083c2e68"
+    digestSHA1: "a70963cba12224b44b8d754944b8ff618a6a3b57"
     stripComponents: 1
 
 # ./configure will delete curlbuild.h

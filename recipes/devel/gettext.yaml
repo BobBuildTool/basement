@@ -1,12 +1,12 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "0.22.4"
+    PKG_VERSION: "0.22.5"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gettext/gettext-${PKG_VERSION}.tar.xz
-    digestSHA256: "29217f1816ee2e777fa9a01f9956a14139c0c23cc1b20368f06b2888e8a34116"
+    digestSHA256: "fe10c37353213d78a5b83d48af231e005c4da84db5ce88037d88355938259640"
     stripComponents: 1
 
 buildScript: |

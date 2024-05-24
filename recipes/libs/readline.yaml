@@ -1,7 +1,7 @@
 inherit: [autotools, patch]
 
 metaEnvironment:
-    PKG_VERSION: "8.0"
+    PKG_VERSION: "8.2"
 
 depends:
     - libs::ncurses-dev
@@ -12,7 +12,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/readline/readline-${PKG_VERSION}.tar.gz
-    digestSHA1: "d58041c2143595dc001d2777ae9a200be30198b0"
+    digestSHA256: "3feb7171f16a84ee82ca18a36d7b9be109a52c04f492a053331d7d1095007c35"
     stripComponents: 1
 
 checkoutDeterministic: true

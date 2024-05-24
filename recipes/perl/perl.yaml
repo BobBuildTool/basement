@@ -1,21 +1,23 @@
+inherit: [make]
+
 metaEnvironment:
-    PKG_VERSION: "5.22.0"
+    PKG_VERSION: "5.38.2"
 
 privateEnvironment:
-    PERL_CROSS_VERSION: "1.0.1"
+    PERL_CROSS_VERSION: "1.5.2"
     PERL_ARCH: "${ARCH}-linux"
 
 checkoutSCM:
     -
         scm: url
-        url: "http://www.cpan.org/src/5.0/perl-${PKG_VERSION}.tar.bz2"
-        digestSHA1: "400338c91c56420d98142cbfcb84d418cae2c98c"
+        url: "http://www.cpan.org/src/5.0/perl-${PKG_VERSION}.tar.xz"
+        digestSHA256: "d91115e90b896520e83d4de6b52f8254ef2b70a8d545ffab33200ea9f1cf29e8"
         dir: perl
         stripComponents: 1
     -
         scm: url
-        url: "https://raw.githubusercontent.com/arsv/perl-cross/releases/perl-${PKG_VERSION}-cross-${PERL_CROSS_VERSION}.tar.gz"
-        digestSHA1: "94f8504000d637850f31243974b894c27f30b094"
+        url: "https://github.com/arsv/perl-cross/raw/releases/perl-cross-${PERL_CROSS_VERSION}.tar.gz"
+        digestSHA256: "584dc54c48dca25e032b676a15bef377c1fed9de318b4fc140292a5dbf326e90"
         extract: False
         dir: perl-cross
         fileName: perl-cross.tar.gz
@@ -24,16 +26,14 @@ checkoutDeterministic: True
 checkoutScript: |
     tar --strip-components=1 -C perl -xf perl-cross/perl-cross.tar.gz
 
-    # fix configure script (remove non-existent entry)
-    sed -i -e 's/x2p\/Makefile//' perl/configure
-
-buildTools: [host-toolchain, target-toolchain, make]
+buildTools: [host-toolchain, target-toolchain]
 buildVars: [AUTOCONF_HOST, CROSS_COMPILE, TOOLCHAIN_SYSROOT, CPPFLAGS, CFLAGS, LDFLAGS]
 buildScript: |
     mkdir -p build install
     cd build
 
-    $1/perl/configure \
+    # perl-cross needs a relative path :(
+    $(realpath --relative-to=. $1)/perl/configure \
         --target=${AUTOCONF_HOST} \
         --target-tools-prefix=${CROSS_COMPILE} \
         --prefix=/usr \
@@ -48,7 +48,7 @@ buildScript: |
         -Dosvers=4.1.0 \
         -Dperladmin=root
 
-    make all
+    makeParallel all
     make DESTDIR=$PWD/../install install.perl
 
 packageVars: [PERL_ARCH, PKG_VERSION]

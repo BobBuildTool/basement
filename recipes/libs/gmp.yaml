@@ -1,12 +1,12 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "6.1.0"
+    PKG_VERSION: "6.3.0"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gmp/gmp-${PKG_VERSION}.tar.xz
-    digestSHA1: "99d691607613e749aa5d7c0c2a89aeab38fec070"
+    digestSHA1: "b4043dd2964ab1a858109da85c44de224384f352"
     stripComponents: 1
 
 buildTools: [host-toolchain]

@@ -1,7 +1,7 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "0.18"
+    PKG_VERSION: "0.22.1"
 
 privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"
@@ -16,7 +16,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${SOURCEFORGE_MIRROR}/libisl/isl-${PKG_VERSION}.tar.xz
-    digestSHA256: "0f35051cc030b87c673ac1f187de40e386a1482a0cfdf2c552dd6031b307ddc4"
+    digestSHA256: "28658ce0f0bdb95b51fd2eb15df24211c53284f6ca2ac5e897acc3169e55b60f"
     stripComponents: 1
 
 buildScript: |

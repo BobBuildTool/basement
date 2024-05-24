@@ -1,5 +1,8 @@
 inherit: [sandbox]
 
+environment:
+    GLIBC_ENABLE_KERNEL: "5.4"
+
 depends:
     # We try to build the sandbox in a temporary 1st stage sandbox. Though not
     # strictly necessary it greatly helps to find unclean stuff. If the we
@@ -68,6 +71,7 @@ depends:
     - devel::m4
     - devel::patch
     - devel::texinfo
+    - editors::ed
     - net::make-ca
     - perl::perl
     - utils::bash

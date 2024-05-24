@@ -27,6 +27,14 @@ depends:
     - name: devel::flex
       use: [tools]
       forward: True
+    - name: python::python3-minimal
+      use: [tools]
+      forward: True
+      tools:
+        # To cross-compile python3, a working python interpreter is required.
+        # Instead, build the interpreter with the native host toolchain. It's
+        # just used for building glibc and won't be needed otherwise.
+        target-toolchain: host-native-toolchain
 
     # Cross toolchain for the current architecture -> ARCH is left as is.
     - name: devel::compat::cross-toolchain
@@ -75,18 +83,18 @@ fingerprintScript: &check-host |
         echo "These recipes assume that your host is using glibc!" >&2
         exit 1
     fi
-    if [[ $MAJOR -ne 2 || $MINOR -lt 27 ]] ; then
+    if [[ $MAJOR -ne 2 || $MINOR -lt 31 ]] ; then
         echo "Your host glibc version is too old!" >&2
         exit 1
     fi
 
-    # check libstdc++ host version
+    # Check libstdc++ host version. See https://gcc.gnu.org/develop.html#timeline
     read -r -d "" ARCH TYPE STAMP <<<"$(bob-libstdc++-version g++)" || true
     if [[ $TYPE != "libstdc++" ]] ; then
         echo "These recipes assume that your host is using libstdc++!" >&2
         exit 1
     fi
-    if [[ $STAMP -lt 20181206 ]] ; then
+    if [[ $STAMP -lt 20220313 ]] ; then
         echo "Your host libstdc++ version is too old!" >&2
         exit 1
     fi

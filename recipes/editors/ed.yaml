@@ -1,0 +1,19 @@
+inherit: [autotools]
+
+metaEnvironment:
+    PKG_VERSION: "1.20.2"
+
+checkoutSCM:
+    scm: url
+    url: ${GNU_MIRROR}/ed/ed-${PKG_VERSION}.tar.lz
+    digestSHA256: "65fec7318f48c2ca17f334ac0f4703defe62037bb13cc23920de077b5fa24523"
+    extract: "tar"
+    stripComponents: 1
+
+buildVars: [CC]
+buildScript: |
+    autotoolsBuild -o "CC=$CC" $1
+
+packageScript: |
+    autotoolsPackageTgt
+
