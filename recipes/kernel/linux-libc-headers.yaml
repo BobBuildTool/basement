@@ -35,3 +35,6 @@ buildScript: |
 
 packageScript: |
     cp -a $1/usr .
+
+provideVars:
+    KERNEL_LINUX_VERSION: "$PKG_VERSION"
