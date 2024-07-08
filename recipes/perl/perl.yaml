@@ -1,4 +1,4 @@
-inherit: [make]
+inherit: [make, strip]
 
 metaEnvironment:
     PKG_VERSION: "5.38.2"
@@ -61,3 +61,4 @@ packageScript: |
     find usr/lib/perl5/ -name '*.bs' -print0 | xargs -0 rm -f
     find usr/lib/perl5/ -name '.packlist' -print0 | xargs -0 rm -f
 
+    stripAll .
