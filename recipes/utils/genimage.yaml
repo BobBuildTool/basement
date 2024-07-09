@@ -1,0 +1,27 @@
+inherit: [autotools]
+
+depends:
+    - libs::libconfuse-dev
+
+    - use: []
+      depends:
+          - libs::libconfuse-tgt
+
+metaEnvironment:
+    PKG_VERSION: "17"
+    PKG_LICENSE: "GPL-2.0"
+
+checkoutSCM:
+    scm: url
+    url: ${GITHUB_MIRROR}/pengutronix/genimage/releases/download/v${PKG_VERSION}/genimage-${PKG_VERSION}.tar.xz
+    digestSHA1: "dd5a188a6eedd3bd0c2ed4f4f97245d0c0a5857f"
+    stripComponents: 1
+
+buildScript: |
+    autotoolsBuild $1
+
+packageScript: |
+    autotoolsPackageTgt
+
+provideTools:
+    genimage: "usr/bin"
