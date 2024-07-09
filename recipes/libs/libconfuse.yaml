@@ -1,0 +1,21 @@
+inherit: [autotools]
+
+metaEnvironment:
+    PKG_VERSION: "3.3"
+    PKG_LICENSE: "ICS"
+
+checkoutSCM:
+    scm: url
+    url: ${GITHUB_MIRROR}/martinh/libconfuse/releases/download/v${PKG_VERSION}/confuse-${PKG_VERSION}.tar.xz
+    digestSHA1: "8d07f3877331b7e87309e4dcacb353ce5e2ea0bd"
+    stripComponents: 1
+
+buildScript: |
+    autotoolsBuild "$1"
+
+multiPackage:
+    dev:
+        packageScript: autotoolsPackageDev
+
+    tgt:
+        packageScript: autotoolsPackageTgt
