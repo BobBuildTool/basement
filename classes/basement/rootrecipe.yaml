@@ -12,12 +12,12 @@ depends:
           use: [environment, tools]
           forward: True
 
-        # Declare some inital tools that are needed to build the intial tools.
+        # Declare some initial tools that are needed to build the initial tools.
         - name: devel::bootstrap-fake-pkg-config
           use: [tools]
           forward: True
 
-        # Use compatability toolchain that practically runs on all major
+        # Use compatibility toolchain that practically runs on all major
         # distributions. The user might explicitly disable it's usage but this will
         # then taint all binary artifacts built for the host.
         - name: devel::host-compat-toolchain
