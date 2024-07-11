@@ -48,7 +48,7 @@ environment:
     CXXFLAGS:   "-Os -pipe -fPIC"
     LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
 
-archive:
+archiveAppend:
     backend: http
     url: http://ci.bobbuildtool.dev/artifacts/
     flags: [download]
