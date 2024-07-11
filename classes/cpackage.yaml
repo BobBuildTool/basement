@@ -24,6 +24,21 @@ buildSetup: |
         basementBitsLibraryType
     }
 
+    cpackageLibraryTypeCheck()
+    {
+        case $(cpackageLibraryType) in
+            static)
+                echo "$1"
+                ;;
+            shared)
+                echo "$2"
+                ;;
+            both)
+                echo "$1 $2"
+                ;;
+        esac
+    }
+
     # In case we build on Windows the global paths need to be added to $PATH.
     ${VS_PATH:+export PATH="$PATH:$VS_PATH"}
 
