@@ -74,8 +74,8 @@ buildSetup: |
     ar    = '$AR'
     strip = '$STRIP'
     nm    = '$NM'
-    pkgconfig = '$(which pkg-config)'
-    [properties]
+    pkg-config = '$(which pkg-config)'
+    [built-in options]
     c_args = [$(meson_join_list "${MESON_CFLAGS[@]}")]
     cpp_args = [$(meson_join_list "${MESON_CXXFLAGS[@]}")]
     c_link_args = [$(meson_join_list "${MESON_LDFLAGS[@]}")]
@@ -102,7 +102,7 @@ buildSetup: |
             MESON_OPTIONS+=("-Ddefault_library=$(cpackageLibraryType)")
             MESON_OPTIONS+=( --prefix /usr --libdir lib --buildtype plain )
             MESON_OPTIONS+=( "${@:2}" )
-            meson "${MESON_OPTIONS[@]}"
+            meson setup "${MESON_OPTIONS[@]}"
             touch .meson-done
         fi
         DESTDIR="$PWD/../install" ninja install
