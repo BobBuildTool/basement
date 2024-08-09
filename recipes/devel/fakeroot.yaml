@@ -21,5 +21,7 @@ buildScript: |
 
 packageScript: |
     autotoolsPackageTgt
+    # fakeroot manually searches for libfakeroot.so. Make sure the link exists.
+    ln -s libfakeroot-0.so usr/lib/libfakeroot.so
 
 provideDeps: [ "*-tgt" ]
