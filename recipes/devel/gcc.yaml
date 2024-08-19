@@ -227,8 +227,12 @@ multiPackage:
                 buildTools: [host-toolchain, target-toolchain, cross-ambient-toolchain]
                 buildScript: |
                     cp -a "${BOB_TOOL_PATHS[cross-ambient-toolchain]}/../.."/* install/
-                    makeParallel -C build all-gcc
-                    makeSequential -C build install-gcc DESTDIR="$PWD/install"
+                    if [[ ${GCC_ENABLE_LANGUAGES:-c,c+} == *"ada"* ]]; then
+                        ADDITIONAL_MAKE=(all-gnattools)
+                        ADDITIONAL_INSTALL=(install-gnattools)
+                    fi
+                    makeParallel -C build all-gcc ${ADDITIONAL_MAKE[@]}
+                    makeSequential -C build install-gcc ${ADDITIONAL_INSTALL[@]} DESTDIR="$PWD/install"
 
     native:
         buildTools: [host-toolchain, target-toolchain]
