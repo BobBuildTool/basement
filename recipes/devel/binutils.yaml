@@ -12,31 +12,53 @@ checkoutSCM:
 # Some parts are compiled for the host during compilation. Hence we need the
 # host toolchain too.
 buildTools: [host-toolchain, bison]
+multiPackage:
+    "":
+        buildVars: [AUTOCONF_HOST, AUTOCONF_TARGET, BINUTILS_PREFIX]
+        buildScript: |
+            export MAKEINFO=true
+            autotoolsBuild -o MAKEINFO=true -O MAKEINFO=true $1 \
+                ${BINUTILS_PREFIX:+--prefix=${BINUTILS_PREFIX}} \
+                --with-sysroot=${BINUTILS_PREFIX:-/usr}/sysroots/${AUTOCONF_TARGET:-$AUTOCONF_HOST} \
+                --enable-deterministic-archives \
+                --disable-nls \
+                --disable-werror \
+                --enable-plugins \
+                --enable-lto
 
-buildVars: [AUTOCONF_HOST, AUTOCONF_TARGET, BINUTILS_PREFIX]
-buildScript: |
-    export MAKEINFO=true
-    autotoolsBuild -o MAKEINFO=true -O MAKEINFO=true $1 \
-        ${BINUTILS_PREFIX:+--prefix=${BINUTILS_PREFIX}} \
-        --with-sysroot=${BINUTILS_PREFIX:-/usr}/sysroots/${AUTOCONF_TARGET:-$AUTOCONF_HOST} \
-        --enable-deterministic-archives \
-        --disable-nls \
-        --disable-werror \
-        --enable-plugins \
-        --enable-lto
+        multiPackage:
+            dev:
+                packageScript: |
+                    autotoolsPackageDev
+            "":
+                packageScript: |
+                    autotoolsPackageTgt
 
-packageScript: |
-    autotoolsPackageTgt
+                    # make sure that prefixed versions are available on native build
+                    if [[ $AUTOCONF_HOST = ${AUTOCONF_TARGET:-$AUTOCONF_HOST} ]] ; then
+                        pushd ./${BINUTILS_PREFIX:-/usr}/bin
+                        for i in *; do
+                            ln -s "$i" "${AUTOCONF_HOST}-$i"
+                        done
+                        popd
+                    fi
 
-    # make sure that prefixed versions are available on native build
-    if [[ $AUTOCONF_HOST = ${AUTOCONF_TARGET:-$AUTOCONF_HOST} ]] ; then
-        pushd ./${BINUTILS_PREFIX:-/usr}/bin
-        for i in *; do
-            ln -s "$i" "${AUTOCONF_HOST}-$i"
-        done
-        popd
-    fi
+                provideTools:
+                    binutils: usr/bin
 
-provideTools:
-    binutils: usr/bin
+    libiberty:
+        depends:
+            - devel::binutils-dev
+        buildScript: |
+            autotoolsBuild $1/libiberty \
+                --enable-install-libiberty
+            if [[ -e install/usr/lib64 ]]; then
+                mkdir -p install/usr/lib
+                mv install/usr/lib64/* install/usr/lib
+            fi
+        multiPackage:
+            dev:
+                packageScript: autotoolsPackageDev
+            tgt:
+                packageScript: autotoolsPackageTgt
 
