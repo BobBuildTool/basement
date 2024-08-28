@@ -23,8 +23,6 @@ checkoutScript: |
 buildTools: [target-toolchain]
 buildVars: [CC, AR, RANLIB, ARCH, AUTOCONF_HOST]
 buildScript: |
-    export TARGETMACH=${AUTOCONF_HOST}
-
     mkdir -p install build
     pushd build
 
