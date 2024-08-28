@@ -1,7 +1,7 @@
 inherit: [cpackage, make, install, patch]
 
 metaEnvironment:
-    PKG_VERSION: "3.2.1"
+    PKG_VERSION: "3.3.1"
 
 depends:
     - libs::zlib-dev
@@ -13,7 +13,7 @@ depends:
 checkoutSCM:
     scm: url
     url: https://www.openssl.org/source/openssl-${PKG_VERSION}.tar.gz
-    digestSHA256: 83c7329fe52c850677d75e5d0b0ca245309b97e8ecbcfdc1dfdc4ab9fac35b39
+    digestSHA256: 777cd596284c883375a2a7a11bf5d2786fc5413255efab20c50d6ffe6d020b7e
     stripComponents: 1
 
 checkoutDeterministic: True
