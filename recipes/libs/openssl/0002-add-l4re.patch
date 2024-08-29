@@ -1,0 +1,36 @@
+--- a/Configurations/10-main.conf	2024-01-30 14:14:56.000000000 +0100
++++ b/Configurations/10-main.conf	2024-04-07 00:47:28.431783012 +0200
+@@ -1002,6 +1002,33 @@
+         ranlib           => "true",
+     },
+ 
++#### L4Re
++    "l4re-x86_64" => {
++        inherit_from     => [ "BASE_unix" ],
++        CC               => "gcc",
++        CXX              => "g++",
++        CFLAGS           => picker(default => "-Wall",
++                                   debug   => "-O0 -g",
++                                   release => "-O3"),
++        CXXFLAGS         => picker(default => "-Wall",
++                                   debug   => "-O0 -g",
++                                   release => "-O3"),
++        cflags           => threads("-pthread"),
++        cxxflags         => combine("-std=c++11", threads("-pthread")),
++        lib_cppflags     => "-DOPENSSL_USE_NODELETE -D__UCLIBC_HAS_CONTEXT_FUNCS__", # or change in uclibc?
++        ex_libs          => add("-ldl", threads("-pthread")),
++        #bn_ops           => "BN_LLONG RC4_CHAR", #32bit
++        bn_ops           => "SIXTY_FOUR_BIT_LONG RC4_CHAR",
++        thread_scheme    => "pthreads",
++        dso_scheme       => "dlfcn",
++        shared_target    => "linux-shared",
++        shared_cflag     => "-fPIC",
++        shared_ldflag    => sub { $disabled{pinshared} ? () : "-Wl,-znodelete" },
++    },
++    "l4re-aarch64" => {
++        inherit_from     => [ "l4re-x86_64" ],
++    },
++
+ #### *BSD
+     "BSD-generic32" => {
+         # As for thread cflag. Idea is to maintain "collective" set of
