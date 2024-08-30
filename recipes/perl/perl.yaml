@@ -25,7 +25,9 @@ checkoutSCM:
 
 checkoutDeterministic: True
 checkoutScript: |
-    tar --strip-components=1 -C perl -xf perl-cross/perl-cross.tar.gz
+    if [ ! -e perl/cnf ]; then
+      tar --strip-components=1 -C perl -xf perl-cross/perl-cross.tar.gz
+    fi
     updateConfigAllRecursive
 
 buildTools: [host-toolchain, target-toolchain]
