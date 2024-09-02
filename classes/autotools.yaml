@@ -1,4 +1,4 @@
-inherit: [cpackage, libtool, make, install]
+inherit: [cpackage, libtool, make, install, "basement::update-config"]
 
 buildVars: [AUTOTOOLS_AUTO_STATIC]
 buildSetup: |

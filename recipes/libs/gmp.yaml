@@ -1,5 +1,8 @@
 inherit: [autotools]
 
+privateEnvironment:
+    APPLY_UPDATE_CONFIG: "no"
+
 metaEnvironment:
     PKG_VERSION: "6.3.0"
 
@@ -8,6 +11,11 @@ checkoutSCM:
     url: ${GNU_MIRROR}/gmp/gmp-${PKG_VERSION}.tar.xz
     digestSHA1: "b4043dd2964ab1a858109da85c44de224384f352"
     stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    updateConfigFile config.guess configfsf.guess
+    updateConfigFile config.sub configfsf.sub
 
 buildTools: [host-toolchain]
 buildScript: |

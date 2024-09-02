@@ -1,0 +1,46 @@
+# This class automatically updates config.guess and config.sub. It is inherited
+# by the autotools class where the files are typically used. Some packages are
+# using the GNU config helpers without the full autotools suite. Derive from
+# this class in this case.
+#
+# In case a package does not use the standard file names, define
+# APPLY_UPDATE_CONFIG to "no" in privateEnvironment and call updateConfigFile
+# or updateConfigFileRecursive as needed.
+checkoutSetup: |
+    declare -A UPDATE_CONFIG_TEMPLATES=(
+        [config.guess]=$<@update-config/config.guess@>
+        [config.sub]=$<@update-config/config.sub@>
+    )
+
+    # $1: source file name ("config.guess" or "config.sub")
+    # $2: destination path
+    updateConfigFile()
+    {
+        if ! cmp "${UPDATE_CONFIG_TEMPLATES[$1]}" "$2" ; then
+            cat "${UPDATE_CONFIG_TEMPLATES[$1]}" > "$2"
+        fi
+    }
+
+    # $1: source file name ("config.guess" or "config.sub")
+    # $2: destination file name (optional, defaults to $1)
+    updateConfigFileRecursive()
+    {
+        local CONFIG_FILE
+
+        find -name "${2:-$1}" | while read -r CONFIG_FILE ; do
+            updateConfigFile "$1" "$CONFIG_FILE"
+        done
+    }
+
+    updateConfigAllRecursive()
+    {
+        updateConfigFileRecursive config.guess
+        updateConfigFileRecursive config.sub
+    }
+
+checkoutDeterministic: True
+checkoutVars: [APPLY_UPDATE_CONFIG]
+checkoutScript: |
+    if [[ ${APPLY_UPDATE_CONFIG:-yes} != no ]] ; then
+        updateConfigAllRecursive
+    fi

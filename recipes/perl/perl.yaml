@@ -1,9 +1,10 @@
-inherit: [make, strip]
+inherit: [make, strip, "basement::update-config"]
 
 metaEnvironment:
     PKG_VERSION: "5.38.2"
 
 privateEnvironment:
+    APPLY_UPDATE_CONFIG: "no"
     PERL_CROSS_VERSION: "1.5.2"
     PERL_ARCH: "${ARCH}-linux"
 
@@ -25,6 +26,7 @@ checkoutSCM:
 checkoutDeterministic: True
 checkoutScript: |
     tar --strip-components=1 -C perl -xf perl-cross/perl-cross.tar.gz
+    updateConfigAllRecursive
 
 buildTools: [host-toolchain, target-toolchain]
 buildVars: [AUTOCONF_HOST, CROSS_COMPILE, TOOLCHAIN_SYSROOT, CPPFLAGS, CFLAGS, LDFLAGS]

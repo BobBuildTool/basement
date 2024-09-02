@@ -64,7 +64,8 @@ checkoutSetup: |
             fi
         fi
 
-        # Apply patches and track them in the series file
+        # Apply patches and track them in the series file. Do a dry-run first
+        # so that we don't leave half applied patches behind...
         mkdir -p "$name"
         for (( i=1 ; i<=$# ; i++ )) ; do
             local fn="${@:$i:1}"
@@ -75,6 +76,7 @@ checkoutSetup: |
                                             p; q                    # one is enough
                                         }' "$fn" )"
             subject="$(printf "%04d-%s.patch" $i "$subject")"
+            patch --dry-run -p $p -F $fuzz -f < "$fn"
             patch -p $p -F $fuzz -f < "$fn"
             cp "$fn" "$name/$subject"
             echo "$subject" >> "$name/series"
