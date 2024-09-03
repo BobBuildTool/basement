@@ -1,0 +1,278 @@
+From 7a122cafc1415e1f182fd58b36708b5a08fb8550 Mon Sep 17 00:00:00 2001
+From: Richard Levitte <levitte@openssl.org>
+Date: Wed, 17 Jul 2024 18:23:57 +0200
+Subject: [PATCH] fix: for exporters to work for build config, there may be two
+ include dirs
+
+For CMake / pkg-config configuration files to be used for an uninstalled
+build, the include directory in the build directory isn't enough, if that
+one is separate from the source directory.  The include directory in the
+source directory must be accounted for too.
+
+This includes some lighter refactoring of util/mkinstallvars.pl, with the
+result that almost all variables in builddata.pm and installdata.pm have
+become arrays, even though unnecessarily for most of them; it was simpler
+that way.  The CMake / pkg-config templates are adapted accordingly.
+
+Reviewed-by: Neil Horman <nhorman@openssl.org>
+Reviewed-by: Tomas Mraz <tomas@openssl.org>
+(Merged from https://github.com/openssl/openssl/pull/24918)
+
+(cherry picked from commit accd835f8d6ed946eb540a3e2e82f9723093f094)
+---
+ build.info                             |  3 +-
+ exporters/cmake/OpenSSLConfig.cmake.in | 22 ++++----
+ exporters/pkg-config/libcrypto.pc.in   | 23 ++++++---
+ exporters/pkg-config/libssl.pc.in      | 11 +++-
+ util/mkinstallvars.pl                  | 71 +++++++++++++++++---------
+ 5 files changed, 84 insertions(+), 46 deletions(-)
+
+diff --git a/build.info b/build.info
+index b578af4b19..930a0a940c 100644
+--- a/build.info
++++ b/build.info
+@@ -124,7 +124,8 @@ DEPEND[openssl.pc]=builddata.pm
+ DEPEND[openssl.pc]=libcrypto.pc libssl.pc
+ 
+ GENERATE[builddata.pm]=util/mkinstallvars.pl \
+-    PREFIX=. BINDIR=apps LIBDIR= INCLUDEDIR=include APPLINKDIR=ms \
++    PREFIX=. BINDIR=apps APPLINKDIR=ms \
++    LIBDIR= INCLUDEDIR=include "INCLUDEDIR=$(SRCDIR)/include" \
+     ENGINESDIR=engines MODULESDIR=providers \
+     "VERSION=$(VERSION)" "LDLIBS=$(LIB_EX_LIBS)"
+ 
+diff --git a/exporters/cmake/OpenSSLConfig.cmake.in b/exporters/cmake/OpenSSLConfig.cmake.in
+index dc9927a762..766aebe3d4 100644
+--- a/exporters/cmake/OpenSSLConfig.cmake.in
++++ b/exporters/cmake/OpenSSLConfig.cmake.in
+@@ -89,10 +89,10 @@ unset(_ossl_undefined_targets)
+ # Set up the import path, so all other import paths are made relative this file
+ get_filename_component(_ossl_prefix "${CMAKE_CURRENT_LIST_FILE}" PATH)
+ {-
+-  # For each component in $OpenSSL::safe::installdata::CMAKECONFIGDIR relative to
+-  # $OpenSSL::safe::installdata::PREFIX, have CMake figure out the parent directory.
+-  my $d = join('/', unixify(catdir($OpenSSL::safe::installdata::LIBDIR_REL_PREFIX,
+-                                   $OpenSSL::safe::installdata::CMAKECONFIGDIR_REL_LIBDIR), 1));
++  # For each component in $OpenSSL::safe::installdata::CMAKECONFIGDIR[0] relative to
++  # $OpenSSL::safe::installdata::PREFIX[0], have CMake figure out the parent directory.
++  my $d = join('/', unixify(catdir($OpenSSL::safe::installdata::LIBDIR_REL_PREFIX[0],
++                                   $OpenSSL::safe::installdata::CMAKECONFIGDIR_REL_LIBDIR[0]), 1));
+   $OUT = '';
+   if ($d ne '.') {
+       $OUT .= 'get_filename_component(_ossl_prefix "${_ossl_prefix}" PATH)' . "\n"
+@@ -129,13 +129,15 @@ set(OPENSSL_VERSION_FIX "${OpenSSL_VERSION_PATCH}")
+ set(OPENSSL_FOUND YES)
+ 
+ # Directories and names
+-set(OPENSSL_LIBRARY_DIR "${_ossl_prefix}/{- unixify($OpenSSL::safe::installdata::LIBDIR_REL_PREFIX, 1); -}")
+-set(OPENSSL_INCLUDE_DIR "${_ossl_prefix}/{- unixify($OpenSSL::safe::installdata::INCLUDEDIR_REL_PREFIX, 1); -}")
+-set(OPENSSL_ENGINES_DIR "${_ossl_prefix}/{- unixify($OpenSSL::safe::installdata::LIBDIR_REL_PREFIX, 1); -}/{- unixify($OpenSSL::safe::installdata::ENGINESDIR_REL_LIBDIR, 1); -}")
+-set(OPENSSL_MODULES_DIR "${_ossl_prefix}/{- unixify($OpenSSL::safe::installdata::LIBDIR_REL_PREFIX, 1); -}/{- unixify($OpenSSL::safe::installdata::MODULESDIR_REL_LIBDIR, 1); -}")
+-set(OPENSSL_RUNTIME_DIR "${_ossl_prefix}/{- unixify($OpenSSL::safe::installdata::BINDIR_REL_PREFIX, 1); -}")
++set(OPENSSL_LIBRARY_DIR "${_ossl_prefix}/{- unixify($OpenSSL::safe::installdata::LIBDIR_REL_PREFIX[0], 1); -}")
++set(OPENSSL_INCLUDE_DIR{- $OUT = '';
++                          $OUT .= ' "${_ossl_prefix}/' . $_ . '"'
++                              foreach (@OpenSSL::safe::installdata::INCLUDEDIR_REL_PREFIX); -})
++set(OPENSSL_ENGINES_DIR "${_ossl_prefix}/{- unixify($OpenSSL::safe::installdata::LIBDIR_REL_PREFIX[0], 1); -}/{- unixify($OpenSSL::safe::installdata::ENGINESDIR_REL_LIBDIR[0], 1); -}")
++set(OPENSSL_MODULES_DIR "${_ossl_prefix}/{- unixify($OpenSSL::safe::installdata::LIBDIR_REL_PREFIX[0], 1); -}/{- unixify($OpenSSL::safe::installdata::MODULESDIR_REL_LIBDIR[0], 1); -}")
++set(OPENSSL_RUNTIME_DIR "${_ossl_prefix}/{- unixify($OpenSSL::safe::installdata::BINDIR_REL_PREFIX[0], 1); -}")
+ {- output_off() if $disabled{uplink}; "" -}
+-set(OPENSSL_APPLINK_SOURCE "${_ossl_prefix}/{- unixify($OpenSSL::safe::installdata::APPLINKDIR_REL_PREFIX, 1); -}/applink.c")
++set(OPENSSL_APPLINK_SOURCE "${_ossl_prefix}/{- unixify($OpenSSL::safe::installdata::APPLINKDIR_REL_PREFIX[0], 1); -}/applink.c")
+ {- output_on() if $disabled{uplink}; "" -}
+ set(OPENSSL_PROGRAM "${OPENSSL_RUNTIME_DIR}/{- platform->bin('openssl') -}")
+ 
+diff --git a/exporters/pkg-config/libcrypto.pc.in b/exporters/pkg-config/libcrypto.pc.in
+index fbc8ea4c79..f225bd6d22 100644
+--- a/exporters/pkg-config/libcrypto.pc.in
++++ b/exporters/pkg-config/libcrypto.pc.in
+@@ -1,15 +1,22 @@
+-prefix={- $OpenSSL::safe::installdata::PREFIX -}
++prefix={- $OpenSSL::safe::installdata::PREFIX[0] -}
+ exec_prefix=${prefix}
+-libdir={- $OpenSSL::safe::installdata::LIBDIR_REL_PREFIX
+-          ? '${exec_prefix}/' . $OpenSSL::safe::installdata::LIBDIR_REL_PREFIX
+-          : $OpenSSL::safe::installdata::libdir -}
+-includedir=${prefix}/{- $OpenSSL::safe::installdata::INCLUDEDIR_REL_PREFIX -}
+-enginesdir=${libdir}/{- $OpenSSL::safe::installdata::ENGINESDIR_REL_LIBDIR -}
+-modulesdir=${libdir}/{- $OpenSSL::safe::installdata::MODULESDIR_REL_LIBDIR -}
++libdir={- $OpenSSL::safe::installdata::LIBDIR_REL_PREFIX[0]
++          ? '${exec_prefix}/' . $OpenSSL::safe::installdata::LIBDIR_REL_PREFIX[0]
++          : $OpenSSL::safe::installdata::libdir[0] -}
++includedir={- $OUT = '';
++              $OUT .= '${prefix}/' . $_ . ' '
++                  foreach (@OpenSSL::safe::installdata::INCLUDEDIR_REL_PREFIX); -}
++enginesdir=${libdir}/{- $OpenSSL::safe::installdata::ENGINESDIR_REL_LIBDIR[0] -}
++modulesdir=${libdir}/{- $OpenSSL::safe::installdata::MODULESDIR_REL_LIBDIR[0] -}
+ 
+ Name: OpenSSL-libcrypto
+ Description: OpenSSL cryptography library
+ Version: {- $OpenSSL::safe::installdata::VERSION -}
+ Libs: -L${libdir} -lcrypto
+ Libs.private: {- join(' ', @OpenSSL::safe::installdata::LDLIBS) -}
+-Cflags: -I${includedir}
++Cflags:{- $OUT = ' -I${includedir}';
++          if (scalar @OpenSSL::safe::installdata::INCLUDEDIR_REL_PREFIX > 1) {
++              $OUT = '';
++              $OUT .= ' -I${prefix}/' . $_ . ' '
++                  foreach (@OpenSSL::safe::installdata::INCLUDEDIR_REL_PREFIX);
++          } -}
+diff --git a/exporters/pkg-config/libssl.pc.in b/exporters/pkg-config/libssl.pc.in
+index 963538807b..80c91ec034 100644
+--- a/exporters/pkg-config/libssl.pc.in
++++ b/exporters/pkg-config/libssl.pc.in
+@@ -3,11 +3,18 @@ exec_prefix=${prefix}
+ libdir={- $OpenSSL::safe::installdata::LIBDIR_REL_PREFIX
+           ? '${exec_prefix}/' . $OpenSSL::safe::installdata::LIBDIR_REL_PREFIX
+           : $OpenSSL::safe::installdata::libdir -}
+-includedir=${prefix}/{- $OpenSSL::safe::installdata::INCLUDEDIR_REL_PREFIX -}
++includedir={- $OUT = '';
++              $OUT .= '${prefix}/' . $_ . ' '
++                  foreach (@OpenSSL::safe::installdata::INCLUDEDIR_REL_PREFIX); -}
+ 
+ Name: OpenSSL-libssl
+ Description: Secure Sockets Layer and cryptography libraries
+ Version: {- $OpenSSL::safe::installdata::VERSION -}
+ Requires.private: libcrypto
+ Libs: -L${libdir} -lssl
+-Cflags: -I${includedir}
++Cflags:{- $OUT = ' -I${includedir}';
++          if (scalar @OpenSSL::safe::installdata::INCLUDEDIR_REL_PREFIX > 1) {
++              $OUT = '';
++              $OUT .= ' -I${prefix}/' . $_ . ' '
++                  foreach (@OpenSSL::safe::installdata::INCLUDEDIR_REL_PREFIX);
++          } -}
+diff --git a/util/mkinstallvars.pl b/util/mkinstallvars.pl
+index e2b7d9d083..52a3d607bd 100644
+--- a/util/mkinstallvars.pl
++++ b/util/mkinstallvars.pl
+@@ -32,10 +32,11 @@ foreach (@others) { $all{$_} = 1 }
+ print STDERR "DEBUG: all keys: ", join(", ", sort keys %all), "\n";
+ 
+ my %keys = ();
++my %values = ();
+ foreach (@ARGV) {
+     (my $k, my $v) = m|^([^=]*)=(.*)$|;
+     $keys{$k} = 1;
+-    $ENV{$k} = $v;
++    push @{$values{$k}}, $v;
+ }
+ 
+ # warn if there are missing values, and also if there are unexpected values
+@@ -49,11 +50,12 @@ foreach my $k (sort keys %keys) {
+ # This shouldn't be needed, but just in case we get relative paths that
+ # should be absolute, make sure they actually are.
+ foreach my $k (@absolutes) {
+-    my $v = $ENV{$k} || '.';
+-    print STDERR "DEBUG: $k = $v => ";
+-    $v = File::Spec->rel2abs($v) if $v;
+-    $ENV{$k} = $v;
+-    print STDERR "$k = $ENV{$k}\n";
++    my $v = $values{$k} || [ '.' ];
++    die "Can't have more than one $k\n" if scalar @$v > 1;
++    print STDERR "DEBUG: $k = $v->[0] => ";
++    $v = [ map { File::Spec->rel2abs($_) } @$v ];
++    $values{$k} = $v;
++    print STDERR "$k = $v->[0]\n";
+ }
+ 
+ # Absolute paths for the subdir variables are computed.  This provides
+@@ -66,18 +68,31 @@ foreach my $k (@absolutes) {
+ foreach my $pair (@subdirs) {
+     my ($var, $subdir_vars) = @$pair;
+     foreach my $k (@$subdir_vars) {
+-        my $v = $ENV{$k} || '.';
+-        print STDERR "DEBUG: $k = $v => ";
+-        if (File::Spec->file_name_is_absolute($v)) {
+-            my $kr = "${k}_REL_${var}";
+-            $ENV{$kr} = File::Spec->abs2rel($v, $ENV{$var});
+-            print STDERR "$kr = $ENV{$kr}\n";
+-        } else {
+-            my $kr = "${k}_REL_${var}";
+-            $ENV{$kr} = $v;
+-            $ENV{$k} = File::Spec->rel2abs($v, $ENV{$var});
+-            print STDERR "$k = $ENV{$k} ,  $kr = $v\n";
++        my $kr = "${k}_REL_${var}";
++        my $v2 = $values{$k} || [ '.' ];
++        $values{$k} = [];       # We're rebuilding it
++        print STDERR "DEBUG: $k = ",
++            (scalar @$v2 > 1 ? "[ " . join(", ", @$v2) . " ]" : $v2->[0]),
++            " => ";
++        foreach my $v (@$v2) {
++            if (File::Spec->file_name_is_absolute($v)) {
++                push @{$values{$k}}, $v;
++                push @{$values{$kr}},
++                    File::Spec->abs2rel($v, $values{$var}->[0]);
++            } else {
++                push @{$values{$kr}}, $v;
++                push @{$values{$k}},
++                    File::Spec->rel2abs($v, $values{$var}->[0]);
++            }
+         }
++        print STDERR join(", ",
++                          map {
++                              my $v = $values{$_};
++                              "$_ = " . (scalar @$v > 1
++                                         ? "[ " . join(", ", @$v) . " ]"
++                                         : $v->[0]);
++                          } ($k, $kr)),
++            "\n";
+     }
+ }
+ 
+@@ -92,13 +107,13 @@ our \@EXPORT = qw(
+ _____
+ 
+ foreach my $k (@absolutes) {
+-    print "    \$$k\n";
++    print "    \@$k\n";
+ }
+ foreach my $pair (@subdirs) {
+     my ($var, $subdir_vars) = @$pair;
+     foreach my $k (@$subdir_vars) {
+         my $k2 = "${k}_REL_${var}";
+-        print "    \$$k \$$k2\n";
++        print "    \@$k \@$k2\n";
+     }
+ }
+ 
+@@ -109,24 +124,30 @@ print <<_____;
+ _____
+ 
+ foreach my $k (@absolutes) {
+-    print "our \$$k" . ' ' x (27 - length($k)) . "= '$ENV{$k}';\n";
++    print "our \@$k" . ' ' x (27 - length($k)) . "= ( '",
++        join("', '", @{$values{$k}}),
++        "' );\n";
+ }
+ foreach my $pair (@subdirs) {
+     my ($var, $subdir_vars) = @$pair;
+     foreach my $k (@$subdir_vars) {
+         my $k2 = "${k}_REL_${var}";
+-        print "our \$$k" . ' ' x (27 - length($k)) . "= '$ENV{$k}';\n";
+-        print "our \$$k2" . ' ' x (27 - length($k2)) . "= '$ENV{$k2}';\n";
++        print "our \@$k" . ' ' x (27 - length($k)) . "= ( '",
++            join("', '", @{$values{$k}}),
++            "' );\n";
++        print "our \@$k2" . ' ' x (27 - length($k2)) . "= ( '",
++            join("', '", @{$values{$k2}}),
++            "' );\n";
+     }
+ }
+ 
+ print <<_____;
+-our \$VERSION                    = '$ENV{VERSION}';
++our \$VERSION                    = '$values{VERSION}->[0]';
+ our \@LDLIBS                     =
+     # Unix and Windows use space separation, VMS uses comma separation
+     \$^O eq 'VMS'
+-    ? split(/ *, */, '$ENV{LDLIBS}')
+-    : split(/ +/, '$ENV{LDLIBS}');
++    ? split(/ *, */, '$values{LDLIBS}->[0]')
++    : split(/ +/, '$values{LDLIBS}->[0]');
+ 
+ 1;
+ _____
+-- 
+2.39.2
+
