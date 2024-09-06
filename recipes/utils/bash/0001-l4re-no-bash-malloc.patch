@@ -1,0 +1,11 @@
+diff -urN a/configure b/configure
+--- a/configure	2022-09-23 16:13:22.000000000 +0200
++++ b/configure	2024-09-05 12:08:53.493867231 +0200
+@@ -3298,6 +3298,7 @@
+ *-nsk*)		opt_bash_malloc=no ;;	# HP NonStop
+ *-haiku*)	opt_bash_malloc=no ;;	# Haiku OS
+ *-genode*)	opt_bash_malloc=no ;;	# Genode has no sbrk
++*-l4re*)	opt_bash_malloc=no ;;	# L4Re's malloc is great
+ esac
+ 
+ # memory scrambling on free()

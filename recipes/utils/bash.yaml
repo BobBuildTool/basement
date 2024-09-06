@@ -1,4 +1,4 @@
-inherit: [autotools]
+inherit: [autotools, patch]
 
 metaEnvironment:
     PKG_VERSION: "5.2.21"
@@ -19,6 +19,10 @@ checkoutSCM:
     url: ${GNU_MIRROR}/bash/bash-${PKG_VERSION}.tar.gz
     digestSHA1: "7f70b6e91ab5a85479b6b778ac10ab6db9db3282"
     stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<@bash/*.patch@>
 
 buildTools: [host-toolchain]
 buildVars: [READLINE_VERSION]
