@@ -1,12 +1,12 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "6.2"
+    PKG_VERSION: "6.5"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/ncurses/ncurses-${PKG_VERSION}.tar.gz
-    digestSHA1: "56e410fb77f2b5501a0b2f6a995376f3cefe1097"
+    digestSHA256: "136d91bc269a9a5785e5f9e980bc76ab57428f604ce3e5a5a90cebc767971cc6"
     stripComponents: 1
 
 buildTools: [host-toolchain]
