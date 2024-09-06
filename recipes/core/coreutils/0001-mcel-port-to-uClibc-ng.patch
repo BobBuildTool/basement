@@ -1,0 +1,32 @@
+From 9765bc796b3e6ceaa7a10ba07c9c2f1e272a4249 Mon Sep 17 00:00:00 2001
+From: Paul Eggert <eggert@cs.ucla.edu>
+Date: Wed, 21 Aug 2024 23:00:38 -0700
+Subject: [PATCH 01/32] mcel: port to uClibc-ng
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Problem reported by Waldemar Brodkorb in:
+https://lists.gnu.org/r/bug-gnulib/2024-08/msg00130.html
+* lib/mcel.h (mcel_scan): Don’t treat uClibc-ng like glibc.
+---
+ lib/mcel.h | 3 ++-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/lib/mcel.h b/lib/mcel.h
+index 7d92d24601..d9f8385155 100644
+--- a/lib/mcel.h
++++ b/lib/mcel.h
+@@ -226,7 +226,8 @@ mcel_scan (char const *p, char const *lim)
+ 
+   /* An initial mbstate_t; initialization optimized for some platforms.
+      For details about these and other platforms, see wchar.in.h.  */
+-#if defined __GLIBC__ && 2 < __GLIBC__ + (2 <= __GLIBC_MINOR__)
++#if (defined __GLIBC__ && 2 < __GLIBC__ + (2 <= __GLIBC_MINOR__) \
++     && !defined __UCLIBC__)
+   /* Although only a trivial optimization, it's worth it for GNU.  */
+   mbstate_t mbs; mbs.__count = 0;
+ #elif (defined __FreeBSD__ || defined __DragonFly__ || defined __OpenBSD__ \
+-- 
+2.45.2
+
