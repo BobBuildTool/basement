@@ -59,6 +59,19 @@ buildScript: |
             ;;
     esac
 
+    case "$AUTOCONF_HOST" in
+        *-l4re)
+            TARGET_OS=l4re
+            ;;
+        *-linux-*)
+            TARGET_OS=linux
+            ;;
+        *)
+            echo "Deriving target OS from $AUTOCONF_HOST not supported." >&2
+            exit 1
+            ;;
+    esac
+
     $1/Configure \
         --prefix=/usr \
         --openssldir=/etc/ssl \
@@ -68,7 +81,7 @@ buildScript: |
         "-I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include" \
         "-Wl,-L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib" \
         "-Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib" \
-        linux-${ARCH}
+        ${TARGET_OS}-${ARCH}
 
     #make depend
     makeParallel
