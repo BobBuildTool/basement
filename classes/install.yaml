@@ -112,6 +112,7 @@ packageSetup: |
             "/usr/lib/*.lib" \
             ${INSTALL_SHARED:+"/usr/lib/*.so*"} \
             "/usr/lib/pkgconfig/***" \
+            "/usr/share/pkgconfig/***" \
             "/usr/lib/cmake/***" \
             ${INSTALL_SHARED:+"/usr/bin/" "/usr/bin/*.dll"} \
             "!*"
@@ -165,6 +166,7 @@ packageSetup: |
             "!/usr/lib/*.a" "!/usr/lib/*.so*" \
             "!/usr/lib/*.lib" "!/usr/bin/*.dll" "!/usr/bin/*.pdb" \
             "!/usr/lib/pkgconfig" \
+            "!/usr/share/pkgconfig" \
             "!/usr/lib/cmake"
         installStripAll .
     }

@@ -9,4 +9,7 @@ buildSetup: |
         if [[ -d "$i/usr/lib/pkgconfig" ]] ; then
             PKG_CONFIG_LIBDIR="${PKG_CONFIG_LIBDIR:+${PKG_CONFIG_LIBDIR}:}$i/usr/lib/pkgconfig"
         fi
+        if [[ -d "$i/usr/share/pkgconfig" ]] ; then
+            PKG_CONFIG_LIBDIR="${PKG_CONFIG_LIBDIR:+${PKG_CONFIG_LIBDIR}:}$i/usr/share/pkgconfig"
+        fi
     done
