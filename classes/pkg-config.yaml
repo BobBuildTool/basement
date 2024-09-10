@@ -1,5 +1,7 @@
 buildToolsWeak: [pkg-config]
 buildSetup: |
+    # some tools use the env var only; make sure it points to the executable
+    export PKG_CONFIG="${BOB_TOOL_PATHS[pkg-config]}/pkg-config"
     # make sure to not search any system paths
     export PKG_CONFIG_DIR=
 
