@@ -85,6 +85,7 @@ packageSetup: |
             "--exclude=/usr/man"
             "--exclude=/usr/share/man"
             "--exclude=/usr/share/doc"
+            "--exclude=/usr/share/gtk-doc"
 
             # Get rid of libtool files. They cause more harm than good.
             "--exclude=*.la"
