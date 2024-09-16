@@ -1,0 +1,13 @@
+diff -ur a/src/flexdef.h b/src/flexdef.h
+--- a/src/flexdef.h	2017-05-03 20:13:14.000000000 +0200
++++ b/src/flexdef.h	2024-06-24 22:36:42.858032870 +0200
+@@ -88,6 +88,9 @@
+ #define _(STRING) STRING
+ #endif /* ENABLE_NLS */
+ 
++void *rpl_malloc(size_t n);
++void *rpl_realloc(void *p, size_t n);
++
+ /* Always be prepared to generate an 8-bit scanner. */
+ #define CSIZE 256
+ 
