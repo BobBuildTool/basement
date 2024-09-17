@@ -1,0 +1,81 @@
+inherit: [install]
+
+metaEnvironment:
+    PKG_VERSION: "1.81.0"
+    PKG_LICENSE: "Apache-2.0 or MIT"
+
+multiPackage:
+    # rust compiler + std lib + tools like cargo
+    "":
+        environment:
+            RUST_ARCH: $(rustc-target,$(get-tool-env,"target-toolchain","AUTOCONF_HOST"))
+
+        checkoutSCM:
+            scm: url
+            url: https://static.rust-lang.org/dist/rust-${PKG_VERSION}-${RUST_ARCH}.tar.xz
+            digestSHA1: >-
+                $(strip,$(if-then-else,$(eq,$RUST_ARCH,aarch64-unknown-linux-gnu),685a6f96c8d3e57409a13ea0ed54c28296a26532,)
+                        $(if-then-else,$(eq,$RUST_ARCH,armv7-unknown-linux-gnueabihf),9d2e65af2cd34271ad9faea467cbc92ab28131f5,)
+                        $(if-then-else,$(eq,$RUST_ARCH,i686-unknown-linux-gnu),24b9c438adcaaa7ad1ce88b4c7bf9a256971fbb6,)
+                        $(if-then-else,$(eq,$RUST_ARCH,x86_64-unknown-linux-gnu),8cce2d23c08988975646dab34b812c6315cb1f4f,))
+            stripComponents: 1
+
+        buildVars: [RUST_ARCH]
+        buildScript: |
+            $1/install.sh --destdir=$PWD/install \
+                --prefix=/usr \
+                --disable-ldconfig \
+                --components=rustc,cargo,rust-std-$RUST_ARCH
+            rm -f install/usr/lib/rustlib/install.log install/usr/lib/rustlib/manifest-*
+
+        packageScript: |
+            installCopy "$1/install/"
+
+    # extra rust std lib used for cross compiling
+    std:
+        environment:
+            RUST_ARCH: ${RUST_ARCH:-$(rustc-target,$(get-tool-env,"target-toolchain","AUTOCONF_HOST"))}
+
+        checkoutSCM:
+            scm: url
+            url: https://static.rust-lang.org/dist/rust-std-${PKG_VERSION}-${RUST_ARCH}.tar.xz
+            digestSHA1: >-
+                $(strip,$(if-then-else,$(eq,$RUST_ARCH,aarch64-unknown-linux-gnu),c23fd4068df568b89d5998c1ac9fe565eeb01d97,)
+                        $(if-then-else,$(eq,$RUST_ARCH,armv7-unknown-linux-gnueabihf),1a78588e07aca1f96c60a0ef4ecad598a2ba58d6,)
+                        $(if-then-else,$(eq,$RUST_ARCH,i686-unknown-linux-gnu),998427cf24cc4a21a95e61bcd9514888b050d2d5,)
+                        $(if-then-else,$(eq,$RUST_ARCH,x86_64-unknown-linux-gnu),2b76cdd61dfd713cc3486820be6f96be610cdb70,))
+            stripComponents: 1
+
+        buildScript: |
+            $1/install.sh --destdir=$PWD/install \
+                --prefix=/usr \
+                --disable-ldconfig
+            rm -f install/usr/lib/rustlib/install.log install/usr/lib/rustlib/manifest-*
+
+        packageScript: |
+            # we have to use copy, because there are cross libs
+            installCopy "$1/install/"
+
+    # host rust compiler + cross std lib as tool
+    cross:
+        depends:
+            - name: devel::rustc
+              tools:
+                target-toolchain: host-compat-toolchain
+            - name: devel::rustc-std
+              if: !expr >
+                rustc-target("$AUTOCONF_BUILD") !=
+                    rustc-target(get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_HOST"))
+
+        buildScript: |
+            # copy both deps into this package, because for tools we don't
+            # really have deps tracking
+            for i in "${@:2}" ; do
+                rsync -aHK "$i/" install/
+            done
+
+        packageScript: |
+            # we have to use copy, because there are cross libs
+            installCopy "$1/install/"
+        provideTools:
+            rustc: "usr/bin"
