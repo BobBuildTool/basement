@@ -1,0 +1,33 @@
+diff -urN a/src/df.c b/src/df.c
+--- a/src/df.c	2024-01-01 14:27:23.000000000 +0100
++++ b/src/df.c	2024-09-16 11:19:31.761134576 +0200
+@@ -23,6 +23,7 @@
+ #include <sys/types.h>
+ #include <getopt.h>
+ #include <c-ctype.h>
++#include <wchar.h>
+ #include <uchar.h>
+ 
+ #include "system.h"
+diff -urN a/src/ls.c b/src/ls.c
+--- a/src/ls.c	2024-03-26 19:57:27.000000000 +0100
++++ b/src/ls.c	2024-09-16 11:19:49.949082419 +0200
+@@ -56,6 +56,7 @@
+ #include <getopt.h>
+ #include <signal.h>
+ #include <selinux/selinux.h>
++#include <wchar.h>
+ #include <uchar.h>
+ 
+ #if HAVE_LANGINFO_CODESET
+diff -urN a/src/wc.c b/src/wc.c
+--- a/src/wc.c	2024-02-26 18:33:02.000000000 +0100
++++ b/src/wc.c	2024-09-16 11:20:46.212921888 +0200
+@@ -23,6 +23,7 @@
+ #include <stdio.h>
+ #include <getopt.h>
+ #include <sys/types.h>
++#include <wchar.h>
+ #include <uchar.h>
+ 
+ #include <argmatch.h>
