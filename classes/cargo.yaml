@@ -1,0 +1,102 @@
+inherit: [pkg-config, install]
+
+depends:
+    # we need a host rustc compiler + a cross std lib for the target arch
+    - name: devel::rustc-cross
+      checkoutDep: True
+      use: [tools]
+
+privateEnvironment:
+    RUST_ARCH: $(rustc-target,$(get-tool-env,"target-toolchain","AUTOCONF_HOST"))
+
+checkoutTools: [rustc]
+checkoutSetup: |
+    # $1 : optional sub dir
+    cargoFetchDeps()
+    {
+        P=${1:-$PWD}
+        # remove any configs from projects; we can't deal with them
+        find . -path *cargo/config -delete
+        mkdir -p $P/.cargo
+        # cargo vendor will automatically add the required local config to
+        # config.toml
+        cargo vendor \
+            --locked \
+            --manifest-path $P/Cargo.toml \
+            $P/vendor > $P/.cargo/config.toml
+
+        # some apps build host stuff, so add the host linker to config.toml,
+        # otherwise it isn't found
+        cat >>$P/.cargo/config.toml <<EOF
+    [host.x86_64-unknown-linux-gnu]
+    linker = "gcc"
+    EOF
+    }
+
+buildTools: [host-toolchain, target-toolchain, rustc]
+buildVars: [CC, CFLAGS, RUST_ARCH]
+buildSetup: |
+    # collect lib locations from any dependencies so we can inform rustc about
+    # it
+    declare -a RUSTFLAGS
+    for i in "${@:2}" ; do
+        for j in lib usr/lib ; do
+            if [[ -d "$i/$j" ]] ; then
+                RUSTFLAGS+=("-C link-arg=-L$i/$j")
+            fi
+        done
+    done
+
+    # enable experimental host!=target feature
+    export __CARGO_TEST_CHANNEL_OVERRIDE_DO_NOT_USE_THIS="nightly"
+    export CARGO_UNSTABLE_HOST_CONFIG="true"
+    export CARGO_UNSTABLE_TARGET_APPLIES_TO_HOST="true"
+    export CARGO_TARGET_APPLIES_TO_HOST="false"
+    export CARGO_BUILD_JOBS=$(nproc)
+
+    CARGO_TARGET="${RUST_ARCH^^}"
+    CARGO_TARGET="${CARGO_TARGET//-/_}"
+    export CARGO_TARGET_${CARGO_TARGET}_LINKER="$CC"
+    export CARGO_TARGET_${CARGO_TARGET}_RUSTFLAGS="${RUSTFLAGS[*]}"
+
+    # $1 : source path
+    # $2+ : optional cargo opts
+    cargoBuild()
+    {
+        # build + install
+        cargo install \
+            --offline \
+            --locked \
+            --force \
+            --target-dir $BOB_CWD/build \
+            --target $RUST_ARCH \
+            --path $1 \
+            --root $BOB_CWD/install/usr \
+            "${@:2}"
+
+        # remove those crates files
+        find $BOB_CWD/install/usr -name .crates* -delete
+    }
+
+packageSetup: |
+    _CARGO_BUILD_PATH=$1
+
+    cargoPackageBin()
+    {
+        installPackageBin "${1:-${_CARGO_BUILD_PATH}}/install/" "${@:2}"
+    }
+
+    cargoPackageDev()
+    {
+        installPackageDev "${1:-${_CARGO_BUILD_PATH}}/install/" "${@:2}"
+    }
+
+    cargoPackageLib()
+    {
+        installPackageLib "${1:-${_CARGO_BUILD_PATH}}/install/" "${@:2}"
+    }
+
+    cargoPackageTgt()
+    {
+        installPackageTgt "${1:-${_CARGO_BUILD_PATH}}/install/" "${@:2}"
+    }
