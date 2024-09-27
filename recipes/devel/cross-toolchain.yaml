@@ -106,6 +106,15 @@ multiPackage:
             GCC_TARGET_ARCH: "armv8-a"
             GCC_LIBC: "glibc"
 
+    # ARMv8-A AArch64 Linux toolchain with ada
+    aarch64-linux-gnu-ada:
+        environment:
+            AUTOCONF_TARGET: "aarch64-linux-gnu"
+            ARCH: "arm64"
+            GCC_TARGET_ARCH: "armv8-a"
+            GCC_LIBC: "glibc"
+            GCC_ENABLE_LANGUAGES: "c,c++,ada"
+
     # ARMv8-A/R AArch64 bare metal toolchain
     aarch64-none-elf:
         environment:
