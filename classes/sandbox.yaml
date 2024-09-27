@@ -41,8 +41,8 @@ buildScript: |
     find . -type d -name .debug | xargs /bin/rm -rf
     find . -not -path ./toolchain/sysroots -executable -type f -exec ${CROSS_COMPILE}strip -g {} \;
 
-    # remove locales and codepages
-    rm -rf usr/share/locale usr/lib/gconv
+    # remove locales
+    rm -rf usr/share/locale
 
     # Create an empty resolv.conf. The host version is mounted over this one
     # when entering the sandbox.
