@@ -1,10 +1,10 @@
 metaEnvironment:
-    PKG_VERSION: "52.0.0"
+    PKG_VERSION: "75.1.0"
 
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/pypa/setuptools/archive/v${PKG_VERSION}.tar.gz
-    digestSHA256: ff0c74d1b905a224d647f99c6135eacbec2620219992186b81aa20012bc7f882
+    digestSHA256: 514dc60688d3118c9883a3dd54a38b28128ea912c01ea325d6e204a93da3b524
     extract: False
 
 buildTools: [python3]
@@ -13,7 +13,6 @@ buildScript: |
     mkdir -p build install
     pushd build
     tar -xf "$1/v${PKG_VERSION}.tar.gz" --strip-components=1
-    python3 bootstrap.py
     python3 setup.py install \
         --root "$PWD/../install" \
         --prefix /usr
