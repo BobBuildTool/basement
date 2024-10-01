@@ -12,7 +12,7 @@ privateEnvironment:
 
 checkoutSCM:
     scm: url
-    url: http://ftp.gnu.org/gnu/glibc/glibc-${PKG_VERSION}.tar.xz
+    url: ${GNU_MIRROR}/glibc/glibc-${PKG_VERSION}.tar.xz
     digestSHA256: "f77bd47cf8170c57365ae7bf86696c118adb3b120d3259c64c502d3dc1e2d926"
     stripComponents: 1
 
