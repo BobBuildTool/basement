@@ -168,7 +168,8 @@ packageSetup: |
             "!/usr/lib/*.lib" "!/usr/bin/*.dll" "!/usr/bin/*.pdb" \
             "!/usr/lib/pkgconfig" \
             "!/usr/share/pkgconfig" \
-            "!/usr/lib/cmake"
+            "!/usr/lib/cmake" \
+            "!/usr/share/aclocal/*.m4"
         installStripAll .
     }
 
