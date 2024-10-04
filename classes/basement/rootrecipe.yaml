@@ -71,7 +71,7 @@ depends:
         - name: devel::cmake            # Overwrite "cmake" tool with properly
           use: [tools]                  # built one.
           forward: True
-        - name: core::util-linux-tools
+        - name: core::util-linux
           use: [tools]
           forward: True
 

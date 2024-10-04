@@ -34,14 +34,19 @@ buildScript: |
         sbindir=/usr/sbin
 
 multiPackage:
-    dev:
-        packageScript: autotoolsPackageDev
-
-    tgt:
-        packageScript: autotoolsPackageTgt
-        provideDeps: [ "*-tgt" ]
-
-    tools:
+    "":
+        depends:
+            - name: core::util-linux-tgt
+              use: []
         packageScript: autotoolsPackageBin
+        provideDeps: [ "*-tgt" ]
         provideTools:
             util-linux: "usr/sbin"
+
+    dev:
+        packageScript: autotoolsPackageDev
+        provideDeps: [ "*-dev" ]
+
+    tgt:
+        packageScript: autotoolsPackageLib
+        provideDeps: [ "*-tgt" ]
