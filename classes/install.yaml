@@ -113,8 +113,9 @@ packageSetup: |
             "/usr/lib/*.lib" \
             ${INSTALL_SHARED:+"/usr/lib/*.so*"} \
             "/usr/lib/pkgconfig/***" \
-            "/usr/share/pkgconfig/***" \
             "/usr/lib/cmake/***" \
+            "/usr/share/" \
+            "/usr/share/pkgconfig/***" \
             ${INSTALL_SHARED:+"/usr/bin/" "/usr/bin/*.dll"} \
             "!*"
 
