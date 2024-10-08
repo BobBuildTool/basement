@@ -63,7 +63,7 @@ depends:
         forward: True
 
     - core::coreutils
-    - core::util-linux-tgt
+    - core::util-linux
     - devel::diffutils
     - devel::fakeroot
     - devel::git
