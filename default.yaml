@@ -4,6 +4,7 @@ environment:
     KERNEL_MIRROR: "https://cdn.kernel.org/pub"
     SOURCEFORGE_MIRROR: "https://downloads.sourceforge.net"
     SOURCEWARE_MIRROR: "https://sourceware.org/pub"
+    RUST_MIRROR: "https://static.rust-lang.org"
 
     # default compile flags
     BASEMENT_OPTIMIZE: "s" # compiler optimization level (0/1/2/s)
