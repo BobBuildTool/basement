@@ -2,7 +2,7 @@ inherit: [autotools]
 
 metaEnvironment:
     PKG_VERSION_MAJOR: "2.40"
-    PKG_VERSION: "2.40.1"
+    PKG_VERSION: "2.40.2"
 
 depends:
     - libs::ncurses-dev
@@ -16,7 +16,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${KERNEL_MIRROR}/linux/utils/util-linux/v${PKG_VERSION_MAJOR}/util-linux-${PKG_VERSION}.tar.xz
-    digestSHA256: "59e676aa53ccb44b6c39f0ffe01a8fa274891c91bef1474752fad92461def24f"
+    digestSHA256: "d78b37a66f5922d70edf3bdfb01a6b33d34ed3c3cafd6628203b2a2b67c8e8b3"
     stripComponents: 1
 
 buildScript: |
@@ -34,14 +34,19 @@ buildScript: |
         sbindir=/usr/sbin
 
 multiPackage:
-    dev:
-        packageScript: autotoolsPackageDev
-
-    tgt:
-        packageScript: autotoolsPackageTgt
-        provideDeps: [ "*-tgt" ]
-
-    tools:
+    "":
+        depends:
+            - name: core::util-linux-tgt
+              use: []
         packageScript: autotoolsPackageBin
+        provideDeps: [ "*-tgt" ]
         provideTools:
             util-linux: "usr/sbin"
+
+    dev:
+        packageScript: autotoolsPackageDev
+        provideDeps: [ "*-dev" ]
+
+    tgt:
+        packageScript: autotoolsPackageLib
+        provideDeps: [ "*-tgt" ]
