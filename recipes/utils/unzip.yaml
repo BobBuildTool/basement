@@ -14,6 +14,7 @@ buildVars: [CC, PKG_VERSION]
 buildScript: |
     tar -xzf $1/unzip${PKG_VERSION}.tar.gz
     mkdir -p install
+    patch -p1 -d unzip${PKG_VERSION} -i $<<unzip/*.patch>>
     makeSequential -C unzip${PKG_VERSION} -f unix/Makefile CC=$CC \
        prefix=${PWD}/install/usr \
        MANDIR=${PWD}/install/usr/share/man/man1 \
