@@ -1,7 +1,7 @@
 inherit: [autotools, patch]
 
 metaEnvironment:
-    PKG_VERSION: "5.2.21"
+    PKG_VERSION: "5.2.37"
 
 depends:
     - libs::ncurses-dev
@@ -17,7 +17,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/bash/bash-${PKG_VERSION}.tar.gz
-    digestSHA1: "7f70b6e91ab5a85479b6b778ac10ab6db9db3282"
+    digestSHA1: "636f9198ab0efa0bb946afad4915050939b2dfa3"
     stripComponents: 1
 
 checkoutDeterministic: True
@@ -36,6 +36,13 @@ buildScript: |
     export bash_cv_printf_a_format=yes
     autotoolsBuild $1 \
         --with-installed-readline 
+
+    mkdir -p install/.bob
+
+    cat >install/.bob/bash.shell-table <<EOF
+    /bin/bash
+    /usr/bin/bash
+    EOF
 
 packageScript: |
     autotoolsPackageTgt
