@@ -37,6 +37,13 @@ buildScript: |
     autotoolsBuild $1 \
         --with-installed-readline 
 
+    mkdir -p install/.bob
+
+    cat >install/.bob/bash.shell-table <<EOF
+    /bin/bash
+    /usr/bin/bash
+    EOF
+
 packageScript: |
     autotoolsPackageTgt
 
