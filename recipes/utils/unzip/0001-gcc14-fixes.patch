@@ -1,0 +1,137 @@
+diff -ur a/extract.c b/extract.c
+--- a/extract.c	2009-03-14 02:32:52.000000000 +0100
++++ b/extract.c	2024-10-22 16:15:46.301743846 +0200
+@@ -45,6 +45,8 @@
+ #include "crc32.h"
+ #include "crypt.h"
+ 
++#include <unistd.h>
++
+ #define GRRDUMP(buf,len) { \
+     int i, j; \
+  \
+diff -ur a/fileio.c b/fileio.c
+--- a/fileio.c	2009-04-20 02:03:44.000000000 +0200
++++ b/fileio.c	2024-10-22 18:22:44.214412585 +0200
+@@ -72,6 +72,8 @@
+ #include "crypt.h"
+ #include "ttyio.h"
+ 
++#include <unistd.h>
++
+ /* setup of codepage conversion for decryption passwords */
+ #if CRYPT
+ #  if (defined(CRYP_USES_ISO2OEM) && !defined(IZ_ISO2OEM_ARRAY))
+diff -ur a/process.c b/process.c
+--- a/process.c	2009-03-06 02:25:10.000000000 +0100
++++ b/process.c	2024-10-22 18:53:50.763151722 +0200
+@@ -43,6 +43,8 @@
+ #  include "crc32.h"
+ #endif
+ 
++#include <unistd.h>
++
+ static int    do_seekable        OF((__GPRO__ int lastchance));
+ #ifdef DO_SAFECHECK_2GB
+ # ifdef USE_STRM_INPUT
+diff -ur a/ttyio.c b/ttyio.c
+--- a/ttyio.c	2008-01-05 21:24:16.000000000 +0100
++++ b/ttyio.c	2024-10-22 19:23:17.049473593 +0200
+@@ -29,6 +29,8 @@
+ #include "zip.h"
+ #include "crypt.h"
+ 
++#include <unistd.h>
++
+ #if (CRYPT || (defined(UNZIP) && !defined(FUNZIP)))
+ /* Non-echo console/keyboard input is needed for (en/de)cryption's password
+  * entry, and for UnZip(SFX)'s MORE and Pause features.
+diff -ur a/unix/configure b/unix/configure
+--- a/unix/configure	2009-04-16 21:25:12.000000000 +0200
++++ b/unix/configure	2024-10-22 20:26:47.521839112 +0200
+@@ -419,6 +419,7 @@
+ 
+ echo Check for directory libraries
+ cat > conftest.c << _EOF_
++#include <dirent.h>
+ int main() { return closedir(opendir(".")); }
+ _EOF_
+ 
+diff -ur a/unix/unix.c b/unix/unix.c
+--- a/unix/unix.c	2009-01-24 00:31:26.000000000 +0100
++++ b/unix/unix.c	2024-10-22 20:59:02.668311566 +0200
+@@ -30,6 +30,9 @@
+ #define UNZIP_INTERNAL
+ #include "unzip.h"
+ 
++#include <unistd.h>
++#include <utime.h>
++
+ #ifdef SCO_XENIX
+ #  define SYSNDIR
+ #else  /* SCO Unix, AIX, DNIX, TI SysV, Coherent 4.x, ... */
+diff -ur a/unzip.c b/unzip.c
+--- a/unzip.c	2024-10-22 16:16:07.033706665 +0200
++++ b/unzip.c	2024-10-22 16:14:19.265693242 +0200
+@@ -69,6 +69,8 @@
+ #include "crypt.h"
+ #include "unzvers.h"
+ 
++#include <unistd.h>
++
+ #ifndef WINDLL          /* The WINDLL port uses windll/windll.c instead... */
+ 
+ /***************************/
+diff -ur a/zipinfo.c b/zipinfo.c
+--- a/zipinfo.c	2009-02-08 18:04:30.000000000 +0100
++++ b/zipinfo.c	2024-10-22 19:57:22.347184673 +0200
+@@ -25,6 +25,7 @@
+ #define UNZIP_INTERNAL
+ #include "unzip.h"
+ 
++#include <unistd.h>
+ 
+ #ifndef NO_ZIPINFO  /* strings use up too much space in small-memory systems */
+ 
+diff -ur a/funzip.c b/funzip.c
+--- a/funzip.c	2009-01-07 00:23:34.000000000 +0100
++++ b/funzip.c	2024-10-25 19:17:23.201505454 +0200
+@@ -120,6 +120,8 @@
+ #include "crypt.h"
+ #include "ttyio.h"
+ 
++#include <unistd.h>
++
+ #ifdef EBCDIC
+ #  undef EBCDIC                 /* don't need ebcdic[] */
+ #endif
+diff -ur a/unix/unix.c b/unix/unix.c
+--- a/unix/unix.c	2024-10-25 11:52:36.496583041 +0200
++++ b/unix/unix.c	2024-10-25 19:14:54.117735461 +0200
+@@ -80,7 +80,7 @@
+     char *fn;                   /* filename of directory */
+     union {
+         iztimes t3;             /* mtime, atime, ctime */
+-        ztimbuf t2;             /* modtime, actime */
++        struct utimbuf t2;      /* modtime, actime */
+     } u;
+     unsigned perms;             /* same as min_info.file_attr */
+     int have_uidgid;            /* flag */
+@@ -1107,7 +1107,7 @@
+ {
+     union {
+         iztimes t3;             /* mtime, atime, ctime */
+-        ztimbuf t2;             /* modtime, actime */
++        struct utimbuf t2;             /* modtime, actime */
+     } zt;
+     ulg z_uidgid[2];
+     int have_uidgid_flg;
+@@ -1401,7 +1401,7 @@
+     ZCONST char *fname;
+     time_t modtime;
+ {
+-    ztimbuf tp;
++    struct utimbuf tp;
+ 
+     tp.modtime = tp.actime = modtime;
+     return (utime(fname, &tp));
