@@ -1,0 +1,10 @@
+--- a/programs/util.h	2024-04-06 17:34:09.963116473 +0200
++++ b/programs/util.h	2024-04-06 17:34:24.651095177 +0200
+@@ -21,6 +21,7 @@
+ ******************************************/
+ #include "platform.h"     /* PLATFORM_POSIX_VERSION, ZSTD_NANOSLEEP_SUPPORT, ZSTD_SETPRIORITY_SUPPORT */
+ #include <stddef.h>       /* size_t, ptrdiff_t */
++#include <stdio.h>        /* for FILE */
+ #include <sys/types.h>    /* stat, utime */
+ #include <sys/stat.h>     /* stat, chmod */
+ #include "../lib/common/mem.h"          /* U64 */

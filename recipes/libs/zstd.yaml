@@ -1,0 +1,52 @@
+inherit: [cpackage, make, install, patch, strip]
+
+metaEnvironment:
+    PKG_VERSION: "1.5.6"
+    PKG_LICENSE: "BSD-3-Clause"
+
+checkoutSCM:
+    scm: url
+    url: ${GITHUB_MIRROR}/facebook/zstd/releases/download/v${PKG_VERSION}/zstd-${PKG_VERSION}.tar.gz
+    digestSHA256: "8c29e06cf42aacc1eafc4077ae2ec6c6fcb96a626157e0593d5e82a34fd403c1"
+    stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<@zstd/*@>
+
+buildVars: [AR, CC, CXX]
+buildScript: |
+    rm -rf install
+    mkdir -p install build
+    cp -a $1/* build # out of tree building does not work, zstd writes to source tree
+    export DESTDIR=${PWD}/install # zstd Makefile variable
+    export PREFIX=/usr
+
+    # Required so that program finds shared object from build tree.
+    export LIB_BINDIR=$PWD/build/lib
+
+    pushd build
+    makeParallel -C lib $(cpackageLibraryTypeCheck libzstd.a-mt-release lib-mt-release)
+    makeParallel -C programs $(if [[ $(cpackageLibraryType) = static ]] ; then echo zstd-release ; else echo zstd-dll ; fi)
+    makeParallel -C lib install-pc install-includes $(cpackageLibraryTypeCheck install-static install-shared)
+    makeParallel -C programs install
+    popd
+
+multiPackage:
+    "":
+        depends:
+            - name: libs::zstd-tgt
+              use: []
+        packageScript: |
+            installPackageBin "$1/install/"
+        provideDeps: [ "*-tgt" ]
+        provideTools:
+            zstd: "usr/bin"
+
+    dev:
+        packageScript: |
+            installPackageDev "$1/install/"
+
+    tgt:
+        packageScript: |
+            installPackageLib "$1/install/"
