@@ -1,0 +1,300 @@
+inherit: [cmake, python3, patch]
+
+metaEnvironment:
+    PKG_VERSION: "20.1.2"
+    PKG_DESCRIPTION: "A collection of modular and reusable compiler and toolchain technologies"
+    PKG_LICENSE: "Apache-2.0 WITH LLVM-exception"
+
+checkoutSCM:
+    scm: url
+    url: ${GITHUB_MIRROR}/llvm/llvm-project/archive/refs/tags/llvmorg-${PKG_VERSION}.tar.gz
+    digestSHA256: 9ee597456405ddf4809bcf66a4765137a68a85361347ca2a4bb13d9176e932ab
+    stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries -p1 $<@llvm/*.patch@>
+
+depends:
+    - libs::libffi-dev
+    - libs::zlib-dev
+    - use: []
+      depends:
+          - libs::libffi-tgt
+          - libs::zlib-tgt
+
+multiPackage:
+    # Attention: this package builds OpenCL binaries that are for foreign
+    # architectures. The package itself must be compiled with the
+    # host-compat-toolchain. Otherwise it won't build!
+    libclc:
+        depends:
+            - devel::llvm-libs-dev
+
+        buildTools: [clang, llvm]
+        buildScript: |
+            # fix "prepare_builtins: command not found" error
+            export PATH=".:${PATH}"
+
+            cmakeBuild $1/libclc \
+               -DCMAKE_BUILD_TYPE=Release
+
+        multiPackage:
+            dev:
+                packageScript: |
+                    # Need to add OpenCL libs for linking explicitly. They are
+                    # in a non-standard path and have a ".bc" suffix.
+                    cmakePackageDev "$1" /usr/share "/usr/share/clc/***"
+            tgt:
+                packageScript: |
+                    cmakePackageTgt
+
+    # A bootstrap clang build to provide everything that is necessary for the
+    # cross build.  Note that this also needs to build and link libclang and
+    # libLLVM dynamically. Otherwise llvm-config will not provide the correct
+    # values.
+    host-tools:
+        buildVars: [LLVM_TARGETS]
+        buildScript: |
+            cmakeBuild $1/llvm \
+                -DCMAKE_BUILD_TYPE=Release                        \
+                -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra"  \
+                -DLLVM_TARGETS_TO_BUILD="${LLVM_TARGETS}"         \
+                -DLLVM_INCLUDE_BENCHMARKS=OFF                     \
+                -DLLVM_INCLUDE_DOCS=OFF                           \
+                -DLLVM_INCLUDE_EXAMPLES=OFF                       \
+                -DLLVM_INCLUDE_TESTS=OFF                          \
+                -DLLVM_ENABLE_OCAMLDOC=OFF                        \
+                -DLIBCLANG_BUILD_STATIC=ON                        \
+                -DLLVM_ENABLE_ZSTD=OFF                            \
+                -DLLVM_ENABLE_BINDINGS=OFF                        \
+                -DLLVM_BUILD_LLVM_DYLIB==ON                       \
+                -DLLVM_LINK_LLVM_DYLIB=ON
+
+            # Need to copy extra host tools that are not installed by default.
+            cp build/bin/{clang-tidy-confusable-chars-gen,llvm-lit} install/usr/bin/
+
+        packageScript: |
+            cmakePackageBin
+            # Get rid of debug symbols. This package is really just to cross
+            # compile the real llvm.
+            find -type d -name .debug | xargs /bin/rm -rf
+
+        provideTools:
+            clang-host: usr/bin
+
+    "":
+        # This builds the llvm toolchain as well as the native tools needed for cross compiling
+        # the libs.
+        inherit: [ocaml]
+
+        Config:
+            LLVM_TARGETS:
+                default: "AArch64;ARM;RISCV;X86"
+                help: "Semicolon-separated list of target architectures to build."
+            LLVM_OCAML_BINDINGS:
+                type: bool
+                default: True
+                help: "Build OCaml llvm bindings. Disable for cross-builds!"
+
+        depends:
+            - libs::zstd-dev
+            - tools:
+                  target-toolchain: host-compat-toolchain
+              depends:
+                  - name: devel::llvm-host-tools
+                    use: [tools]
+                    # This is a bit more complicated but we do not want to pay
+                    # be extra clang build for the host-compat toolchain, even
+                    # though it is a cross-compiling toolchain.
+                    if: !expr &cross-condition |
+                        "$AUTOCONF_BUILD" != get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_BUILD")
+                        && !match(get-tool-env("target-toolchain", "AUTOCONF_HOST", ""), "bob_compat")
+                  - name: devel::ocaml
+                    use: [tools]
+                    forward: True
+                  - name: devel::opam
+                    use: [tools]
+                    forward: True
+                  - name: devel::ocamlfind
+                    use: [tools]
+                    forward: True
+
+            - name: libs::ocaml-ctypes-dev
+              if: "$LLVM_OCAML_BINDINGS"
+
+            - use: []
+              depends:
+                  - libs::zstd-tgt
+
+        privateEnvironment:
+            # This sets BUILD_SHARED_LIBS=OFF via cmake class. LLVM is special
+            # as the switch will result in many, many shared libraries. Quoting
+            # the documentation:
+            #
+            #   BUILD_SHARED_LIBS is only recommended for use by LLVM developers.
+            #
+            BASEMENT_LIBS: static
+
+        buildVars: [LLVM_TARGETS, LLVM_OCAML_BINDINGS]
+        buildTools:
+            - ocaml
+            - ocamlfind
+            - name: clang-host
+              if: *cross-condition
+
+        buildScript: |
+            OPTIONS=(
+                -DCMAKE_BUILD_TYPE=Release
+                -DLLVM_ENABLE_FFI=ON
+                -DLLVM_ENABLE_RTTI=ON
+                -DLLVM_ENABLE_PROJECTS="clang;lld;clang-tools-extra"
+                -DLLVM_TARGETS_TO_BUILD="${LLVM_TARGETS}"
+                -DLLVM_INCLUDE_BENCHMARKS=OFF
+                -DLLVM_INCLUDE_DOCS=OFF
+                -DLLVM_INCLUDE_EXAMPLES=OFF
+                -DLLVM_INCLUDE_TESTS=OFF
+                -DCLANG_DEFAULT_PIE_ON_LINUX=OFF
+                -DCLANG_ENABLE_CLANGD=ON
+                -DLLVM_ENABLE_OCAMLDOC=OFF
+                -DLLVM_ENABLE_ZSTD=ON
+            )
+
+            if [[ $LLVM_OCAML_BINDINGS == 1 ]] ; then
+                OPTIONS+=( -DLLVM_OCAML_INSTALL_PATH=/usr/lib )
+            else
+                OPTIONS+=( -DLLVM_ENABLE_BINDINGS=OFF )
+            fi
+
+            if [[ ${BOB_TOOL_PATHS[clang-host]:+true} ]] ; then
+                OPTIONS+=(
+                    -DLLVM_NATIVE_TOOL_DIR="${BOB_TOOL_PATHS[clang-host]}"
+                    -DLLVM_HOST_TRIPLE="$AUTOCONF_HOST"
+                    -DLLVM_TABLEGEN="${BOB_TOOL_PATHS[clang-host]}/llvm-tblgen"
+                    # Build and link libLLVM dynamically
+                    -DLLVM_BUILD_LLVM_DYLIB==ON
+                    -DLLVM_LINK_LLVM_DYLIB=ON
+                )
+            else
+                OPTIONS+=(
+                    -DLIBCLANG_BUILD_STATIC=ON
+                )
+            fi
+
+            cmakeBuild $1/llvm "${OPTIONS[@]}"
+
+        multiPackage:
+            "":
+                # Only share if built for the host (plain host build or
+                # compat-toolchain). Real cross-builds are to be installed into
+                # some target rootfs.
+                shared: !expr |
+                    "$AUTOCONF_BUILD" == get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_BUILD")
+                    || match(get-tool-env("target-toolchain", "AUTOCONF_HOST", ""), "bob_compat")
+
+                depends:
+                    - name: devel::llvm-libs-tgt
+                      use: []
+
+                provideDeps: [ "*-tgt" ]
+
+                multiPackage:
+                    "":
+                        packageScript: |
+                            cmakePackageBin "$1" \
+                                /usr/ /usr/bin/ !/usr/bin/clang{,-20,++,-cl,-cpp} \
+                                !/usr/bin/{ld.lld,lld,lld-link,wasm-ld} \
+                                !/usr/bin/clangd \
+                                !/usr/bin/{,git-}clang-format \
+                                !/usr/bin/{,run-}clang-tidy \
+                                !/usr/bin/llvm-config
+
+                        provideTools:
+                            llvm: "usr/bin"
+
+                    clang:
+                        packageScript: |
+                            installCopy "$1/install/" \
+                                /usr/ /usr/bin/ /usr/bin/clang{,-20,++,-cl,-cpp} \
+                                /usr/bin/{ld.lld,lld,lld-link,wasm-ld} \
+                                /usr/lib/ "/usr/lib/clang/***" \
+                                "!*"
+                            installStripAll .
+
+                        provideTools:
+                            clang: "usr/bin"
+
+                    clangd:
+                        packageScript: |
+                            installCopy "$1/install/" \
+                                /usr/ /usr/bin/ /usr/bin/clangd \
+                                "!*"
+                            installStripAll .
+
+                        provideTools:
+                            clangd: "usr/bin"
+
+                    clang-format:
+                        packageScript: |
+                            installCopy "$1/install/" \
+                                /usr/ /usr/bin/ /usr/bin/{,git-}clang-format \
+                                "!*"
+                            installStripAll .
+
+                        provideTools:
+                            clang-format: "usr/bin"
+
+                    clang-tidy:
+                        packageScript: |
+                            installCopy "$1/install/" \
+                                /usr/ /usr/bin/ /usr/bin/{,run-}clang-tidy \
+                                "!*"
+                            installStripAll .
+
+                        provideTools:
+                            clang-tidy: "usr/bin"
+
+            # The devel::llvm-libs-dev package is needed for applications that
+            # are based on LLVM. Usually, the "llvm" tool (provided by
+            # devel::llvm) is needed too because it holds all host executables.
+            # The devel::llvm-libs-tgt package really only has the shared
+            # libraries that clang and llvm binaries need.
+            libs:
+                multiPackage:
+                    dev:
+                        packageScript: |
+                            # this doesn't work without the shared libs:
+                            # CMake Error at usr/lib/cmake/llvm/LLVMExports.cmake:1044 (message):
+                            #   The imported target "LTO" references the file
+                            #
+                            #      "usr/lib/libLTO.so.19.1"
+                            export INSTALL_SHARED=yes
+
+                            cmakePackageDev "$1" \
+                                /usr/ /usr/lib/ /usr/lib/{clang,llvm}/"***" \
+                                /usr/bin/ /usr/bin/llvm-config
+
+                            # Add some wrapper scripts for all executables,
+                            # except llvm-config. The CMake exported targets
+                            # expect them relative to them and check this!
+                            mkdir -p usr/bin
+                            for i in "$1/install/usr/bin/"* ; do
+                                i="${i##*/}"
+                                if [[ $i == llvm-config ]] ; then
+                                    continue
+                                fi
+                                cat >usr/bin/$i <<EOF
+                            #!/bin/sh
+                            exec $i "\$@"
+                            EOF
+                                chmod a+x usr/bin/$i
+                            done
+
+                        provideDeps: [ "*-dev" ]
+
+                    tgt:
+                        packageScript: |
+                            export INSTALL_SHARED=yes
+                            cmakePackageLib "$1"
+
+                        provideDeps: [ "*-tgt" ]

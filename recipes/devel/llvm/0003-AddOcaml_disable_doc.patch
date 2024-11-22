@@ -1,0 +1,43 @@
+From: Ralf Hubert <ralf.hubert@secunet.com>
+Date: Thu, 23 Jan 2025 05:14:46 +0000
+Subject: AddOcaml: disable doc
+
+We don't have ocamldoc.
+---
+ llvm/cmake/modules/AddOCaml.cmake | 15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
+
+diff --git a/llvm/cmake/modules/AddOCaml.cmake b/llvm/cmake/modules/AddOCaml.cmake
+index 6c94f94c8d033..6a21cee631de1 100644
+--- a/llvm/cmake/modules/AddOCaml.cmake
++++ b/llvm/cmake/modules/AddOCaml.cmake
+@@ -168,25 +168,12 @@ function(add_ocaml_library name)
+     COMMENT "Building OCaml library ${name}"
+     VERBATIM)
+ 
+-  add_custom_command(
+-    OUTPUT "${bin}/${name}.odoc"
+-    COMMAND "${OCAMLFIND}" "ocamldoc"
+-            "-I" "${bin}"
+-            "-I" "${LLVM_LIBRARY_DIR}/ocaml/llvm/"
+-            "-dump" "${bin}/${name}.odoc"
+-            ${ocaml_pkgs} ${ocaml_inputs}
+-    DEPENDS ${ocaml_inputs} ${ocaml_outputs}
+-    COMMENT "Building OCaml documentation for ${name}"
+-    VERBATIM)
+-
+-  add_custom_target("ocaml_${name}" ALL DEPENDS ${ocaml_outputs} "${bin}/${name}.odoc")
++  add_custom_target("ocaml_${name}" ALL DEPENDS ${ocaml_outputs})
+   get_subproject_title(subproject_title)
+   set_target_properties("ocaml_${name}" PROPERTIES FOLDER "${subproject_title}/Bindings/OCaml")
+ 
+   set_target_properties("ocaml_${name}" PROPERTIES
+     OCAML_FLAGS "-I;${bin}")
+-  set_target_properties("ocaml_${name}" PROPERTIES
+-    OCAML_ODOC "${bin}/${name}.odoc")
+ 
+   foreach( ocaml_dep ${ARG_OCAMLDEP} )
+     add_dependencies("ocaml_${name}" "ocaml_${ocaml_dep}")
+-- 
+GitLab
+
