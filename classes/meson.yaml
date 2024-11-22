@@ -98,6 +98,14 @@ buildSetup: |
         export LDFLAGS=$(meson_join_space "${MESON_LDFLAGS[@]}")
     fi
 
+    cat >native_file.txt << EOF
+    [binaries]
+    c     = '${AUTOCONF_BUILD:+${AUTOCONF_BUILD}-}gcc'
+    cpp   = '${AUTOCONF_BUILD:+${AUTOCONF_BUILD}-}g++'
+    ar    = '${AUTOCONF_BUILD:+${AUTOCONF_BUILD}-}ar'
+    nm    = '${AUTOCONF_BUILD:+${AUTOCONF_BUILD}-}nm'
+    EOF
+
     # $1 : source path
     mesonBuild()
     {
@@ -111,6 +119,7 @@ buildSetup: |
                 MESON_OPTIONS+=("--cross-file" "$BOB_CWD/cross_file.txt")
             fi
             MESON_OPTIONS+=("-Ddefault_library=$(cpackageLibraryType)")
+            MESON_OPTIONS+=("--native-file" "$BOB_CWD/native_file.txt")
             MESON_OPTIONS+=( --prefix /usr --libdir lib --buildtype plain )
             MESON_OPTIONS+=( "${@:2}" )
             meson setup "${MESON_OPTIONS[@]}"
