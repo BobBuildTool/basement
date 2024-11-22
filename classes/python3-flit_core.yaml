@@ -1,0 +1,17 @@
+inherit: [python3-pkg]
+
+depends:
+    - python::flit_core
+    - python::installer
+
+buildSetup: |
+  python3BuildFlit() {
+    rm -rf build && mkdir -p build
+    pushd build
+    rsync -a --delete $1/ .
+    mkdir dist
+    python3 -c "from flit_core import buildapi; buildapi.build_wheel('dist/')"
+    python3 -m installer dist/*.whl \
+            --prefix ../install/usr/
+    popd
+  }

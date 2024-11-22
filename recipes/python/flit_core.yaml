@@ -1,0 +1,25 @@
+inherit: [python3-pkg]
+
+metaEnvironment:
+   PKG_VERSION: "3.9.0"
+
+checkoutSCM:
+   scm: url
+   url: https://files.pythonhosted.org/packages/source/f/flit/flit-${PKG_VERSION}.tar.gz
+   digestSHA256: d75edf5eb324da20d53570a6a6f87f51e606eee8384925cd66a90611140844c7
+   stripComponents: 1
+
+buildScript: |
+   rm -rf install && mkdir -p install
+   rsync -a --delete $1/ .
+   pushd flit_core
+   python3 build_dists.py
+
+   PURELIB=$(python3 -c "import sysconfig; import os;\
+      print(os.path.relpath(sysconfig.get_path('purelib'),sysconfig.get_path('data')))")
+
+   python3 bootstrap_install.py dist/flit_core*.whl \
+     -i $(pwd)/../install/usr/${PURELIB}
+
+packageScript: |
+   rsync -a --delete $1/install/ .
