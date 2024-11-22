@@ -19,7 +19,7 @@ buildSetup: &commonScript |
     #
     # By default, shared libraries are built when cross-compiling and static
     # libraries on host builds (including the bob_compat cross-toolchain).
-    # This can be overridded by setting BASEMENT_LIBS to "static", "shared" or
+    # This can be overridden by setting BASEMENT_LIBS to "static", "shared" or
     # "both".
     basementBitsLibraryType()
     {

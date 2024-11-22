@@ -1,4 +1,4 @@
-# Eagerly inherit libtool beause it defines a checkoutScript and will be
+# Eagerly inherit libtool because it defines a checkoutScript and will be
 # inherited by the autotools class anyway. This prevents a separate checkout
 # for the anonymous multiPackage which does not depend on the autotools class.
 inherit: [libtool, patch]

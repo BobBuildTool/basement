@@ -35,7 +35,7 @@ buildScript: |
     export bash_cv_func_sigsetjmp=present
     export bash_cv_printf_a_format=yes
     autotoolsBuild $1 \
-        --with-installed-readline 
+        --with-installed-readline
 
     mkdir -p install/.bob
 
@@ -51,4 +51,3 @@ provideDeps: [ "*-tgt" ]
 
 provideVars:
     BASH_VERSION: "${PKG_VERSION}"
-

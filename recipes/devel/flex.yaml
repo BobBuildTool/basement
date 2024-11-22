@@ -21,7 +21,7 @@ buildTools: [bison, host-toolchain]
 buildScript: |
     export M4=m4
     autotoolsBuild $1 \
-        --disable-nls 
+        --disable-nls
 
 packageScript: |
     autotoolsPackageTgt

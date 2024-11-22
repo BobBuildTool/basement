@@ -77,4 +77,3 @@ packageSetup: |
     {
         installPackageTgt "${1:-${_AUTOTOOLS_NOARCH_BUILD_PATH}}/install/" "${@:2}"
     }
-

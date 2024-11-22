@@ -41,4 +41,3 @@ packageScript: |
 
 provideTools:
     binutils: usr/bin
-

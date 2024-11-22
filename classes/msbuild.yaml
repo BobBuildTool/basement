@@ -3,4 +3,3 @@ buildTools: [msbuild]
 buildVarsWeak: [MSB_PATH]
 buildSetup: |
     ${MSB_PATH:+export PATH="$PATH:$MSB_PATH"}
-

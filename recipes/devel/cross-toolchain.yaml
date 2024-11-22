@@ -53,7 +53,7 @@ provideTools:
             STRIP: "${AUTOCONF_TARGET}-strip"
 
             # Host system definition. Note that we do not touch the build
-            # system definiton (AUTOCONF_BUILD) because this is a cross
+            # system definition (AUTOCONF_BUILD) because this is a cross
             # compiling toolchain.
             ARCH: "${ARCH}"
             AUTOCONF_HOST: "${AUTOCONF_TARGET}"

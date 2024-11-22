@@ -30,4 +30,3 @@ checkoutSetup: |
     if [[ ${APPLY_LIBTOOL_PATCH:-yes} != no ]] ; then
         libtoolApply
     fi
-

@@ -72,7 +72,7 @@ packageSetup: |
         stripAll "$1"
     }
 
-    # Copy files matching the given patterns, 
+    # Copy files matching the given patterns,
     installCopy()
     {
         declare -a OPTS=(
@@ -140,7 +140,7 @@ packageSetup: |
             installCopy "$@" /usr/ \
                 /usr/bin/ "/usr/bin/*.dll" "/usr/bin/*.pdb" \
                 "!*"
-            # Be a bit more carefull for UNIX shared objects. Only copy real
+            # Be a bit more careful for UNIX shared objects. Only copy real
             # files. If the SONAME differs from the file name, create the
             # symlink too.
             local d f
