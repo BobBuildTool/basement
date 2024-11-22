@@ -21,6 +21,5 @@ buildScript: |
        --disable-zstd \
        --disable-lz4
 
-
 packageScript: |
     autotoolsPackageTgt
