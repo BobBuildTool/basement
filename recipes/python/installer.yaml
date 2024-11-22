@@ -1,0 +1,32 @@
+inherit: [python3-pkg]
+
+metaEnvironment:
+   PKG_VERSION: "0.7.0"
+
+checkoutSCM:
+   scm: url
+   url: https://files.pythonhosted.org/packages/source/i/installer/installer-${PKG_VERSION}.tar.gz
+   digestSHA256: a26d3e3116289bb08216e0d0f7d925fcef0b0194eedfa0c944bcaaa106c4b631
+   stripComponents: 1
+
+depends:
+   - python::flit_core
+
+buildScript: |
+   rm -rf install && mkdir -p install
+   rsync -a --delete $1/ .
+   mkdir -p dist
+   python3 -c "from flit_core import buildapi; buildapi.build_wheel('dist/')"
+
+   PURELIB=$(python3 -c "import sysconfig; import os;\
+      print(os.path.relpath(sysconfig.get_path('purelib'),sysconfig.get_path('data')))")
+
+   DISTDIR=$(pwd)/dist
+   mkdir -p install/usr/${PURELIB}
+   pushd install/usr/${PURELIB}
+   unzip ${DISTDIR}/installer-*.whl
+
+packageScript: |
+   python3PackageTgt
+
+provideDeps: ['python::*']

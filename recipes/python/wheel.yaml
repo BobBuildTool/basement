@@ -1,0 +1,16 @@
+inherit: [python3-flit_core]
+
+metaEnvironment:
+    PKG_VERSION: "0.44.0"
+
+checkoutSCM:
+    scm: url
+    url: ${GITHUB_MIRROR}/pypa/wheel/archive/${PKG_VERSION}.tar.gz
+    digestSHA256: a98adedb1f4b409c4aa211fbe4bbc1d687a2b7cf66cfe3079fc3140b2e4e0ce1
+    stripComponents: 1
+
+buildScript: |
+    python3BuildFlit $1
+
+packageScript: |
+    python3PackageTgt
