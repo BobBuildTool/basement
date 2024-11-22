@@ -10,6 +10,10 @@ depends:
         name: devel::bootstrap-fake-pkg-config
         use: [tools]
         forward: True
+    -
+        name: devel::bootstrap-fake-clang
+        use: [tools]
+        forward: True
 
     # some required host tools
     -

@@ -2,7 +2,7 @@
 # variables so that the dependencies are found by the toolchains. Pulls in
 # pkg-config too for the same reason.
 
-inherit: [pkg-config, "basement::bits::libs"]
+inherit: [pkg-config, "basement::bits::libs", clang]
 
 buildTools: [target-toolchain]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS,
