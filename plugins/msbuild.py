@@ -15,7 +15,7 @@ def msbuild(args, **options):
     try:
         vswargs = (os.path.join(os.environ["ProgramFiles(x86)"],
                                 "Microsoft Visual Studio/Installer/vswhere.exe"),
-                '-find', 'MSBuild\**\Bin\MSBuild.exe',
+                '-find', r'MSBuild\**\Bin\MSBuild.exe',
                 '-latest',
                 '-products', '*',
                 '-requires', 'Microsoft.Component.MSBuild')
