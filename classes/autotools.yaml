@@ -1,5 +1,8 @@
 inherit: [cpackage, libtool, make, install, "basement::update-config"]
 
+privateEnvironment:
+    USE_CLANG: "0"
+
 buildVars: [AUTOTOOLS_AUTO_STATIC]
 buildSetup: |
     # $1 : source path
