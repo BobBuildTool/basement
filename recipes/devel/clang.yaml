@@ -1,4 +1,4 @@
-inherit: [cmake, python3-usr]
+inherit: [cmake, python3-usr, patch]
 
 shared: True
 
@@ -11,13 +11,16 @@ checkoutSCM:
    digestSHA256: 010e1fd3cabee8799bd2f8a6fbc68f28207494f315cf9da7057a2820f79fd531
    stripComponents: 1
 
+checkoutDeterministic: True
+checkoutScript: |
+   patchApplySeries -p0 $<@clang/*.diff@>
+
 environment:
   LLVM_TARGETS: "${LLVM_TARGETS:-X86;AArch64}"
 
 depends:
    - devel::binutils-dev
    - libs::zlib-dev
-   - libs::zstd-dev
    - libs::libffi-dev
    - libs::ncurses-dev
 
@@ -28,7 +31,7 @@ buildScript: |
       -DLLVM_ENABLE_FFI=ON                      \
       -DCMAKE_BUILD_TYPE=Release                \
       -DLLVM_ENABLE_RTTI=ON                     \
-      -DLLVM_USE_STATIC_ZSTD=TRUE               \
+      -DLLVM_ENABLE_ZSTD=OFF                    \
       -DLLVM_ENABLE_PROJECTS="clang;lld;clang-tools-extra" \
       -DLLVM_TARGETS_TO_BUILD="${LLVM_TARGETS}" \
       -DLLVM_NATIVE_TOOL_DIR=${BOB_TOOL_PATHS['host-toolchain']} \
