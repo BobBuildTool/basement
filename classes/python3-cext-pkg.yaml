@@ -10,7 +10,8 @@ buildTools: [target-toolchain]
 buildSetup: |
     if cpackageCrossCompiling ; then
         export _PYTHON_HOST_PLATFORM="linux-$ARCH"
-        export _PYTHON_SYSCONFIGDATA_NAME=$(basename "${BOB_DEP_PATHS[python::python3-dev]}"/usr/lib/python3.*/_sysconfigdata_*.py .py)
+        export _PYTHON_SYSCONFIGDATA_NAME=$(basename \
+            "${BOB_DEP_PATHS[python::python3-dev]}"/usr/lib/python3.*/_sysconfigdata_*.py .py)
     fi
 
     python3CExtInstallPip()

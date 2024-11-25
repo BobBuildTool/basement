@@ -12,7 +12,8 @@ depends:
 
 checkoutSCM:
     scm: url
-    url: https://snapshot.debian.org/archive/debian/20240521T144222Z/pool/main/f/fakeroot/fakeroot_${PKG_VERSION}.orig.tar.gz
+    url: "https://snapshot.debian.org/archive/debian/20240521T144222Z/pool/main/f/fakeroot/\
+          fakeroot_${PKG_VERSION}.orig.tar.gz"
     digestSHA256: 5727f16d8903792588efa7a9f8ef8ce71f8756e746b62e45162e7735662e56bb
     stripComponents: 1
 

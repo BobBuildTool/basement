@@ -32,7 +32,9 @@ packageScript: |
     # Create a wrapper scripts that prefer the right executable in /toolchain
     # and (if we are outside of a sandbox) fall back to globally installed
     # versions.
-    for i in addr2line ar as c++ c++filt cpp elfedit g++ gcc gcov gdb gprof ld nm objcopy objdump ranlib readelf size strings strip ; do
+    TOOLS=(addr2line ar as c++ c++filt cpp elfedit g++ gcc gcov gdb)
+    TOOLS+=(gprof ld nm objcopy objdump ranlib readelf size strings strip)
+    for i in  ${TOOLS[@]}; do
         ln -sf /toolchain/bin/$i
         cat >${SANDBOX_AUTOCONF_BUILD}-$i <<EOF
     #!/bin/bash
