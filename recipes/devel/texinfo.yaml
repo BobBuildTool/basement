@@ -15,4 +15,3 @@ buildScript: |
 
 packageScript: |
     autotoolsPackageTgt
-

@@ -22,4 +22,3 @@ buildScript: |
 
 packageScript: |
    installPackageTgt "$1/install/"
-

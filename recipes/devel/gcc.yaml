@@ -137,7 +137,7 @@ multiPackage:
                     STRIP: "${AUTOCONF_TARGET}-strip"
 
                     # Host system definition. Note that we do not touch the build
-                    # system definiton (AUTOCONF_BUILD) because this is a cross
+                    # system definition (AUTOCONF_BUILD) because this is a cross
                     # compiling toolchain.
                     ARCH: "${ARCH}"
                     AUTOCONF_HOST: "${AUTOCONF_TARGET}"
@@ -195,7 +195,7 @@ multiPackage:
             - libs::newlib
 
         multiPackage:
-            # Straigtforward cross compiler. This is a regular cross compiler
+            # Straightforward cross compiler. This is a regular cross compiler
             # built by the native host compiler. As such, it is usually not
             # intended to be used directly but to bootstrap the canadian cross
             # compiler below.

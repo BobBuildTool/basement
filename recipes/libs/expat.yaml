@@ -5,7 +5,8 @@ metaEnvironment:
 
 checkoutSCM:
    scm: url
-   url: ${GITHUB_MIRROR}/libexpat/libexpat/releases/download/R_$(subst,".","_",${PKG_VERSION})/expat-${PKG_VERSION}.tar.gz
+   url: "${GITHUB_MIRROR}/libexpat/libexpat/releases/download/\
+         R_$(subst,'.','_',${PKG_VERSION})/expat-${PKG_VERSION}.tar.gz"
    digestSHA256: a00ae8a6b96b63a3910ddc1100b1a7ef50dc26dceb65ced18ded31ab392f132b
    stripComponents: 1
 
@@ -17,4 +18,3 @@ multiPackage:
         packageScript: autotoolsPackageDev
     tgt:
         packageScript: autotoolsPackageTgt
-

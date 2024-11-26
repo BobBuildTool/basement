@@ -5,7 +5,7 @@ devel/		-- Development utilities, compilers, development environments, libraries
 graphics/   -- X and other graphically related system libraries
 kernel/		-- Operating System Kernels and related modules.
 libs/		-- Libraries to make other programs work.
-multimedia/ -- Codecs and support utilties for audio, images and video
+multimedia/ -- Codecs and support utilities for audio, images and video
 net/		-- Daemons and clients to connect your system to the world.
 perl/		-- Everything about Perl, an interpreted scripting language.
 python/		-- Everything about Python, an interpreted, interactive object oriented language.

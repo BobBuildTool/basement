@@ -3,7 +3,7 @@ inherit: [autotools]
 metaEnvironment:
     PKG_VERSION: "3.8.2"
 
-# parallel make sometimes failes in examples/c/reccalc/...
+# parallel make sometimes fails in examples/c/reccalc/...
 jobServer: False
 privateEnvironment:
     MAKE_JOBS: "1"
@@ -30,4 +30,3 @@ packageScript: |
 
 provideTools:
     bison: usr/bin
-

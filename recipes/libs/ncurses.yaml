@@ -74,4 +74,3 @@ multiPackage:
         packageScript: |
             autotoolsPackageTgt
             rm -f usr/bin/*-config
-

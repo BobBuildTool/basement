@@ -31,4 +31,3 @@ multiPackage:
         packageScript: installPackageDev "$1/install/"
     tgt:
         packageScript: installPackageTgt "$1/install/"
-

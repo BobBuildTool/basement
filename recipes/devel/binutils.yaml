@@ -61,4 +61,3 @@ multiPackage:
                 packageScript: autotoolsPackageDev
             tgt:
                 packageScript: autotoolsPackageTgt
-

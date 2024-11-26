@@ -13,7 +13,7 @@ packageSetup: |
 
             local dir="${1%/*}/.debug" file="${1##*/}"
 
-            # Split off the debug symbols into separete file. Doesn't need to
+            # Split off the debug symbols into separate file. Doesn't need to
             # stay executable...
             mkdir -p "$dir"
             $OBJCOPY --only-keep-debug --compress-debug-sections "$1" "${dir}/${file}"
