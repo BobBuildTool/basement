@@ -7,7 +7,7 @@ depends:
     - libs::ncurses-dev
     - use: []
       depends:
-        - libs::ncurses-tgt
+          - libs::ncurses-tgt
 
 checkoutSCM:
     scm: url

@@ -11,9 +11,9 @@ depends:
 
     - use: []
       depends:
-        - libs::zlib-tgt
-        - libs::openssl-tgt
-        - net::curl-tgt
+          - libs::zlib-tgt
+          - libs::openssl-tgt
+          - net::curl-tgt
 
 checkoutSCM:
     scm: url

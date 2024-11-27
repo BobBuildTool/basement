@@ -31,17 +31,17 @@ depends:
       use: [tools]
       forward: True
       tools:
-        # To cross-compile python3, a working python interpreter is required.
-        # Instead, build the interpreter with the native host toolchain. It's
-        # just used for building glibc and won't be needed otherwise.
-        target-toolchain: host-native-toolchain
+          # To cross-compile python3, a working python interpreter is required.
+          # Instead, build the interpreter with the native host toolchain. It's
+          # just used for building glibc and won't be needed otherwise.
+          target-toolchain: host-native-toolchain
 
     # Cross toolchain for the current architecture -> ARCH is left as is.
     - name: devel::compat::cross-toolchain
       use: [environment, tools]
       forward: True
       environment:
-        AUTOCONF_TARGET: "$(gen-autoconf,bob_isolation)"
+          AUTOCONF_TARGET: "$(gen-autoconf,bob_isolation)"
 
     # Canadian cross toolchain. Built with above cross toolchain for the real
     # $AUTOCONF_TARGET as set in environment above.

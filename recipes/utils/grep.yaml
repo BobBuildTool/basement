@@ -4,7 +4,7 @@ depends:
     - libs::pcre-lib-1-dev
     - use: []
       depends:
-        - libs::pcre-lib-1-tgt
+          - libs::pcre-lib-1-tgt
 
 metaEnvironment:
     PKG_VERSION: "3.11"

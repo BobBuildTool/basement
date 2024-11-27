@@ -27,26 +27,26 @@ buildScript: |
 multiPackage:
     "":
         depends:
-           - libs::expat-dev
-           - libs::gdbm-dev
-           - libs::libffi-dev
-           - libs::ncurses-dev
-           - libs::openssl-dev
-           - libs::readline-dev
-           - libs::zlib-dev
-           - python::python3-setuptools
-           - python::python3-pip
-           - python::wheel
+            - libs::expat-dev
+            - libs::gdbm-dev
+            - libs::libffi-dev
+            - libs::ncurses-dev
+            - libs::openssl-dev
+            - libs::readline-dev
+            - libs::zlib-dev
+            - python::python3-setuptools
+            - python::python3-pip
+            - python::wheel
 
-           - use: []
-             depends:
-              - libs::expat-tgt
-              - libs::gdbm-tgt
-              - libs::libffi-tgt
-              - libs::ncurses-tgt
-              - libs::openssl-tgt
-              - libs::readline-tgt
-              - libs::zlib-tgt
+            - use: []
+              depends:
+                  - libs::expat-tgt
+                  - libs::gdbm-tgt
+                  - libs::libffi-tgt
+                  - libs::ncurses-tgt
+                  - libs::openssl-tgt
+                  - libs::readline-tgt
+                  - libs::zlib-tgt
 
         buildTools: [python3]
         buildVars: [PKG_VERSION]
@@ -114,9 +114,9 @@ multiPackage:
 
     minimal:
         depends:
-           - libs::expat-dev
-           - libs::libffi-dev
-           - libs::zlib-dev
+            - libs::expat-dev
+            - libs::libffi-dev
+            - libs::zlib-dev
 
         buildScript: |
             autotoolsBuild ../src \

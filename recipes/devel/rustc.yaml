@@ -61,7 +61,7 @@ multiPackage:
         depends:
             - name: devel::rustc
               tools:
-                target-toolchain: host-compat-toolchain
+                  target-toolchain: host-compat-toolchain
             - name: devel::rustc-std
               if: !expr >
                 rustc-target("$AUTOCONF_BUILD") !=

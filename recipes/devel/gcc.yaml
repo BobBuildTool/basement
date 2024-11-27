@@ -11,10 +11,10 @@ depends:
 
     - use: []
       depends:
-        - libs::gmp-tgt
-        - libs::mpfr-tgt
-        - libs::mpc-tgt
-        - libs::isl-tgt
+          - libs::gmp-tgt
+          - libs::mpfr-tgt
+          - libs::mpc-tgt
+          - libs::isl-tgt
 
 checkoutSCM:
     scm: url
@@ -159,11 +159,11 @@ multiPackage:
             - name: libs::glibc
               if: "$(eq,${GCC_LIBC},glibc)"
               tools:
-                target-toolchain: cross-target-toolchain
+                  target-toolchain: cross-target-toolchain
             - name: libs::newlib
               if: "$(eq,${GCC_LIBC},newlib)"
               tools:
-                target-toolchain: cross-target-toolchain
+                  target-toolchain: cross-target-toolchain
 
         buildTools: [binutils]
         buildVars: [GCC_LIBC, GCC_ENABLE_LANGUAGES]

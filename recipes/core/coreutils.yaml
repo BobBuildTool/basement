@@ -7,7 +7,7 @@ depends:
     - libs::gmp-dev
     - use: []
       depends:
-        - libs::gmp-tgt
+          - libs::gmp-tgt
 
 checkoutSCM:
     scm: url

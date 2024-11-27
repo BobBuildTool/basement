@@ -7,7 +7,7 @@ depends:
     - libs::mpfr-dev
     - use: []
       depends:
-        - libs::mpfr-tgt
+          - libs::mpfr-tgt
 
 checkoutSCM:
     scm: url

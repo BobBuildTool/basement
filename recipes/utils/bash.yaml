@@ -11,8 +11,8 @@ depends:
 
     - use: []
       depends:
-        - libs::ncurses-tgt
-        - libs::readline-tgt
+          - libs::ncurses-tgt
+          - libs::readline-tgt
 
 checkoutSCM:
     scm: url

@@ -4,7 +4,7 @@ depends:
     - cmake::libholler-dev
     - use: []
       depends:
-        - cmake::libholler-tgt
+          - cmake::libholler-tgt
 
 checkoutSCM:
     scm: import

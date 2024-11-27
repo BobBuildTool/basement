@@ -4,7 +4,7 @@ depends:
     - meson::libholler-dev
     - use: []
       depends:
-        - meson::libholler-tgt
+          - meson::libholler-tgt
 
 checkoutSCM:
     scm: import

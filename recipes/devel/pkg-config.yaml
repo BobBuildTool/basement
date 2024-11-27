@@ -25,7 +25,7 @@ multiPackage:
 
             - use: []
               depends:
-                - libs::glib-tgt
+                  - libs::glib-tgt
 
         buildScript: |
             export GLIB_CFLAGS="-I${BOB_DEP_PATHS[libs::glib-dev]}/usr/include/glib-2.0"

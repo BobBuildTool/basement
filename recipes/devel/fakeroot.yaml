@@ -8,7 +8,7 @@ depends:
 
     - use: []
       depends:
-        - libs::libcap-tgt
+          - libs::libcap-tgt
 
 checkoutSCM:
     scm: url

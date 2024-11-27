@@ -84,8 +84,8 @@ multiPackage:
         depends:
             - use: []
               depends:
-                - libs::libc-bin
-                - libs::libc-l10n
+                  - libs::libc-bin
+                  - libs::libc-l10n
         buildScript: |
             copyFiles /usr/ /usr/share/ \
                 "/usr/share/i18n/***" \
