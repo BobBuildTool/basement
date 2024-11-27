@@ -10,8 +10,8 @@ depends:
 
     - use: []
       depends:
-        - libs::ncurses-tgt
-        - libs::zlib-tgt
+          - libs::ncurses-tgt
+          - libs::zlib-tgt
 
 checkoutSCM:
     scm: url

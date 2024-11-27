@@ -8,7 +8,7 @@ depends:
 
     - use: []
       depends:
-        - libs::openssl-tgt
+          - libs::openssl-tgt
 
 checkoutSCM:
     scm: url

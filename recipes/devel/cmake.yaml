@@ -26,13 +26,13 @@ multiPackage:
             - net::curl-dev
             - use: []
               depends:
-                - libs::expat-tgt
-                - libs::jsoncpp-tgt
-                - libs::libarchive-tgt
-                - libs::libuv-tgt
-                - libs::rhash-tgt
-                - libs::zlib-tgt
-                - net::curl-tgt
+                  - libs::expat-tgt
+                  - libs::jsoncpp-tgt
+                  - libs::libarchive-tgt
+                  - libs::libuv-tgt
+                  - libs::rhash-tgt
+                  - libs::zlib-tgt
+                  - net::curl-tgt
 
         buildScript: |
             cmakeBuild "$1" \

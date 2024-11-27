@@ -5,12 +5,12 @@ metaEnvironment:
 
 depends:
     - environment:
-        BASEMENT_LIBS: static
+          BASEMENT_LIBS: static
       depends:
-        - libs::gmp-dev
-        - libs::mpfr-dev
-        - libs::mpc-dev
-        - libs::compat::isl-dev
+          - libs::gmp-dev
+          - libs::mpfr-dev
+          - libs::mpc-dev
+          - libs::compat::isl-dev
 
 checkoutSCM:
     scm: url

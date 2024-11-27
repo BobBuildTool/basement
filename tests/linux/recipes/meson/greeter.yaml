@@ -22,8 +22,8 @@ packageScript: |
 multiPackage:
     host:
         depends: &deps
-           - meson::libgreet-dev
-           - meson::libgreet-tgt
+            - meson::libgreet-dev
+            - meson::libgreet-tgt
     cross:
         depends:
             - name: devel::cross-toolchain-x86_64-linux-gnu

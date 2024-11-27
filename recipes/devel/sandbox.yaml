@@ -91,8 +91,8 @@ depends:
 
     # native toolchain installed in /toolchain
     - environment:
-        GCC_PREFIX: "/toolchain"
-        BINUTILS_PREFIX: "/toolchain"
+          GCC_PREFIX: "/toolchain"
+          BINUTILS_PREFIX: "/toolchain"
       depends:
-        - devel::binutils
-        - devel::gcc-native
+          - devel::binutils
+          - devel::gcc-native

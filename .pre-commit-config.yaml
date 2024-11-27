@@ -8,18 +8,18 @@ repos:
     - repo: https://github.com/pre-commit/pre-commit-hooks
       rev: v5.0.0
       hooks:
-        - id: check-yaml
-          args: ["--unsafe"]
-          # unsafe is needed to avoid:
-          # "could not determine a constructor for the tag '!expr'"
-        - id: end-of-file-fixer
-        - id: trailing-whitespace
+          - id: check-yaml
+            args: ["--unsafe"]
+            # unsafe is needed to avoid:
+            # "could not determine a constructor for the tag '!expr'"
+          - id: end-of-file-fixer
+          - id: trailing-whitespace
 
     - repo: https://github.com/adrienverge/yamllint.git
       rev: v1.35.1
       hooks:
-        - id: yamllint
+          - id: yamllint
     - repo: https://github.com/codespell-project/codespell
       rev: v2.3.0
       hooks:
-        - id: codespell
+          - id: codespell

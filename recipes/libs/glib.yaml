@@ -10,9 +10,9 @@ depends:
 
     - use: []
       depends:
-        - libs::libffi-tgt
-        - libs::pcre-lib-1-tgt
-        - libs::zlib-tgt
+          - libs::libffi-tgt
+          - libs::pcre-lib-1-tgt
+          - libs::zlib-tgt
 
 checkoutSCM:
     scm: url
