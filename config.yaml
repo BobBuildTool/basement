@@ -5,3 +5,4 @@ plugins:
     - paths
     - vsenv
     - msbuild
+    - config
