@@ -2,12 +2,12 @@ inherit: [autotools, patch]
 
 metaEnvironment:
     PKG_LICENSE: BSD-3-Clause
-    PKG_VERSION: "8.41"
+    PKG_VERSION: "8.45"
 
 checkoutSCM:
     scm: url
     url: ${SOURCEFORGE_MIRROR}/pcre/pcre-${PKG_VERSION}.tar.bz2
-    digestSHA256: e62c7eac5ae7c0e7286db61ff82912e1c0b7a0c13706616e94a7dd729321b530
+    digestSHA256: "4dae6fdcd2bb0bb6c37b5f97c33c2be954da743985369cddac3546e3218bffb8"
     stripComponents: 1
 
 checkoutDeterministic: True
