@@ -1,24 +1,24 @@
-inherit: [meson, patch]
+inherit: [meson, 'python3::build']
 
 metaEnvironment:
     PKG_LICENSE: "LGPL-2.1-or-later"
-    PKG_VERSION: "2.71.0"
+    PKG_VERSION: "2.87.2"
 
 depends:
     - libs::libffi-dev
-    - libs::pcre-lib-1-dev
+    - libs::libpcre2-dev
     - libs::zlib-dev
 
     - use: []
       depends:
           - libs::libffi-tgt
-          - libs::pcre-lib-1-tgt
+          - libs::libpcre2-tgt
           - libs::zlib-tgt
 
 checkoutSCM:
     scm: url
-    url: http://ftp.gnome.org/pub/gnome/sources/glib/2.71/glib-${PKG_VERSION}.tar.xz
-    digestSHA256: "926816526f6e4bba9af726970ff87be7dac0b70d5805050c6207b7bb17ea4fca"
+    url: http://ftp.gnome.org/pub/gnome/sources/glib/2.87/glib-${PKG_VERSION}.tar.xz
+    digestSHA256: "d6eb74a4f4ffc0b56df79ae3a939463b1d92c623f6c167d51aab24e303a851f3"
     stripComponents: 1
 
 buildScript: |
@@ -31,7 +31,10 @@ multiPackage:
     dev:
         packageScript: |
             # make sure glibconfig.h is copied too
-            mesonPackageDev "$1" "/usr/lib/glib-2.0/***"
+            mesonPackageDev "$1" "/usr/lib/glib-2.0/***" \
+                           "/usr/share/" \
+                           "/usr/share/aclocal/***" \
+                           "/usr/bin/***"
         provideDeps: [ "*-dev" ]
     tgt:
         packageScript: mesonPackageLib
