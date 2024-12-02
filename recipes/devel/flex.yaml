@@ -10,7 +10,7 @@ checkoutSCM:
     stripComponents: 1
 
 checkoutDeterministic: True
-checkoutTools: [gettext]
+checkoutTools: [gettext, m4]
 checkoutScript: |
     patchApplySeries $<@flex/*.patch@>
     autoconfReconfigure
