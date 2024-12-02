@@ -2,12 +2,12 @@ inherit: [autotools]
 
 metaEnvironment:
     PKG_LICENSE: "GPL-3.0"
-    PKG_VERSION: "6.1"
+    PKG_VERSION: "7.2"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/texinfo/texinfo-${PKG_VERSION}.tar.xz
-    digestSHA1: "d39c2e35ddb0aff6ebdd323ce53729bd215534fa"
+    digestSHA1: "ce3776715e655400485381b8ae94e34c5632e729"
     stripComponents: 1
 
 buildTools: [host-toolchain]
