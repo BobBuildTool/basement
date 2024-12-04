@@ -1,2 +1,4 @@
+*.bat   -text
+*.png   binary
 .git*   eol=lf export-ignore
 *       eol=lf

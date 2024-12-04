@@ -16,6 +16,30 @@ depends:
           - libs::mpc-tgt
           - libs::isl-tgt
 
+Config:
+    GCC_TARGET_ARCH:
+        help: >
+            Provides the default for the -march= option. The acceptable values
+            depend on the target (AUTOCONF_TARGET).
+    GCC_TARGET_FLOAT_ABI:
+        type: choice
+        help: >
+            Choose between default floating-point implementation. Defaults to "soft".
+        choice:
+            soft:
+                help: Use -msoft-float by default.
+            hard:
+                help: Use -mhard-float by default.
+    GCC_TARGET_FPU:
+        help: >
+            Provide default value for the -mfpu= option.
+    GCC_MULTILIB:
+        help: >
+            Specify what multilibs to build. It is a comma separated list of
+            values, possibly consisting of a single value. The permissible
+            values depend on the target CPU architecture. If unset or empty,
+            multilibs are disabled.
+
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gcc/gcc-${PKG_VERSION}/gcc-${PKG_VERSION}.tar.xz
@@ -164,6 +188,22 @@ multiPackage:
               if: "$(eq,${GCC_LIBC},newlib)"
               tools:
                   target-toolchain: cross-target-toolchain
+
+        Config:
+            GCC_LIBC:
+                type: choice
+                required: True
+                choice:
+                    glibc:
+                    newlib:
+
+            GCC_ENABLE_LANGUAGES:
+                help: >
+                    Control which languages should be supported by gcc. This is
+                    a comma separated list (without whitespace). Defaults to
+                    "c,c++" if unset or empty.
+
+                    See https://gcc.gnu.org/install/configure.html for more detauls.
 
         buildTools: [binutils]
         buildVars: [GCC_LIBC, GCC_ENABLE_LANGUAGES]
