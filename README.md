@@ -5,6 +5,11 @@ other projects. Most importantly it provides pre-made classes to handle common
 build systems and other recurring tasks. Additionally a sandbox and common GCC
 toolchains are ready-to-use.
 
+# Documentation
+
+The documentation how to use the basement project can be found on [Read the
+Docs](https://bob-build-tool.readthedocs.io/projects/basement/en/latest/index.html).
+
 # Prerequisites
 
 * A x86\_64 system with the regular development tools installed
