@@ -65,7 +65,8 @@ checkoutScript: |
 
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET, GCC_TARGET_ABI,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU,
-            GCC_MULTILIB, GCC_EXTRA_OPTIONS, GCC_ENABLE_LIBADA]
+            GCC_MULTILIB, GCC_EXTRA_OPTIONS, GCC_ENABLE_LIBADA,
+            PKG_VERSION]
 buildToolsWeak: [m4]
 buildScript: |
     GCC_SRC=$(pwd)/src
@@ -127,6 +128,11 @@ buildScript: |
         configureGcc "$@"
         makeParallel -C build
         makeSequential -C build install DESTDIR="$PWD/install"
+
+        #add libbacktrace
+        cp build/libbacktrace/.libs/libbacktrace.a \
+            install/${GCC_PREFIX:-usr}/lib/gcc/${AUTOCONF_TARGET:-${AUTOCONF_HOST}}/${PKG_VERSION}/
+        cp $GCC_SRC/libbacktrace/backtrace.h install/${GCC_PREFIX:-usr}/include
     }
 
 packageScript: |
