@@ -31,3 +31,6 @@ packageScript: |
     find -name '*.m4f' -delete
     sed -i -e 's/Generated from __file__/Generated/' \
         usr/share/autoconf/m4sugar/m4sh.m4
+
+provideTools:
+    autoconf: "usr/bin"
