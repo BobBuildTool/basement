@@ -33,6 +33,9 @@ buildSetup: |
             *-linux-*)
                 MESON_SYSTEM=linux
                 ;;
+            *-l4re)
+                MESON_SYSTEM=l4re
+                ;;
             *)
                 echo "Unsupported system: $AUTOCONF_HOST" >&2
                 exit 1
