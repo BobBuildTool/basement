@@ -23,3 +23,6 @@ buildScript: |
 
 packageScript: |
     autotoolsNoarchPackageTgt
+
+provideTools:
+    automake: "usr/bin"
