@@ -21,6 +21,9 @@ depends:
     - name: devel::help2man
       use: [tools]
       forward: True
+    - name: devel::texinfo
+      use: [tools]
+      forward: True
     - name: devel::autotools
       use: [tools]
       forward: True

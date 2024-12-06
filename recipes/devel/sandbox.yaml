@@ -34,6 +34,10 @@ depends:
         use: [tools]
         forward: True
     -
+        name: devel::texinfo
+        use: [tools]
+        forward: True
+    -
         name: devel::autotools
         use: [tools]
         forward: True
@@ -77,7 +81,6 @@ depends:
     - devel::git
     - devel::gperf
     - devel::patch
-    - devel::texinfo
     - editors::ed
     - net::make-ca
     - perl::perl
