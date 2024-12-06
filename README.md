@@ -39,16 +39,19 @@ which use the `basement` layer. They act as smoke tests for this project.
 
 # How to use
 
-First you need to add the `basement` layer to your project. To do so add a
+First you need to add the `basement` layer to your project. To do so, add a
 `layers` entry to `config.yaml`:
 
-    bobMinimumVersion: "0.15"
+    bobMinimumVersion: "0.25"
     layers:
-        - basement
+        - name: basement
+          scm: git
+          url: https://github.com/BobBuildTool/basement.git
+          commit: <git commit id> # optional but highly recommended
 
-and then add this repository as submodule to your project:
+and then fetch the layer:
 
-    $ git submodule add https://github.com/BobBuildTool/basement.git layers/basement
+    $ bob layers update
 
 To use all facilities of the basement project you just need to inherit the `basement::rootrecipe`
 class in your root recipe:
