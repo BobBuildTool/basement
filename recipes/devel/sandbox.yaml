@@ -26,6 +26,10 @@ depends:
         use: [tools]
         forward: True
     -
+        name: devel::m4
+        use: [tools]
+        forward: True
+    -
         name: devel::autotools
         use: [tools]
         forward: True
@@ -68,7 +72,6 @@ depends:
     - devel::fakeroot
     - devel::git
     - devel::gperf
-    - devel::m4
     - devel::patch
     - devel::texinfo
     - editors::ed

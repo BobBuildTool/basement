@@ -16,6 +16,7 @@ checkoutScript: |
     # Prevent that...
     touch man/*.1
 
+buildTools: [m4]
 buildScript: |
     export EMACS="no"
     export HELP2MAN=false

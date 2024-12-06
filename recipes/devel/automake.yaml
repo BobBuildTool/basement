@@ -16,6 +16,7 @@ checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<@automake/*.patch@>
 
+buildTools: [m4]
 buildScript: |
     export PATH="${BOB_DEP_PATHS[devel::autoconf]}/usr/bin:$PATH"
     autotoolsNoarchBuild $1

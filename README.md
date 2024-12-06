@@ -16,7 +16,6 @@ Docs](https://bob-build-tool.readthedocs.io/projects/basement/en/latest/index.ht
   * gcc >= 5.x
   * bash
   * POSIX awk (GNU awk version >= 3.1.5)
-  * GNU m4
   * GNU make >= 3.80
   * perl >= 5.6.1
   * GNU tar

@@ -17,7 +17,7 @@ checkoutSCM:
     stripComponents: 1
 
 buildVars: [AS, CC, CXX, LD, AUTOCONF_HOST, GCC_MULTILIB, GLIBC_ENABLE_KERNEL]
-buildTools: [host-toolchain, target-toolchain, bison]
+buildTools: [host-toolchain, target-toolchain, bison, m4]
 buildToolsWeak: [python3]
 buildScript: |
     EXTRA=

@@ -32,6 +32,9 @@ depends:
           - name: devel::make
             use: [tools]
             forward: True
+          - name: devel::m4
+            use: [tools]
+            forward: True
           - name: devel::autotools
             use: [tools]
             forward: True
