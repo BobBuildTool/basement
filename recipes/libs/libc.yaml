@@ -64,6 +64,13 @@ multiPackage:
                 "libstdc++.so.*" \
                 "!*"
 
+    openmp-tgt:
+        buildScript: |
+            copyFiles /usr/ /usr/lib/ \
+                "!*.py" \
+                "libgomp.so.*" \
+                "!*"
+
     bin:
         depends:
             - use: []
