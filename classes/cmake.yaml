@@ -47,6 +47,9 @@ buildSetup: |
             *-linux-*)
                 CMAKE_SYSTEM_NAME=Linux
                 ;;
+            *-l4re)
+                CMAKE_SYSTEM_NAME=Linux
+                ;;
             *-msys|*-win32)
                 CMAKE_SYSTEM_NAME=Windows
                 ;;
