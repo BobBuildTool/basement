@@ -1,4 +1,4 @@
-inherit: [autotools]
+inherit: [autotools, autoconf]
 
 privateEnvironment:
     APPLY_UPDATE_CONFIG: "no"
@@ -16,6 +16,7 @@ checkoutDeterministic: True
 checkoutScript: |
     updateConfigFile config.guess configfsf.guess
     updateConfigFile config.sub configfsf.sub
+    autoconfReconfigure
 
 buildTools: [host-toolchain]
 buildScript: |
