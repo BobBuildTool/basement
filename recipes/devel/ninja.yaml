@@ -9,13 +9,28 @@ checkoutSCM:
     digestSHA256: d00033813993116a4e14f835df813daee9916b107333d88dbb798a22f8671b1f
     stripComponents: 1
 
-buildVars: [AR, CC, CXX]
+buildVars: [AR, CC, CXX, CFLAGS, CXXFLAGS, LDFLAGS]
 buildToolsWeak: [python3]
-buildScript: |
-    python3 "$1/configure.py" --bootstrap
-    ./ninja
-    mkdir -p install/usr/bin
-    cp ninja install/usr/bin/
+multiPackage:
+    "":
+        depends:
+            - name: devel::ninja-bootstrap
+              use: [tools]
+              tools:
+                  target-toolchain: host-compat-toolchain
+
+        buildToolsWeak: [ninja]
+        buildScript: |
+            python3 "$1/configure.py"
+            ninja
+            mkdir -p install/usr/bin
+            cp ninja install/usr/bin/
+
+    bootstrap:
+        buildScript: |
+            python3 "$1/configure.py" --bootstrap
+            mkdir -p install/usr/bin
+            cp ninja install/usr/bin/
 
 packageScript: |
     installPackageTgt "$1/install/"
