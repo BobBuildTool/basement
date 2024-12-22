@@ -8,6 +8,7 @@ depends:
 
 metaEnvironment:
     PKG_VERSION: "3.11"
+    PKG_LICENSE: "GPL-3.0-or-later"
 
 checkoutSCM:
     scm: url
