@@ -6,7 +6,7 @@ depends:
 
 buildSetup: |
   python3BuildFlit() {
-    rm -rf build && mkdir -p build
+    rm -rf build install && mkdir -p build
     pushd build
     rsync -a --delete $1/ .
     mkdir dist
