@@ -1,7 +1,7 @@
 inherit: [cpackage, install, make, pkg-config]
 
 metaEnvironment:
-    PKG_VERSION: "2.45.1"
+    PKG_VERSION: "2.47.1"
 
 depends:
     - libs::zlib-dev
@@ -18,7 +18,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${KERNEL_MIRROR}/software/scm/git/git-${PKG_VERSION}.tar.xz
-    digestSHA256: "e64d340a8e627ae22cfb8bcc651cca0b497cf1e9fdf523735544ff4a732f12bf"
+    digestSHA256: "f3d8f9bb23ae392374e91cd9d395970dabc5b9c5ee72f39884613cd84a6ed310"
     extract: False
 
 buildTools: [target-toolchain, curl, host-toolchain, gettext]
