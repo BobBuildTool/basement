@@ -1,0 +1,78 @@
+inherit: [cpackage, make]
+
+metaEnvironment:
+    PKG_VERSION: "3.17.2"
+
+depends:
+    - libs::zstd-dev
+    - use: []
+      depends:
+          - libs::zstd-tgt
+
+checkoutSCM:
+    scm: url
+    url: https://github.com/ocaml/dune/archive/refs/tags/${PKG_VERSION}.tar.gz
+    digestSHA256: 1b45e34d1eacf40be569e4d7ad055508a3242637b098327c91f7ce67772a1889
+    stripComponents: 1
+
+multiPackage:
+    configurator:
+        depends:
+            - libs::csexp-dev
+
+        buildTools: [ocaml, dune, ocamlfind]
+        buildSetup: |
+            export OCAMLLIB=${BOB_TOOL_PATHS['ocaml']}/../lib
+        buildScript: |
+            rsync -a --delete $1/ .
+            dune build dune-configurator.install
+            dune install dune-configurator \
+               --prefix "/usr" \
+               --dest $(pwd)/install
+        multiPackage:
+            dev:
+                provideDeps: ['*-dev']
+                packageScript: |
+                    rsync -a --delete $1/install/ .
+            tgt:
+                provideDeps: ['*-tgt']
+                packageScript:
+                    installPackageTgt $1/install
+    stdune:
+        buildTools: [ocaml, dune, ocamlfind]
+        buildSetup: |
+            export OCAMLLIB=${BOB_TOOL_PATHS['ocaml']}/../lib
+        buildScript: |
+            rsync -a --delete $1/ .
+            dune build stdune.install
+            dune install stdune \
+               --prefix "/usr" \
+               --dest $(pwd)/install
+        multiPackage:
+            dev:
+                provideDeps: ['*-dev']
+                packageScript: |
+                    rsync -a --delete $1/install/ .
+            tgt:
+                provideDeps: ['*-tgt']
+                packageScript:
+                    installPackageTgt $1/install
+
+    "":
+        inherit: [strip]
+        buildTools: [ocaml]
+        buildSetup: |
+            export OCAMLLIB=${BOB_TOOL_PATHS['ocaml']}/../lib
+        buildScript: |
+            rsync -a --delete $1/ .
+
+            ./configure \
+                   --toolchains enable
+            makeParallel release V=1
+            make install DESTDIR=$(pwd)/install PREFIX="/usr"
+
+        packageScript: |
+            rsync -a --delete $1/install/ .
+            stripAll .
+        provideTools:
+            dune: "usr/bin"
