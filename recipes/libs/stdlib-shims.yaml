@@ -1,0 +1,25 @@
+inherit: [ocaml, install]
+
+metaEnvironment:
+    PKG_VERSION: "0.3.0"
+
+checkoutSCM:
+    scm: url
+    url: https://github.com/ocaml/stdlib-shims/archive/refs/tags/${PKG_VERSION}.tar.gz
+    digestSHA256: 6d0386313a021146300011549180fcd4e94f7ac3c3bf021ff165f6558608f0c2
+    stripComponents: 1
+
+buildTools: [dune, ocaml, target-toolchain]
+buildScript: |
+    rsync -a --delete $1/ .
+    dune build
+    dune install --prefix "/usr" \
+        --dest $(pwd)/install
+
+multiPackage:
+    dev:
+        packageScript: |
+            rsync -a --delete $1/install/ .
+    tgt:
+        packageScript: |
+            installPackageTgt $1/install
