@@ -1,0 +1,25 @@
+buildTools: [ocaml, ocamlfind]
+buildSetup: |
+    export OCAMLLIB=${BOB_TOOL_PATHS['ocaml']}/../lib
+    export OCAMLFIND_CONF=${BOB_TOOL_PATHS['ocamlfind']}/../local/etc/findlib.conf
+
+    OCAMLPATH=${OCAMLPATH:-""}
+    for i in "${@:2}" ; do
+        for j in $i/usr/lib/* ; do
+            if [[ -d "$j" ]] ; then
+                if [ -e "$j/META" ] ; then
+                    OCAMLPATH+=""
+                    OCAMLPATH+="${OCAMLPATH:+:}$i/usr/lib"
+                fi
+            fi
+        done
+    done
+
+    [ -z "${OCAMLPATH:+true}" ] || export OCAMLPATH
+
+packageSetup: |
+    ocamlFixupInstall() {
+        find . -type f -exec \
+            sed -i "s@#!${BOB_TOOL_PATHS[ocaml]}/ocamlrun@#!/usr/bin/env ocamlrun@g" \
+            {} \;
+    }
