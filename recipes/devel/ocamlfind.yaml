@@ -1,0 +1,54 @@
+inherit: [autotools]
+
+metaEnvironment:
+    PKG_VERSION: "1.9.8"
+
+depends:
+    - libs::zstd-dev
+    - use: []
+      depends:
+          - libs::zstd-tgt
+
+checkoutSCM:
+    scm: url
+    url: https://github.com/ocaml/ocamlfind/archive/refs/tags/findlib-${PKG_VERSION}.tar.gz
+    digestSHA256: d6899935ccabf67f067a9af3f3f88d94e310075d13c648fa03ff498769ce039d
+    stripComponents: 1
+
+buildTools: [ocaml]
+buildSetup: |
+    export OCAMLLIB=${BOB_TOOL_PATHS['ocaml']}/../lib
+    export CAML_LD_LIBRARY_PATH=${BOB_TOOL_PATHS['ocaml']}/../lib
+    mkdir -p .bob/ocaml_wrappers
+    cat > .bob/ocaml_wrappers/ocamlc << EOF
+    #!/bin/bash
+    if [[ "\$@" =~ '-custom' ]]; then
+        exec ${BOB_TOOL_PATHS[ocaml]}/ocamlc \$@
+    else
+        exec ${BOB_TOOL_PATHS[ocaml]}/ocamlc -use-runtime $(which ocamlrun) \$@
+    fi
+    EOF
+    chmod +x .bob/ocaml_wrappers/*
+
+    export PATH=$(pwd)/.bob/ocaml_wrappers:${PATH}
+
+buildScript: |
+    # Note: we can not use the autotools class here as this is no autotools compatible
+    # configure.
+    rsync -a --delete $1/ build
+    pushd build
+    ./configure \
+        -bindir "/usr/bin/" \
+        -sitelib "/usr/lib/" \
+        -mandir "/usr/man/" \
+        -with-relative-paths-at "/" \
+        -no-topfind
+    makeParallel
+    make install DESTDIR=$(pwd)/../install
+    popd
+
+packageScript: |
+    rsync -a --delete $1/install/ .
+
+provideTools:
+    ocamlfind: "usr/bin"
