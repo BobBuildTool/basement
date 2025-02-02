@@ -1,0 +1,26 @@
+inherit: [ "basement::rootrecipe" ]
+
+depends:
+    # Uses clang as library
+    - devel::llvm-libclc-dev
+
+    - name: devel::cross-toolchain-clang-aarch64-linux-gnu
+      use: [environment, tools]
+      forward: true
+
+    # Build some stuff with clang
+    - utils::bash
+    - utils::bc
+    - utils::bzip2
+    - utils::file
+    - utils::findutils
+    - utils::gawk
+    - utils::grep
+    - utils::gzip
+    - utils::rsync
+    - utils::sed
+
+buildScript: |
+    true
+packageScript: |
+    true
