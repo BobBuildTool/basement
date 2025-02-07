@@ -1,21 +1,18 @@
-checkoutSetup: &ref |
+buildTools: [python3]
+buildSetup: &ref |
     export PYTHONNOUSERSITE=1
 
-    if command -v python3 2>&1 >/dev/null; then
-        PYTHONPATH=
-        PYTHON3_DESTLIB="$(python3 -c \
-            "import sysconfig; print(sysconfig.get_config_var('DESTLIB') or '/usr/lib/python3')")"
-        for i in "${!BOB_ALL_PATHS[@]}" ; do
-            for j in "" "lib-dynload" "site-packages" "dist-packages" ; do
-                l="${BOB_ALL_PATHS[$i]}${PYTHON3_DESTLIB}${j:+/$j}"
-                if [[ -d "$l" ]] ; then
-                    PYTHONPATH+="${PYTHONPATH:+:}$l"
-                fi
-            done
+    PYTHONPATH=
+    PYTHON3_DESTLIB="$(python3 -c \
+        "import sysconfig; print(sysconfig.get_config_var('DESTLIB') or '/usr/lib/python3')")"
+    for i in "${!BOB_ALL_PATHS[@]}" ; do
+        for j in "" "lib-dynload" "site-packages" "dist-packages" ; do
+            l="${BOB_ALL_PATHS[$i]}${PYTHON3_DESTLIB}${j:+/$j}"
+            if [[ -d "$l" ]] ; then
+                PYTHONPATH+="${PYTHONPATH:+:}$l"
+            fi
         done
-        export PYTHONPATH
-    fi
+    done
+    export PYTHONPATH
 
-buildTools: [python3]
-buildSetup: *ref
 packageSetup: *ref
