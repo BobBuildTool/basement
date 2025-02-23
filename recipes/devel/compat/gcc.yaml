@@ -25,7 +25,7 @@ checkoutScript: |
         $<<gcc/buildroot-libtool-v2.2.patch>> \
         $<<gcc/0003-fix-canadian-cross-includes.patch>>
 
-buildTools: [host-toolchain]
+buildTools: [host-toolchain, m4]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU]
 buildScript: |

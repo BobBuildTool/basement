@@ -20,7 +20,6 @@ To use the basement layer, the following prerequisites should be fulfilled:
   * gcc >= 5.x
   * bash
   * POSIX awk (GNU awk version >= 3.1.5)
-  * GNU m4
   * perl >= 5.6.1
   * GNU tar
   * gzip

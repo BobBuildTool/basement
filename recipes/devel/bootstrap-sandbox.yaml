@@ -17,6 +17,18 @@ depends:
         use: [tools]
         forward: True
     -
+        name: devel::m4
+        use: [tools]
+        forward: True
+    -
+        name: devel::help2man
+        use: [tools]
+        forward: True
+    -
+        name: devel::texinfo
+        use: [tools]
+        forward: True
+    -
         name: devel::autotools
         use: [tools]
         forward: True
@@ -57,7 +69,6 @@ depends:
     - core::coreutils
     - core::util-linux
     - devel::diffutils
-    - devel::m4
     - devel::patch
     - editors::ed
     - net::make-ca

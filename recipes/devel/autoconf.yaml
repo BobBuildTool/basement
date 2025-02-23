@@ -16,6 +16,7 @@ checkoutScript: |
     # Prevent that...
     touch man/*.1
 
+buildTools: [m4]
 buildScript: |
     export EMACS="no"
     export HELP2MAN=false
@@ -30,3 +31,6 @@ packageScript: |
     find -name '*.m4f' -delete
     sed -i -e 's/Generated from __file__/Generated/' \
         usr/share/autoconf/m4sugar/m4sh.m4
+
+provideTools:
+    autoconf: "usr/bin"
