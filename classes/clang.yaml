@@ -1,0 +1,21 @@
+depends:
+   - name: devel::llvm
+     tools:
+        target-toolchain: host-compat-toolchain
+     use: [tools]
+     if: !expr |
+        "${BASEMENT_HAS_CLANG:-false}" == "true"
+
+buildVars: [BASEMENT_HAS_CLANG, TOOLCHAIN_SYSROOT, CC, CLANG_TARGET]
+buildTools:
+    - target-toolchain
+    - name: clang
+      if: !expr |
+         "${BASEMENT_HAS_CLANG:-false}" == "true"
+buildSetup: |
+    if ${BASEMENT_HAS_CLANG:-false}; then
+       export CLANG_TARGET_TOOLCHAIN=${BOB_TOOL_PATHS[target-toolchain]}
+       export CLANG_GCC_INSTALL_DIR="$($CC -print-search-dirs  | grep  "install:" | cut -d ' ' -f 2)"
+       export CC="clang"
+       export CXX="clang++"
+    fi
