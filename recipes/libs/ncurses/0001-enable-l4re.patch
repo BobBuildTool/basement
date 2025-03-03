@@ -1,0 +1,21 @@
+diff -u a/configure b/configure
+--- a/configure	2025-03-03 16:39:58.707952981 +0100
++++ b/configure	2025-03-03 14:13:55.500512239 +0100
+@@ -6801,7 +6801,7 @@
+ 		fi
+ 		cf_cv_rm_so_locs=yes
+ 		;;
+-	(linux*|gnu*|k*bsd*-gnu)
++	(linux*|gnu*|k*bsd*-gnu|l4re*)
+ 		if test "$DFT_LWR_MODEL" = "shared" && test -n "$LD_RPATH_OPT" ; then
+ 			LOCAL_LDFLAGS="${LD_RPATH_OPT}\$(LOCAL_LIBDIR)"
+ 			LOCAL_LDFLAGS2="$LOCAL_LDFLAGS"
+@@ -10418,7 +10418,7 @@
+ 	cf_xopen_source="-D_SGI_SOURCE"
+ 	cf_XOPEN_SOURCE=
+ 	;;
+-(linux*gnu|linux*gnuabi64|linux*gnuabin32|linux*gnueabi|linux*gnueabihf|linux*gnux32|uclinux*|gnu*|mint*|k*bsd*-gnu|cygwin|msys|mingw*|linux*uclibc)
++(linux*gnu|linux*gnuabi64|linux*gnuabin32|linux*gnueabi|linux*gnueabihf|linux*gnux32|uclinux*|gnu*|mint*|k*bsd*-gnu|cygwin|msys|mingw*|linux*uclibc|l4re*)
+ 
+ cf_gnu_xopen_source=$cf_XOPEN_SOURCE
+ 
