@@ -15,3 +15,6 @@ buildScript: |
 
 packageScript: |
     autotoolsPackageTgt
+
+provideTools:
+    texinfo: usr/bin

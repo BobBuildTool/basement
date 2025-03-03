@@ -1,4 +1,4 @@
-inherit: [autotools]
+inherit: [autotools, patch]
 
 metaEnvironment:
     PKG_VERSION: "6.5"
@@ -8,6 +8,10 @@ checkoutSCM:
     url: ${GNU_MIRROR}/ncurses/ncurses-${PKG_VERSION}.tar.gz
     digestSHA256: "136d91bc269a9a5785e5f9e980bc76ab57428f604ce3e5a5a90cebc767971cc6"
     stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<@ncurses/*.patch@>
 
 buildTools: [host-toolchain]
 buildScript: |
