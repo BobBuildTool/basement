@@ -1,0 +1,33 @@
+inherit: [autotools]
+
+metaEnvironment:
+    PKG_VERSION: "2.3.0"
+
+checkoutSCM:
+    scm: git
+    url: git@gitlab.lab.dd.secunet.de:hubert/opam.git
+    tag: ${PKG_VERSION}
+    commit: e13109411952d4f723a165c2a24b8c03c4945041
+
+buildTools: [ocaml]
+buildScript: |
+   rsync -a --delete $1/ .
+   ./configure \
+       ${AUTOCONF_BUILD:+--build=${AUTOCONF_BUILD}} \
+       ${AUTOCONF_HOST:+--host=${AUTOCONF_HOST}} \
+       ${AUTOCONF_TARGET:+--target=${AUTOCONF_TARGET}} \
+       --prefix="/usr" \
+       --sysconfdir="/etc" \
+       --localstatedir="/var" \
+       --libdir=/usr/lib \
+       --without-mccs \
+       --without-dune \
+       --disable-checks \
+   makeParallel
+   make install DESTDIR=$(pwd)/install
+
+packageScript:
+    autotoolsPackageBin
+
+provideTools:
+    opam: "usr/bin"

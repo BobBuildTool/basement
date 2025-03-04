@@ -1,0 +1,25 @@
+inherit: [ocaml, install]
+
+metaEnvironment:
+    PKG_VERSION: "1.1.0"
+
+checkoutSCM:
+    scm: url
+    url: https://github.com/mirage/bigarray-compat/archive/refs/tags/v${PKG_VERSION}.tar.gz
+    digestSHA256: cf09354986d1ab7d506949f58e73dd72be8aedb241c1593381c18e92a70c0bb1
+    stripComponents: 1
+
+buildTools: [dune, ocaml, target-toolchain]
+buildScript: |
+    rsync -a --delete $1/ .
+    dune build
+    dune install --prefix "/usr" \
+        --dest $(pwd)/install
+
+multiPackage:
+    dev:
+        packageScript: |
+            rsync -a --delete $1/install/ .
+    tgt:
+        packageScript: |
+            installPackageTgt $1/install

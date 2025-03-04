@@ -1,0 +1,41 @@
+inherit: [make, cpackage, ocaml]
+
+metaEnvironment:
+    PKG_VERSION: "0.23.0"
+
+depends:
+    - name: devel::dune
+      tools:
+          target-toolchain: host-compat-toolchain
+      use: [tools]
+      forward: True
+    - devel::dune-configurator-dev
+    - devel::dune-stdune-dev
+    - libs::bigarray-compat-dev
+    - libs::ocaml-integers-dev
+
+checkoutSCM:
+    scm: url
+    url: https://github.com/yallop/ocaml-ctypes/archive/refs/tags/${PKG_VERSION}.tar.gz
+    digestSHA256: cae47d815b27dd4c824a007f1145856044542fe2588d23a443ef4eefec360bf1
+    stripComponents: 1
+
+buildTools: [dune, ocaml, target-toolchain]
+buildSetup: |
+   export OCAMLLIB=${BOB_TOOL_PATHS['ocaml']}/../lib
+buildScript: |
+    rsync -a --delete $1/ .
+    dune build ctypes.install
+    dune install ctypes \
+            --prefix "/usr" \
+            --dest $(pwd)/install
+
+multiPackage:
+    dev:
+        provideDeps: ['*-dev']
+        packageScript: |
+            rsync -a --delete $1/install/ .
+    tgt:
+        provideDeps: ['*-tgt']
+        packageScript: |
+            installPackageTgt $1/install

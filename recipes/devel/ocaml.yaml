@@ -1,0 +1,44 @@
+inherit: [autotools, autoconf]
+
+metaEnvironment:
+    PKG_VERSION: "5.3.0"
+
+checkoutSCM:
+    scm: url
+    url: https://github.com/ocaml/ocaml/archive/refs/tags/${PKG_VERSION}.tar.gz
+    digestSHA256: eb9eab2f21758d3cfb1e78c7f83f0b4dd6302824316aba4abee047a5a4f85029
+    stripComponents: 1
+
+buildTools: [m4, autotools]
+buildVars: [STRIP]
+buildScript: |
+    rsync -a --delete $1/ .
+    mkdir -p .bob
+    pushd .bob
+    ln -s $(which ${STRIP}) strip
+    popd
+    export PATH=${PATH}:$(pwd)/.bob
+
+    ./configure \
+            ${AUTOCONF_BUILD:+--build=${AUTOCONF_BUILD}} \
+            ${AUTOCONF_HOST:+--host=${AUTOCONF_HOST}} \
+            ${AUTOCONF_TARGET:+--target=${AUTOCONF_TARGET}} \
+            --prefix="/usr" \
+            --sysconfdir="/etc" \
+            --localstatedir="/var" \
+            --libdir=/usr/lib \
+            --enable-shared --enable-static \
+            --enable-unix-lib \
+            --without-zstd
+
+    makeParallel V=1
+    make install DESTDIR=$(pwd)/install
+
+packageScript: |
+    rsync -a --delete $1/install/ .
+    pushd usr/bin
+    find . -type f -exec sed -i 's@#!/usr/bin/ocamlrun@#!/usr/bin/env ocamlrun@g' {} \;
+    popd
+
+provideTools:
+    ocaml: "usr/bin"
