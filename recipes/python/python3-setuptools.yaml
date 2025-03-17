@@ -1,10 +1,10 @@
 metaEnvironment:
-    PKG_VERSION: "75.1.0"
+    PKG_VERSION: "75.3.2"
 
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/pypa/setuptools/archive/v${PKG_VERSION}.tar.gz
-    digestSHA256: 514dc60688d3118c9883a3dd54a38b28128ea912c01ea325d6e204a93da3b524
+    digestSHA256: 22463710a3393a745176726645fd7ec87dc60504f5ed38b6fcaac654384e81dd
     extract: False
 
 buildTools: [python3]
