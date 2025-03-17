@@ -1,0 +1,16 @@
+Adding the LIBDIR unconditionally breaks Bob cross compilation. It should even
+be unnecessary because the Python shared library should be in the standard
+linker search path anyway.
+
+--- setuptools-75.3.2/setuptools/_distutils/command/build_ext.py	2025-03-12 00:53:07.000000000 +0100
++++ setuptools-75.3.2/setuptools/_distutils/command/build_ext.py.new	2025-03-17 17:19:42.666297349 +0100
+@@ -159,9 +159,6 @@
+             installed_dir = sysconfig.get_config_var('base')
+             lib_dir = sysconfig.get_config_var('platlibdir')
+             yield os.path.join(installed_dir, lib_dir)
+-        else:
+-            # building third party extensions
+-            yield sysconfig.get_config_var('LIBDIR')
+ 
+     def finalize_options(self) -> None:  # noqa: C901
+         from distutils import sysconfig
