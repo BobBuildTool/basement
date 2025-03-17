@@ -114,19 +114,21 @@ ALL_SCHEMA = {
 
 class VarValidator:
     def validate(self, data):
-        try:
-            COMMON_SCHEMA.validate(data)
-            ALL_SCHEMA[data.get('type', "str")].validate(data)
-            return True
-        except schema.SchemaError:
-            return False
+        COMMON_SCHEMA.validate(data)
+        ALL_SCHEMA[data.get('type', "str")].validate(data)
+        return data
 
 SCHEMA = schema.Schema({ str : VarValidator() })
 
 class ConfigProperty(PluginProperty):
     @staticmethod
     def validate(data):
-        return SCHEMA.validate(data)
+        try:
+            SCHEMA.validate(data)
+            return True
+        except schema.SchemaError as e:
+            print("Config schema error:", e)
+            return False
 
     def inherit(self, cls):
         if self.present:
