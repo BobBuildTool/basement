@@ -1,0 +1,23 @@
+inherit: [python3-flit_core]
+
+metaEnvironment:
+    PKG_VERSION: "1.2.2"
+
+checkoutSCM:
+    scm: url
+    url: ${GITHUB_MIRROR}/pypa/build/archive/refs/tags/${PKG_VERSION}.tar.gz
+    digestSHA256: 6708ae4ee3ed0ca2f5efa4943627e5e6b0db4793ff3baba240e313a447007268
+    stripComponents: 1
+
+depends:
+    - python::packaging
+    - python::pyproject-hooks
+    - python::wheel
+
+buildScript: |
+    python3BuildFlit $1
+
+packageScript: |
+    python3PackageTgt
+
+provideDeps: ['python::*']
