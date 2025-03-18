@@ -1,4 +1,4 @@
-inherit: [python3-usr]
+inherit: [python3]
 
 buildSetup: |
     # add current pip install directory to PYTHONPATH for instant
