@@ -1,4 +1,4 @@
-inherit: [python3-pkg]
+inherit: ["python3::setuptools"]
 
 metaEnvironment:
     PKG_VERSION: "1.5.1"

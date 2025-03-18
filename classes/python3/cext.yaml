@@ -1,6 +1,7 @@
-# Class for building python packages with cpython extension
+# Mixin class for building python packages with cpython extension.
+# Needs to be combined with some of the other python3::* classes.
 
-inherit: [python3-pkg, cpackage, strip]
+inherit: ["basement::bits::python3-pkg", cpackage, strip]
 
 depends:
     - python::python3-dev # We need the cpython headers
@@ -14,19 +15,9 @@ buildSetup: |
             "${BOB_DEP_PATHS[python::python3-dev]}"/usr/lib/python3.*/_sysconfigdata_*.py .py)
     fi
 
-    python3CExtInstallPip()
-    {
-        python3InstallPip "$@"
-    }
-
-    python3CExtBuildSetuptools()
-    {
-        python3BuildSetuptools "$@"
-    }
-
 packageSetup: |
     python3CExtPackageTgt()
     {
-        python3PackageTgt
+        python3PackageTgt "$@"
         stripAll .
     }

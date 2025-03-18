@@ -1,0 +1,16 @@
+inherit: ["basement::bits::python3-pkg"]
+
+buildSetup: |
+    # $1: source path
+    python3BuildSetuptools()
+    {
+        rm -rf build install
+        mkdir -p build install/usr/lib
+        rsync -aH "$1/" build/
+        pushd build
+        python3 setup.py install \
+            --root "$PWD/../install" \
+            --prefix usr
+        popd
+        python3FixupScripts install
+    }
