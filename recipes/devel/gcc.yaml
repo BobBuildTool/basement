@@ -52,7 +52,7 @@ checkoutScript: |
         $<<gcc/0001-squash-multilib-libdir-suffix.patch>> \
         $<<gcc/0003-Remove-crypt-and-crypt_r-interceptors.patch>>
 
-buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
+buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET, GCC_TARGET_ABI,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU,
             GCC_MULTILIB]
 buildTools: [m4]
@@ -69,6 +69,7 @@ buildScript: |
                 --host=${AUTOCONF_HOST} \
                 --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST}} \
                 --prefix=/usr \
+                ${GCC_TARGET_ABI:+--with-abi=$GCC_TARGET_ABI} \
                 ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
                 ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
                 ${GCC_TARGET_FLOAT_ABI:+--with-float=$GCC_TARGET_FLOAT_ABI} \
