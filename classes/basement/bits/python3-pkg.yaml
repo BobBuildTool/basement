@@ -1,4 +1,4 @@
-inherit: [python3-usr]
+inherit: [python3]
 
 buildSetup: |
     # add current pip install directory to PYTHONPATH for instant
@@ -16,32 +16,6 @@ buildSetup: |
         for i in $(find "$1/usr/bin" -type f -perm /111 || true) ; do
             sed -i '1 s/^#!.*python3.*$/#!\/usr\/bin\/env python3/' $i
         done
-    }
-
-    python3InstallPip()
-    {
-        # force lib instead of Lib for MSYS
-        mkdir -p "${BOB_CWD}/install/usr/lib"
-        python3 -m pip install -q "$@" \
-            --root "${BOB_CWD}/install" \
-            --prefix usr \
-            --disable-pip-version-check \
-            --no-warn-script-location \
-            --ignore-installed
-    }
-
-    # $1: source path
-    python3BuildSetuptools()
-    {
-        rm -rf build install
-        mkdir -p build install/usr/lib
-        rsync -aH "$1/" build/
-        pushd build
-        python3 setup.py install \
-            --root "$PWD/../install" \
-            --prefix usr
-        popd
-        python3FixupScripts install
     }
 
 packageSetup: |

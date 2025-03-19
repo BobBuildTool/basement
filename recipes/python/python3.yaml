@@ -1,7 +1,7 @@
 inherit: [autotools, autoconf, make, patch]
 
 metaEnvironment:
-    PKG_VERSION: "3.11.8"
+    PKG_VERSION: "3.13.2"
 
 privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"
@@ -9,7 +9,7 @@ privateEnvironment:
 checkoutSCM:
     scm: url
     url: https://www.python.org/ftp/python/${PKG_VERSION}/Python-${PKG_VERSION}.tar.xz
-    digestSHA256: "9e06008c8901924395bc1da303eac567a729ae012baa182ab39269f650383bb3"
+    digestSHA256: "d984bcc57cd67caab26f7def42e523b1c015bbc5dc07836cf4f0b63fa159eb56"
     stripComponents: 1
 
 checkoutDeterministic: True

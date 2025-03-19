@@ -1,4 +1,4 @@
-inherit: [cpackage, install, python3-usr]
+inherit: [cpackage, install, python3]
 
 buildToolsWeak: [meson, ninja]
 buildVars: [CC, CXX, AR, STRIP, NM]

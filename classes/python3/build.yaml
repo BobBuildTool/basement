@@ -1,0 +1,15 @@
+inherit: ["basement::bits::python3-pkg"]
+
+depends:
+    - python::build
+    - python::installer
+
+buildSetup: |
+    python3Build () {
+        rm -rf build install && mkdir -p build install
+        pushd build
+        rsync -a --delete $1/ .
+        python3 -m build -n .
+        python3 -m installer dist/*.whl --prefix ../install/usr/
+        popd
+    }

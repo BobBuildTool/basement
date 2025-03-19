@@ -1,0 +1,16 @@
+inherit: ["python3::flit"]
+
+metaEnvironment:
+    PKG_VERSION: "1.1.0"
+
+checkoutSCM:
+    scm: url
+    url: https://files.pythonhosted.org/packages/source/p/pyproject_hooks/pyproject_hooks-${PKG_VERSION}.tar.gz
+    digestSHA256: 4b37730834edbd6bd37f26ece6b44802fb1c1ee2ece0e54ddff8bfc06db86965
+    stripComponents: 1
+
+buildScript: |
+    python3BuildFlit $1
+
+packageScript: |
+    python3PackageTgt

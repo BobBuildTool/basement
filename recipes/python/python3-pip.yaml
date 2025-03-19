@@ -1,7 +1,7 @@
-inherit: [ python3-pkg ]
+inherit: [ "python3::build" ]
 
 metaEnvironment:
-    PKG_VERSION: "23.0.1"
+    PKG_VERSION: "25.0.1"
 
 depends:
     - python::python3-setuptools
@@ -9,11 +9,11 @@ depends:
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/pypa/pip/archive/${PKG_VERSION}.tar.gz
-    digestSHA256: 8544443b6810cf1e41306f44218449524d579f4f801b6b16e46f7cabe64de155
+    digestSHA256: 334371888f0c679c04e819ddc234562feaea81331658a76842b62dc9dc83a832
     stripComponents: 1
 
 buildScript: |
-    python3BuildSetuptools "$1"
+    python3Build "$1"
 
 packageScript: |
     python3PackageTgt

@@ -1,0 +1,18 @@
+inherit: ["python3::flit"]
+
+metaEnvironment:
+    PKG_VERSION: "24.1"
+
+checkoutSCM:
+    scm: url
+    url: ${GITHUB_MIRROR}/pypa/packaging/archive/refs/tags/${PKG_VERSION}.tar.gz
+    digestSHA256: 7b31090ae4ddd6c48a5ed10073a880e6e2612ce8ac2f81e34f42aaabefd1b81b
+    stripComponents: 1
+
+buildScript: |
+    python3BuildFlit $1
+
+packageScript: |
+    python3PackageTgt
+
+provideDeps: ['python::*']

@@ -1,4 +1,4 @@
-inherit: [python3-flit_core]
+inherit: ["python3::flit"]
 
 metaEnvironment:
     PKG_VERSION: "0.44.0"
