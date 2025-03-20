@@ -1,4 +1,4 @@
-inherit: [cpackage, install]
+inherit: [cpackage, install, patch]
 
 metaEnvironment:
     PKG_VERSION: "1.11.1.g95dee.kitware.jobserver-1"
@@ -8,6 +8,10 @@ checkoutSCM:
     url: ${GITHUB_MIRROR}/Kitware/ninja/archive/v${PKG_VERSION}.tar.gz
     digestSHA256: 7ba84551f5b315b4270dc7c51adef5dff83a2154a3665a6c9744245c122dd0db
     stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<@ninja/*.patch@>
 
 buildVars: [AR, CC, CXX, CFLAGS, CXXFLAGS, LDFLAGS]
 buildToolsWeak: [python3]
