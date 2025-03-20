@@ -1,12 +1,12 @@
 inherit: [cpackage, install]
 
 metaEnvironment:
-    PKG_VERSION: "1.10.0.gfb670.kitware.jobserver-1"
+    PKG_VERSION: "1.11.1.g95dee.kitware.jobserver-1"
 
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/Kitware/ninja/archive/v${PKG_VERSION}.tar.gz
-    digestSHA256: d00033813993116a4e14f835df813daee9916b107333d88dbb798a22f8671b1f
+    digestSHA256: 7ba84551f5b315b4270dc7c51adef5dff83a2154a3665a6c9744245c122dd0db
     stripComponents: 1
 
 buildVars: [AR, CC, CXX, CFLAGS, CXXFLAGS, LDFLAGS]
