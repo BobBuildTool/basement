@@ -1,0 +1,35 @@
+Description: Fix shebang generation
+ Upstream adds the absolute path of the current Python interpreter into the
+ script. This obviously breaks the relocation of the package result.
+Author: Jan Klötzke <jan@kloetzke.net>
+Origin: vendor
+Last-Update: 2025-03-20
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+Index: b/src/installer/scripts.py
+===================================================================
+--- a/src/installer/scripts.py	2025-03-20 22:09:39.373718884 +0100
++++ b/src/installer/scripts.py	2025-03-20 22:16:01.505540978 +0100
+@@ -58,21 +58,7 @@
+ 
+     https://bitbucket.org/pypa/distlib/src/58cd5c6/distlib/scripts.py#lines-124
+     """
+-    executable_bytes = executable.encode("utf-8")
+-    if forlauncher:  # The launcher can just use the command as-is.
+-        return b"#!" + executable_bytes
+-    if _is_executable_simple(executable_bytes):
+-        return b"#!" + executable_bytes
+-
+-    # Shebang support for an executable with a space in it is under-specified
+-    # and platform-dependent, so we use a clever hack to generate a script to
+-    # run in ``/bin/sh`` that should work on all reasonably modern platforms.
+-    # Read the following message to understand how the hack works:
+-    # https://github.com/pradyunsg/installer/pull/4#issuecomment-623668717
+-
+-    quoted = shlex.quote(executable).encode("utf-8")
+-    # I don't understand a lick what this is trying to do.
+-    return b"#!/bin/sh\n'''exec' " + quoted + b' "$0" "$@"\n' + b"' '''"
++    return b"#!/usr/bin/env python3"
+ 
+ 
+ class InvalidScript(ValueError):
