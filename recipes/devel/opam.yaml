@@ -1,0 +1,28 @@
+inherit: [autotools]
+
+metaEnvironment:
+    PKG_VERSION: "2.3.0"
+
+checkoutSCM:
+    scm: url
+    url: ${GITHUB_MIRROR}/ocaml/opam/archive/refs/tags/${PKG_VERSION}.tar.gz
+    digestSHA256: 7787c50c6caf1568b8a1e1fa79fd2c8107f633316f29ba94797cba831c75c4b4
+    stripComponents: 1
+
+buildTools: [ocaml]
+buildScript: |
+    # Note: the configure script is broken - it generates the makefiles in the
+    # directory of configure not in cwd. But the autotools-class expects the makefiles
+    # to be in build. rsync the sources into 'build' dir as workaround
+    mkdir build
+    rsync -a $1/ build/
+    autotoolsBuild $(pwd)/build \
+        --without-mccs \
+        --without-dune \
+        --disable-checks \
+
+packageScript:
+    autotoolsPackageBin
+
+provideTools:
+    opam: "usr/bin"

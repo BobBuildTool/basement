@@ -49,6 +49,14 @@ Perl
 
 .. TODO
 
+Ocaml / opam / dune
+-------------------
+
+Ocaml is available for building ocaml host tools only. ATM there is no cross
+compiling support.
+
+See `tests/linux/recipes/ocaml/hello.yaml` for a hello world example using dune.
+
 Rust
 ----
 

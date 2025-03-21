@@ -1,0 +1,39 @@
+inherit: [autotools]
+
+metaEnvironment:
+    PKG_VERSION: "5.3.0"
+
+checkoutSCM:
+    scm: url
+    url: https://github.com/ocaml/ocaml/archive/refs/tags/${PKG_VERSION}.tar.gz
+    digestSHA256: eb9eab2f21758d3cfb1e78c7f83f0b4dd6302824316aba4abee047a5a4f85029
+    stripComponents: 1
+
+buildTools: [m4]
+buildVars: [STRIP]
+buildScript: |
+    # Note: the configure script is broken - it generates the makefiles in the
+    # directory of configure not in cwd. But the autotools-class expects the makefiles
+    # to be in build. rsync the sources into 'build' dir as workaround
+    mkdir build
+    rsync -a $1/ build/
+
+    # The makefile expects 'strip' in the path...
+    mkdir -p .bob
+    pushd .bob
+    ln -s $(which ${STRIP}) strip
+    popd
+    export PATH=${PATH}:$(pwd)/.bob
+
+    autotoolsBuild $(pwd)/build
+
+packageScript: |
+    rsync -a --delete $1/install/ .
+    # replace the hard coded ocamrun path to make ocaml relocatable.
+    pushd usr/bin
+    find . -type f -exec sed -i 's@#!/usr/bin/ocamlrun@#!/usr/bin/env ocamlrun@g' {} \;
+    popd
+    stripAll .
+
+provideTools:
+    ocaml: "usr/bin"

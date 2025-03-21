@@ -1,0 +1,46 @@
+inherit: ['basement::rootrecipe', ocaml]
+
+depends:
+    - name: devel::ocaml
+      use: [tools]
+      forward: True
+
+    - name: devel::ocamlfind
+      use: [tools]
+      forward: True
+
+    - name: devel::dune
+      use: [tools]
+      forward: True
+
+    - libs::ocaml-integers-dev
+
+buildTools: [dune, target-toolchain]
+buildScript: |
+    dune init proj hello
+    cd hello
+    # edit the hello world by adding a simple print using the integer library
+
+    cat > bin/dune << 'EOF'
+    (executable
+     (public_name hello)
+     (name main)
+     (libraries hello integers))
+    EOF
+
+    cat >> bin/main.ml << 'EOF'
+    let () =
+      print_endline Signed.Int.(to_hexstring (of_string "42"))
+    EOF
+
+    dune build
+packageScript: |
+    cp $1/hello/_build/install/default/bin/hello .
+
+    ./hello > output.txt
+
+    cat > output.sha1 << EOF
+    ebc351b83427d2bf6702f96bd6c63b4cb99bb8c2  output.txt
+    EOF
+
+    sha1sum -c output.sha1
