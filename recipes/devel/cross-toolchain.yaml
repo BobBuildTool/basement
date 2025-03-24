@@ -80,6 +80,13 @@ multiPackage:
             GCC_LIBC: "glibc"
             GCC_MULTILIB: "m32,m64"
 
+    x86_64-linux-gnu-ada:
+        environment:
+            AUTOCONF_TARGET: "x86_64-cross-linux-gnu"
+            ARCH: "x86_64"
+            GCC_LIBC: "glibc"
+            GCC_ENABLE_LANGUAGES: "c,c++,ada"
+
     # ARMv7 Linux CortexA toolchain with hard floating point
     arm-linux-gnueabihf:
         environment:
