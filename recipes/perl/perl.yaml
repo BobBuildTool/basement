@@ -36,13 +36,15 @@ buildScript: |
     mkdir -p build install
     cd build
 
+    SYSROOT=$(${CROSS_COMPILE:-}gcc --print-sysroot)
+
     # perl-cross needs a relative path :(
     $(realpath --relative-to=. $1)/perl/configure \
-        --target=${AUTOCONF_HOST} \
-        --target-tools-prefix=${CROSS_COMPILE} \
+        ${AUTOCONF_HOST:+--target=${AUTOCONF_HOST}} \
+        ${CROSS_COMPILE:+--target-tools-prefix=${CROSS_COMPILE}} \
         --prefix=/usr \
-        --sysroot=${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT \
-        -Dld="${CROSS_COMPILE}gcc" \
+        ${SYSROOT:+--sysroot=${SYSROOT}} \
+        -Dld="${CROSS_COMPILE:-}gcc" \
         -Dccflags="$CFLAGS" \
         -Dldflags="$LDFLAGS -lm" \
         -Dmydomain="" \
