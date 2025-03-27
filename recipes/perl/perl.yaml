@@ -1,4 +1,4 @@
-inherit: [make, strip, "basement::update-config"]
+inherit: [make, strip, "basement::update-config", install]
 
 metaEnvironment:
     PKG_VERSION: "5.40.2"
@@ -6,7 +6,6 @@ metaEnvironment:
 privateEnvironment:
     APPLY_UPDATE_CONFIG: "no"
     PERL_CROSS_VERSION: "1.6.2"
-    PERL_ARCH: "${ARCH}-linux"
 
 checkoutSCM:
     -
@@ -52,19 +51,28 @@ buildScript: |
         -Dmyuname="Buildroot 1.2.3" \
         -Dosname=linux \
         -Dosvers=4.1.0 \
-        -Dperladmin=root
+        -Dperladmin=root \
+        -Duserelocatableinc \
 
     makeParallel all
     make DESTDIR=$PWD/../install install.perl
 
-packageVars: [PERL_ARCH, PKG_VERSION]
+packageVars: [PKG_VERSION]
 packageScript: |
     cp -a $1/install/* .
 
-    rm -rf usr/lib/perl5/${PKG_VERSION}/pod
-    rm -rf usr/lib/perl5/${PKG_VERSION}/${PERL_ARCH}/CORE
     find usr/lib/perl5/ -name 'extralibs.ld' -print0 | xargs -0 rm -f
     find usr/lib/perl5/ -name '*.bs' -print0 | xargs -0 rm -f
     find usr/lib/perl5/ -name '.packlist' -print0 | xargs -0 rm -f
 
+    # remove absolute sysroot argument from Config_heavy.pl. This would be used to compile
+    # perl modules.
+    find usr/lib/perl5/${PKG_VERSION} -name Config_heavy.pl \
+        -exec sed -i 's/--sysroot=[^\ ]* //g' {} \;
+
     stripAll .
+    installFixShebang
+
+provideTools:
+    perl:
+        path: "usr/bin"
