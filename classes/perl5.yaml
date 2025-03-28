@@ -1,0 +1,11 @@
+buildTools: [perl]
+buildSetup: &ref |
+    PERL5LIB=
+    for i in "${!BOB_ALL_PATHS[@]}" ; do
+        if [[ -d ${BOB_ALL_PATHS[$i]}/usr/lib/perl5/site_perl ]]; then
+            PERL5LIB+="${PERL5LIB:+:}${BOB_ALL_PATHS[$i]}/usr/lib/perl5/site_perl"
+        fi
+    done
+    export PERL5LIB
+
+packageSetup: *ref
