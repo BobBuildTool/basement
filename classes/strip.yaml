@@ -8,7 +8,7 @@ packageSetup: |
         fi
 
         local type="$(file -b "$1")"
-        if [[ $type == ELF*not\ stripped ]] ; then
+        if [[ $type == *ELF*not\ stripped ]] ; then
             echo "Stripping ${1} ..."
 
             local dir="${1%/*}/.debug" file="${1##*/}"
