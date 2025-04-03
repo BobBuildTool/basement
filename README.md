@@ -86,6 +86,8 @@ as you like.
 * `devel::cross-toolchain-arm-none-eabi`: ARMv7 bare metal toolchain with
   newlib libc.
 * `devel::cross-toolchain-x86_64-linux-gnu`: x86_64 toolchain for Linux with glibc.
+* `devel::cross-toolchain-riscv64-linux-gnu`: RISC-V toolchain targeting the GC
+  profile.
 
 To use a cross compiling toolchain include it where needed via:
 
