@@ -41,7 +41,7 @@ which use the `basement` layer. They act as smoke tests for this project.
 First you need to add the `basement` layer to your project. To do so, add a
 `layers` entry to `config.yaml`:
 
-    bobMinimumVersion: "0.25"
+    bobMinimumVersion: "1.0"
     layers:
         - name: basement
           scm: git
