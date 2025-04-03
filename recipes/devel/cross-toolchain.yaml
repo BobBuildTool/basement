@@ -182,3 +182,12 @@ multiPackage:
             ARCH: "arm64"
             GCC_TARGET_ARCH: "armv8-a"
             GCC_LIBC: "newlib"
+
+    # RISC-V 64 bit, standard, general-purpose ISA
+    riscv64-linux-gnu:
+        environment:
+            AUTOCONF_TARGET: "riscv64-linux-gnu"
+            ARCH: "riscv"
+            GCC_TARGET_ARCH: "rv64gc"
+            GCC_TARGET_ABI: "lp64d"
+            GCC_LIBC: "glibc"

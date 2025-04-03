@@ -55,6 +55,14 @@ buildSetup: |
                 MESON_CPU_FAMILY=x86
                 : ${MESON_CPU=i686}
                 ;;
+            riscv32-*)
+                MESON_CPU_FAMILY=riscv32
+                : ${MESON_CPU=rv32gc}
+                ;;
+            riscv64-*)
+                MESON_CPU_FAMILY=riscv64
+                : ${MESON_CPU=rv64gc}
+                ;;
             x86_64-*)
                 MESON_CPU_FAMILY=x86_64
                 : ${MESON_CPU=x86_64}
