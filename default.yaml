@@ -50,6 +50,7 @@ environment:
 
 archiveAppend:
     backend: http
+    name: ci.bobbuildtool.dev
     url: http://ci.bobbuildtool.dev/artifacts/
     flags: [download]
 
