@@ -62,10 +62,13 @@ provideTools:
 
 provideVars:
     # Set default compiler flags
-    CPPFLAGS:   "-Wdate-time"
-    CFLAGS:     "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
-    CXXFLAGS:   "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
-    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
+    CPPFLAGS: "-Wdate-time"
+    CFLAGS: &cflags >-
+        -O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe
+        ${CROSS_TOOLCHAIN_CPU+ -mcpu=$CROSS_TOOLCHAIN_CPU}
+        ${CROSS_TOOLCHAIN_ARCH+ -march=$CROSS_TOOLCHAIN_ARCH}
+    CXXFLAGS: *cflags
+    LDFLAGS: "-Wl,-O1 -Wl,--hash-style=gnu"
 
 multiPackage:
     # Keep an unconfigured package that can be tweaked by the consumer. This is
