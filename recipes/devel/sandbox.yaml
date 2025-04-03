@@ -79,7 +79,6 @@ depends:
     - devel::diffutils
     - devel::fakeroot
     - devel::git
-    - devel::gperf
     - devel::patch
     - editors::ed
     - net::make-ca
