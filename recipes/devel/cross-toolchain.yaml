@@ -60,6 +60,56 @@ provideTools:
             CROSS_COMPILE: "${AUTOCONF_TARGET}-"
             TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
 
+            # Target CPU feature flags. The "toolchain-feature" function
+            # implicitly reads ARCH, CROSS_TOOLCHAIN_CPU, GCC_TARGET_ARCH and
+            # CROSS_TOOLCHAIN_ARCH...
+
+            # x86 toolchains take MMX, SSE and SSE2 for granted...
+            CPU_HAS_SSE3:
+                value: "$(toolchain-feature,sse3)"
+                if: "$(eq,$ARCH,x86_64)"
+            CPU_HAS_SSSE3:
+                value: "$(toolchain-feature,ssse3)"
+                if: "$(eq,$ARCH,x86_64)"
+            CPU_HAS_SSE41:
+                value: "$(toolchain-feature,sse4.1)"
+                if: "$(eq,$ARCH,x86_64)"
+            CPU_HAS_SSE42:
+                value: "$(toolchain-feature,sse4.2)"
+                if: "$(eq,$ARCH,x86_64)"
+            CPU_HAS_AVX:
+                value: "$(toolchain-feature,avx)"
+                if: "$(eq,$ARCH,x86_64)"
+            CPU_HAS_AVX2:
+                value: "$(toolchain-feature,avx2)"
+                if: "$(eq,$ARCH,x86_64)"
+            CPU_HAS_AVX512:
+                value: "$(toolchain-feature,avx512)"
+                if: "$(eq,$ARCH,x86_64)"
+
+            CPU_HAS_VFPV2:
+                value: "$(toolchain-feature,vfpv2)"
+                if: "$(eq,$ARCH,arm)"
+            CPU_HAS_VFPV3:
+                value: "$(toolchain-feature,vfpv3)"
+                if: "$(eq,$ARCH,arm)"
+            CPU_HAS_VFPV4:
+                value: "$(toolchain-feature,vfpv4)"
+                if: "$(eq,$ARCH,arm)"
+            CPU_HAS_NEON:
+                value: "$(toolchain-feature,neon)"
+                if: "$(eq,$ARCH,arm)"
+
+            CPU_HAS_SVE:
+                value: "$(toolchain-feature,SVE)"
+                if: "$(eq,$ARCH,arm64)"
+            CPU_HAS_SVE2:
+                value: "$(toolchain-feature,SVE2)"
+                if: "$(eq,$ARCH,arm64)"
+            CPU_HAS_SME:
+                value: "$(toolchain-feature,SME)"
+                if: "$(eq,$ARCH,arm64)"
+
 provideVars:
     # Set default compiler flags
     CPPFLAGS: "-Wdate-time"
