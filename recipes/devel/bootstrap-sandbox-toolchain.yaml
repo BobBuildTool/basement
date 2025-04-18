@@ -2,4 +2,3 @@ inherit: [sandbox-toolchain]
 
 privateEnvironment:
     SANDBOX_AUTOCONF_BUILD: "$(gen-autoconf,wendy)"
-    SANDBOX_AUTOCONF_HOST:  "$(gen-autoconf,wendy)"

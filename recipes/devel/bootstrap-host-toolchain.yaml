@@ -6,6 +6,21 @@ provideTools:
     host-toolchain: "."
     target-toolchain: &target-toolchain
         path: "."
+        environment:
+            # Default tool names.
+            AR: "ar"
+            AS: "as"
+            CC: "gcc"
+            CPP: "cpp"
+            CXX: "g++"
+            GDB: "gdb"
+            LD: "ld"
+            NM: "nm"
+            OBJCOPY: "objcopy"
+            OBJDUMP: "objdump"
+            RANLIB: "ranlib"
+            READELF: "readelf"
+            STRIP: "strip"
         fingerprintIf: True
         fingerprintScript: |
             bob-libc-version gcc
