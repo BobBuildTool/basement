@@ -915,6 +915,16 @@ def crossToolchainCpuFeature(args, env, **options):
 
     return "1" if args[0] in flags else "0"
 
+def libcFlavour(args, **options):
+    if len(args) != 1:
+        raise ParseError("$(libc-flavour,triple) expects one argument")
+    # Very simple for the moment because we just support glibc and uclibc on Linux...
+    _, _, os_part = args[0].rpartition("-")
+    if "uclibc" in os_part:
+        return "uclibc"
+    else:
+        return "glibc"
+
 manifest = {
     'apiVersion' : "0.25",
     'stringFunctions' : {
@@ -923,5 +933,6 @@ manifest = {
         "host-autoconf" : hostAutoconf,
         "rustc-target" : rustcTarget,
         "toolchain-feature" : crossToolchainCpuFeature,
+        "libc-flavour" : libcFlavour,
     }
 }
