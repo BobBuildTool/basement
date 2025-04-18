@@ -1,4 +1,4 @@
-inherit: [sandbox-toolchain]
+inherit: ["basement::bits::sandbox-toolchain"]
 
 privateEnvironment:
     SANDBOX_AUTOCONF_BUILD: "$(gen-autoconf,wendy)"
