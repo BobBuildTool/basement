@@ -1,0 +1,2 @@
+multiPackage:
+    tgt: "libs::libc-$(libc-flavour,$(get-tool-env,target-toolchain,AUTOCONF_HOST))-tgt"

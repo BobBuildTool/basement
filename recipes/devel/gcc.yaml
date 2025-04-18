@@ -182,14 +182,15 @@ multiPackage:
             - name: devel::gcc-cross-bare
               use: [tools]
               forward: True
-            - name: libs::glibc
-              if: "$(eq,${GCC_LIBC},glibc)"
-              tools:
+            - tools:
                   target-toolchain: cross-target-toolchain
-            - name: libs::newlib
-              if: "$(eq,${GCC_LIBC},newlib)"
-              tools:
-                  target-toolchain: cross-target-toolchain
+              depends:
+                  - name: libs::glibc
+                    if: "$(eq,${GCC_LIBC},glibc)"
+                  - name: libs::newlib
+                    if: "$(eq,${GCC_LIBC},newlib)"
+                  - name: libs::uclibc-ng
+                    if: "$(eq,${GCC_LIBC},uclibc-ng)"
 
         Config:
             GCC_LIBC:
@@ -198,6 +199,7 @@ multiPackage:
                 choice:
                     glibc:
                     newlib:
+                    uclibc-ng:
 
             GCC_ENABLE_LANGUAGES:
                 help: >
@@ -216,9 +218,15 @@ multiPackage:
                 OPTIONS=( "--with-multilib-list=$GCC_MULTILIB" )
             fi
 
-            if [[ "$GCC_LIBC" = newlib ]] ; then
-                OPTIONS+=( --with-newlib )
-            fi
+            case "$GCC_LIBC" in
+                newlib)
+                    OPTIONS+=( --with-newlib )
+                    ;;
+                uclibc-ng)
+                    # libsanitizer does not build with uclibc-ng
+                    OPTIONS+=( --disable-libsanitizer )
+                    ;;
+            esac
 
             configureGcc \
                 --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET} \
@@ -235,6 +243,7 @@ multiPackage:
             - devel::binutils
             - libs::glibc
             - libs::newlib
+            - libs::uclibc-ng
 
         multiPackage:
             # Straightforward cross compiler. This is a regular cross compiler

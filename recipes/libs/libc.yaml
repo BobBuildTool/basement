@@ -30,7 +30,10 @@ buildScript: |
     }
 
 multiPackage:
-    tgt:
+    # the "tgt" multipackage is provided by aliases/libs/libc.yaml
+
+    # glibc flavour
+    glibc-tgt:
         buildScript: |
             copyFiles /lib/ /lib64/ /lib32/ /usr/ /usr/lib/ \
                 "/usr/lib/gconv/***" \
@@ -49,6 +52,15 @@ multiPackage:
                 "libresolv*.so*" \
                 "librt*.so*" \
                 "libutil*.so*" \
+                "!*"
+
+    # uclibc flavour
+    uclibc-tgt:
+        buildScript: |
+            copyFiles /lib/ /usr/ /usr/lib/ \
+                "ld*.so*" \
+                "libc.so.*" \
+                "libuClibc*.so" \
                 "!*"
 
     threaddb-tgt:
