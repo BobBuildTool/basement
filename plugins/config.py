@@ -38,6 +38,10 @@ from bob.input import PluginState, PluginProperty
 import re
 import schema
 
+class InvalidCfg(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
 class TwoInts:
     def validate(self, data):
         data = schema.Schema([int]).validate(data)
@@ -54,6 +58,7 @@ COMMON_SCHEMA = schema.Schema({
 CHOICE_SCHEMA = schema.Schema({
     'type' : 'choice',
     schema.Optional('required') : bool,
+    schema.Optional('default') : str,
     schema.Optional('help') : str,
     'choice' : schema.Schema({
         str : schema.Or(None, { schema.Optional('help') : str })
@@ -63,18 +68,21 @@ CHOICE_SCHEMA = schema.Schema({
 BOOL_SCHEMA = schema.Schema({
     'type' : 'bool',
     schema.Optional('required') : bool,
+    schema.Optional('default') : bool,
     schema.Optional('help') : str,
 })
 
 STR_SCHEMA = schema.Schema({
     schema.Optional('type') : 'str',
     schema.Optional('required') : bool,
+    schema.Optional('default') : str,
     schema.Optional('help') : str,
 })
 
 INT_SCHEMA = schema.Schema({
     'type' : 'int',
     schema.Optional('required') : bool,
+    schema.Optional('default') : schema.Or(int, str),
     schema.Optional('help') : str,
     schema.Optional('range') : TwoInts(),
 })
@@ -82,6 +90,7 @@ INT_SCHEMA = schema.Schema({
 OCTAL_SCHEMA = schema.Schema({
     'type' : 'octal',
     schema.Optional('required') : bool,
+    schema.Optional('default') : schema.Or(int, str),
     schema.Optional('prefix') : bool,
     schema.Optional('help') : str,
     schema.Optional('range') : TwoInts(),
@@ -90,6 +99,7 @@ OCTAL_SCHEMA = schema.Schema({
 DECIMAL_SCHEMA = schema.Schema({
     'type' : 'decimal',
     schema.Optional('required') : bool,
+    schema.Optional('default') : schema.Or(int, str),
     schema.Optional('help') : str,
     schema.Optional('range') : TwoInts(),
 })
@@ -97,6 +107,7 @@ DECIMAL_SCHEMA = schema.Schema({
 HEX_SCHEMA = schema.Schema({
     'type' : 'hex',
     schema.Optional('required') : bool,
+    schema.Optional('default') : schema.Or(int, str),
     schema.Optional('prefix') : bool,
     schema.Optional('help') : str,
     schema.Optional('range') : TwoInts(),
@@ -143,14 +154,18 @@ class ConfigProperty(PluginProperty):
 
 def handleChoice(var, val):
     if val not in var["choice"]:
-        return f"Invalid 'choice': key '{val}' not defined"
+        raise InvalidCfg(f"Invalid 'choice': key '{val}' not defined")
+    return val
 
 def handleBool(var, val):
+    if isinstance(val, bool):
+        val = "1" if val else "0"
     if val not in ("0", "1"):
-        return f"'{val}' is not a boolean"
+        raise InvalidCfg(f"'{val}' is not a boolean")
+    return val
 
 def handleStr(var, val):
-    pass
+    return val
 
 NUM_HANDLERS = {
     0  : (re.compile(r"0[xX][0-9a-fA-F]+|0[0-7]+|[1-9][0-9]*"), None, "C-like"),
@@ -171,29 +186,40 @@ def parseCNum(val):
         return int(val, 10)
 
 def handleNum(var, val, base, prefix):
+    if isinstance(val, int):
+        if base == 0 or base == 10:
+            val = str(val)
+        elif base == 8:
+            val = f"0{val:o}" if prefix else f"{val:o}"
+        else:
+            assert base == 16
+            val = f"0x{val:x}" if prefix else f"{val:x}"
+
     regex, prefixStr, name = NUM_HANDLERS[base]
     if prefixStr:
         if prefix == True:
             if not val.startswith(prefixStr):
-                return f"missing prefix '{prefixStr}' in '{val}'"
+                raise InvalidCfg(f"missing prefix '{prefixStr}' in '{val}'")
         elif prefix == False:
             if val.startswith(prefixStr):
-                return f"forbidden prefix '{prefixStr}' in '{val}'"
+                raise InvalidCfg(f"forbidden prefix '{prefixStr}' in '{val}'")
 
     if not regex.fullmatch(val):
-        return f"'{val}' is not a {name} number"
+        raise InvalidCfg(f"'{val}' is not a {name} number")
 
     try:
-        val = parseCNum(val) if base == 0 else int(val, base)
+        intVal = parseCNum(val) if base == 0 else int(val, base)
     except ValueError:
-        return f"'{val}' is not a {name} value"
+        raise InvalidCfg(f"'{val}' is not a {name} value")
 
     rng = var.get("range")
     if rng is not None:
-        if val < rng[0]:
-            return f"'{val}' is below allowed range [{rng[0]} - {rng[1]}]"
-        if val > rng[1]:
-            return f"'{val}' is above allowed range [{rng[0]} - {rng[1]}]"
+        if intVal < rng[0]:
+            raise InvalidCfg(f"'{val}' is below allowed range [{rng[0]} - {rng[1]}]")
+        if intVal > rng[1]:
+            return InvalidCfg(f"'{val}' is above allowed range [{rng[0]} - {rng[1]}]")
+
+    return val
 
 def handleCLike(var, val):
     return handleNum(var, val, 0, None)
@@ -224,14 +250,20 @@ class ConfigState(PluginState):
         for name, var in cfg.getValue().items():
             typ = var.get("type", "str")
             val = env.get(name)
-            if val is None:
-                if var.get("required", False):
-                    raise ParseError(f"Config: required variable {name} not present!")
-                continue
+            try:
+                if val is None:
+                    if var.get("required", False):
+                        raise ParseError(f"Config: required variable {name} not present!")
 
-            err = HANDLER[typ](var, val)
-            if err:
-                raise ParseError(f"Config: {name}: {err}")
+                    default = var.get("default")
+                    if default is not None:
+                        env[name] = HANDLER[typ](var, default)
+                    else:
+                        continue
+                else:
+                    HANDLER[typ](var, val)
+            except InvalidCfg as e:
+                raise ParseError(f"Config: {name}: {e.msg}")
 
 manifest = {
     'apiVersion' : "0.25",
