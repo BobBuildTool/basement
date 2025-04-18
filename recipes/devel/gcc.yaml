@@ -135,7 +135,7 @@ multiPackage:
                 --disable-libstdcxx                            \
                 --disable-shared                               \
                 --disable-bootstrap                            \
-                --enable-languages=c
+                --enable-languages=c,c++
             cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
 
         packageScript: |
