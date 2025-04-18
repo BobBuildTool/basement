@@ -1,4 +1,4 @@
-inherit: [sandbox]
+inherit: ["basement::bits::sandbox"]
 
 environment:
     GLIBC_ENABLE_KERNEL: "5.4"

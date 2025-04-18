@@ -1,4 +1,4 @@
-inherit: [sandbox]
+inherit: ["basement::bits::sandbox"]
 
 depends:
     # The toolchain of the build machine is used
