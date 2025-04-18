@@ -1,0 +1,68 @@
+inherit: [make, strip, kconfig]
+
+depends:
+    - kernel::linux-libc-headers
+
+metaEnvironment:
+    PKG_VERSION: "1.0.52"
+    PKG_LICENSE: "LGPL-2.1+"
+
+checkoutSCM:
+    scm: url
+    url: https://downloads.uclibc-ng.org/releases/${PKG_VERSION}/uClibc-ng-${PKG_VERSION}.tar.xz
+    digestSHA256: "881da473784f95cc8290bb0780c0afc810ca28d575e33d5afd5e7153b29aa136"
+    stripComponents: 1
+
+Config:
+    UCLIBC_STATIC_PIE:
+        type: bool
+        default: True
+        help: Add support for Static Position Independent Executables (PIE)
+    UCLIBC_HAS_LOCALE:
+        type: bool
+        default: False
+        help: Locale Support
+    UCLIBC_LOCALES_LIST:
+        default: "en_US"
+        help: Space separated list of locales to use.
+
+buildVars: [AUTOCONF_HOST, CROSS_COMPILE, UCLIBC_STATIC_PIE, UCLIBC_HAS_LOCALE, UCLIBC_LOCALES_LIST]
+buildTools: [host-toolchain, target-toolchain]
+buildSetup: |
+    export HOSTCC=gcc
+    export ARCH="${AUTOCONF_HOST%%-*}"
+
+buildScript: |
+    rm -rf install
+    mkdir -p build install
+    pushd build
+    if [ ! -e .config ] ; then
+        echo "TARGET_${ARCH}=y" > .config
+        echo "KERNEL_HEADERS=\"${BOB_DEP_PATHS[kernel::linux-libc-headers]}/usr/include\"" >> .config
+        cat $<<uclibc-ng/defconfig>> >> .config
+
+        # Reverse if we ever support some big endian target
+        kconfigEnable ARCH_LITTLE_ENDIAN
+        kconfigEnable ARCH_WANTS_LITTLE_ENDIAN
+        kconfigDisable ARCH_BIG_ENDIAN
+        kconfigDisable ARCH_WANTS_BIG_ENDIAN
+
+        # Arm needs to set the ABI
+        [[ $ARCH == arm ]] && kconfigEnable CONFIG_ARM_EABI
+
+        kconfigSetBool STATIC_PIE $UCLIBC_STATIC_PIE
+        kconfigSetBool UCLIBC_HAS_LOCALE $UCLIBC_HAS_LOCALE
+        kconfigSetBool UCLIBC_HAS_XLOCALE $UCLIBC_HAS_LOCALE
+        echo "UCLIBC_BUILD_MINIMAL_LOCALES=\"$UCLIBC_LOCALES_LIST\"" >> .config
+
+        makeParallel -C $1 O=$PWD olddefconfig
+    fi
+    makeParallel -C $1 O=$PWD
+    makeParallel -C $1 O=$PWD install PREFIX="$PWD/../install"
+    popd
+
+    cp -a "${BOB_DEP_PATHS[kernel::linux-libc-headers]}/usr/include" install/usr/
+
+packageScript: |
+    cp -a $1/install/* .
+    stripAll .
