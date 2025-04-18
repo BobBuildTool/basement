@@ -21,6 +21,7 @@ multiPackage:
                 ${BINUTILS_PREFIX:+--prefix=${BINUTILS_PREFIX}} \
                 --with-sysroot=${BINUTILS_PREFIX:-/usr}/sysroots/${AUTOCONF_TARGET:-$AUTOCONF_HOST} \
                 --enable-deterministic-archives \
+                --enable-default-hash-style=gnu \
                 --disable-nls \
                 --disable-werror \
                 --enable-plugins \

@@ -118,7 +118,7 @@ provideVars:
         ${CROSS_TOOLCHAIN_CPU+ -mcpu=$CROSS_TOOLCHAIN_CPU}
         ${CROSS_TOOLCHAIN_ARCH+ -march=$CROSS_TOOLCHAIN_ARCH}
     CXXFLAGS: *cflags
-    LDFLAGS: "-Wl,-O1 -Wl,--hash-style=gnu"
+    LDFLAGS: "-Wl,-O1"
 
 multiPackage:
     # Keep an unconfigured package that can be tweaked by the consumer. This is

@@ -173,7 +173,7 @@ multiPackage:
                     CPPFLAGS:   "-Wdate-time"
                     CFLAGS:     "-Os -pipe"
                     CXXFLAGS:   "-Os -pipe"
-                    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
+                    LDFLAGS:    "-Wl,-O1"
 
     cross:
         depends:
