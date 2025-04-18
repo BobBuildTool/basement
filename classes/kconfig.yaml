@@ -1,0 +1,41 @@
+buildSetup: |
+    # $1: option (e.g. ENABLE_FOO)
+    # $2: replacement (e.g. "ENABLE_FOO=y" or "# ENABLE_FOO is not set")
+    # $3: kconfig-file (optional, defaults to ".config")
+    kconfigUpdate()
+    {
+        sed -e "/^# $1 is not set/d" -e "/^$1=/d" -i "${3:-.config}"
+        echo "$2" >> "${3:-.config}"
+    }
+
+    # $1: option
+    # $2: kconfig-file (optional, defaults to ".config")
+    kconfigEnable()
+    {
+        kconfigUpdate "$1" "$1=y" "${2:-.config}"
+    }
+
+    # $1: option
+    # $2: kconfig-file (optional, defaults to ".config")
+    kconfigDisable()
+    {
+        kconfigUpdate "$1" "# $1 is not set" "${2:-.config}"
+    }
+
+    # $1: option
+    # $2: value ("n" or "0" -> disable, "y" or "1" -> enable)
+    # $3: kconfig-file (optional, defaults to ".config")
+    kconfigSetBool()
+    {
+        case "$2" in
+            n|0)
+                kconfigDisable "$1" "${3:-.config}"
+                ;;
+            y|1)
+                kconfigEnable "$1" "${3:-.config}"
+                ;;
+            *)
+                echo "kconfigSetBool: invalid value '$2'" >&2
+                exit 1
+        esac
+    }
