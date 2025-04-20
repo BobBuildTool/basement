@@ -145,9 +145,8 @@ multiPackage:
         environment:
             AUTOCONF_TARGET: "arm-linux-gnueabihf"
             ARCH: "arm"
-            GCC_TARGET_ARCH: "armv7-a"
+            GCC_TARGET_ARCH: "armv7-a+fp"
             GCC_TARGET_FLOAT_ABI: "hard"
-            GCC_TARGET_FPU: "vfpv4"
             GCC_LIBC: "glibc"
 
     # ARMv7 bare metal toolchain with newlib libc
