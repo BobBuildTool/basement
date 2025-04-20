@@ -6,12 +6,12 @@ depends:
     # the host-native-toolchain!
     - name: devel::gcc-cross-host
       if: !expr |
-        "$AUTOCONF_BUILD" == get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_HOST")
+        "$AUTOCONF_BUILD" == get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_BUILD")
 
     # If AUTOCONF_BUILD != AUTOCONF_HOST, we build a canadian cross.
     - name: devel::gcc-cross-canadian
       if: !expr |
-        "$AUTOCONF_BUILD" != get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_HOST")
+        "$AUTOCONF_BUILD" != get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_BUILD")
 
 buildVars: [AUTOCONF_TARGET, GCC_LIBC]
 buildScript: |

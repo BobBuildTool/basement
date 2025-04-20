@@ -51,7 +51,7 @@ buildScript: |
     if [[ $1/configure -nt .configure.stamp ]] ; then
         $1/configure \
             --prefix=/usr                    \
-            --host=${AUTOCONF_HOST}          \
+            ${AUTOCONF_HOST:+--host=${AUTOCONF_HOST}} \
             --build=$($1/scripts/config.guess) \
             --enable-kernel=$GLIBC_ENABLE_KERNEL \
             --with-headers=$2/usr/include \

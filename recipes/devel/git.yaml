@@ -36,7 +36,7 @@ buildScript: |
     tar -xf $1/git-${PKG_VERSION}.tar.xz
 
     pushd git-${PKG_VERSION}
-    ./configure --host=${AUTOCONF_HOST} \
+    ./configure --host=${AUTOCONF_HOST:-$AUTOCONF_BUILD} \
                 --prefix=/usr \
                 --with-curl=${BOB_DEP_PATHS[net::curl-dev]}/usr \
                 --without-python \

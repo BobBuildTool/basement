@@ -56,8 +56,8 @@ buildScript: |
         if [[ $GCC_SRC/configure -nt .configure.stamp ]] ; then
             $GCC_SRC/configure \
                 --build=${AUTOCONF_BUILD} \
-                --host=${AUTOCONF_HOST} \
-                --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST}} \
+                --host=${AUTOCONF_HOST:-${AUTOCONF_BUILD}} \
+                --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST:-${AUTOCONF_BUILD}}} \
                 --prefix=/usr \
                 ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
                 ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \

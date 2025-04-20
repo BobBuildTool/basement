@@ -66,8 +66,8 @@ buildScript: |
         if [[ $GCC_SRC/configure -nt .configure.stamp ]] ; then
             $GCC_SRC/configure \
                 --build=${AUTOCONF_BUILD} \
-                --host=${AUTOCONF_HOST} \
-                --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST}} \
+                --host=${AUTOCONF_HOST:-${AUTOCONF_BUILD}} \
+                --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST:-${AUTOCONF_BUILD}}} \
                 --prefix=/usr \
                 ${GCC_TARGET_ABI:+--with-abi=$GCC_TARGET_ABI} \
                 ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
@@ -280,7 +280,7 @@ multiPackage:
         buildTools: [host-toolchain, target-toolchain]
         buildVars: [TOOLCHAIN_SYSROOT, GCC_PREFIX, GCC_ENABLE_LANGUAGES]
         buildScript: |
-            TARGET_SYSROOT="${GCC_PREFIX:-/usr}/sysroots/${AUTOCONF_HOST}"
+            TARGET_SYSROOT="${GCC_PREFIX:-/usr}/sysroots/${AUTOCONF_HOST:-${AUTOCONF_BUILD}}"
             buildGcc \
                 ${GCC_PREFIX:+--prefix=${GCC_PREFIX}} \
                 --with-sysroot="${TARGET_SYSROOT}" \

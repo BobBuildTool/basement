@@ -19,7 +19,7 @@ multiPackage:
             export MAKEINFO=true
             autotoolsBuild -o MAKEINFO=true -O MAKEINFO=true $1 \
                 ${BINUTILS_PREFIX:+--prefix=${BINUTILS_PREFIX}} \
-                --with-sysroot=${BINUTILS_PREFIX:-/usr}/sysroots/${AUTOCONF_TARGET:-$AUTOCONF_HOST} \
+                --with-sysroot=${BINUTILS_PREFIX:-/usr}/sysroots/${AUTOCONF_TARGET:-${AUTOCONF_HOST:-$AUTOCONF_BUILD}} \
                 --enable-deterministic-archives \
                 --enable-default-hash-style=gnu \
                 --disable-nls \
@@ -36,10 +36,11 @@ multiPackage:
                     autotoolsPackageTgt
 
                     # make sure that prefixed versions are available on native build
-                    if [[ $AUTOCONF_HOST = ${AUTOCONF_TARGET:-$AUTOCONF_HOST} ]] ; then
+                    if [[ ${AUTOCONF_HOST:-$AUTOCONF_BUILD} = ${AUTOCONF_TARGET:-${AUTOCONF_HOST:-$AUTOCONF_BUILD}} ]]
+                    then
                         pushd ./${BINUTILS_PREFIX:-/usr}/bin
                         for i in *; do
-                            ln -s "$i" "${AUTOCONF_HOST}-$i"
+                            ln -s "$i" "${AUTOCONF_HOST:-$AUTOCONF_BUILD}-$i"
                         done
                         popd
                     fi
