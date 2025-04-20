@@ -218,7 +218,7 @@ HANDLER = {
 }
 
 class ConfigState(PluginState):
-    def onFinish(self, env, properties):
+    def onEnter(self, env, properties):
         cfg = properties.get("Config")
         if not (cfg and cfg.isPresent()): return
         for name, var in cfg.getValue().items():
