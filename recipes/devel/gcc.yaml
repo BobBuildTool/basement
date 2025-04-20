@@ -39,6 +39,11 @@ Config:
             values, possibly consisting of a single value. The permissible
             values depend on the target CPU architecture. If unset or empty,
             multilibs are disabled.
+    GCC_EXTRA_OPTIONS:
+        help: >
+            Additional options that are passed to gcc configure. May be used to
+            pass options that are not provided by the other standard GCC_
+            knobs.
 
 checkoutSCM:
     scm: url
@@ -54,7 +59,7 @@ checkoutScript: |
 
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET, GCC_TARGET_ABI,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU,
-            GCC_MULTILIB]
+            GCC_MULTILIB, GCC_EXTRA_OPTIONS]
 buildTools: [m4]
 buildScript: |
     GCC_SRC=$1
@@ -74,6 +79,7 @@ buildScript: |
                 ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
                 ${GCC_TARGET_FLOAT_ABI:+--with-float=$GCC_TARGET_FLOAT_ABI} \
                 --enable-initfini-array \
+                ${GCC_EXTRA_OPTIONS:-} \
                 "${@}" \
                 --disable-gtk-doc \
                 --disable-gtk-doc-html \
