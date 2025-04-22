@@ -6,12 +6,12 @@ depends:
     # the host-native-toolchain!
     - name: devel::gcc-cross-host
       if: !expr |
-        "$AUTOCONF_BUILD" == get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_HOST")
+        "$AUTOCONF_BUILD" == get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_BUILD")
 
     # If AUTOCONF_BUILD != AUTOCONF_HOST, we build a canadian cross.
     - name: devel::gcc-cross-canadian
       if: !expr |
-        "$AUTOCONF_BUILD" != get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_HOST")
+        "$AUTOCONF_BUILD" != get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_BUILD")
 
 buildVars: [AUTOCONF_TARGET, GCC_LIBC]
 buildScript: |
@@ -60,12 +60,65 @@ provideTools:
             CROSS_COMPILE: "${AUTOCONF_TARGET}-"
             TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
 
+            # Target CPU feature flags. The "toolchain-feature" function
+            # implicitly reads ARCH, CROSS_TOOLCHAIN_CPU, GCC_TARGET_ARCH and
+            # CROSS_TOOLCHAIN_ARCH...
+
+            # x86 toolchains take MMX, SSE and SSE2 for granted...
+            CPU_HAS_SSE3:
+                value: "$(toolchain-feature,sse3)"
+                if: "$(eq,$ARCH,x86_64)"
+            CPU_HAS_SSSE3:
+                value: "$(toolchain-feature,ssse3)"
+                if: "$(eq,$ARCH,x86_64)"
+            CPU_HAS_SSE41:
+                value: "$(toolchain-feature,sse4.1)"
+                if: "$(eq,$ARCH,x86_64)"
+            CPU_HAS_SSE42:
+                value: "$(toolchain-feature,sse4.2)"
+                if: "$(eq,$ARCH,x86_64)"
+            CPU_HAS_AVX:
+                value: "$(toolchain-feature,avx)"
+                if: "$(eq,$ARCH,x86_64)"
+            CPU_HAS_AVX2:
+                value: "$(toolchain-feature,avx2)"
+                if: "$(eq,$ARCH,x86_64)"
+            CPU_HAS_AVX512:
+                value: "$(toolchain-feature,avx512)"
+                if: "$(eq,$ARCH,x86_64)"
+
+            CPU_HAS_VFPV2:
+                value: "$(toolchain-feature,vfpv2)"
+                if: "$(eq,$ARCH,arm)"
+            CPU_HAS_VFPV3:
+                value: "$(toolchain-feature,vfpv3)"
+                if: "$(eq,$ARCH,arm)"
+            CPU_HAS_VFPV4:
+                value: "$(toolchain-feature,vfpv4)"
+                if: "$(eq,$ARCH,arm)"
+            CPU_HAS_NEON:
+                value: "$(toolchain-feature,neon)"
+                if: "$(eq,$ARCH,arm)"
+
+            CPU_HAS_SVE:
+                value: "$(toolchain-feature,SVE)"
+                if: "$(eq,$ARCH,arm64)"
+            CPU_HAS_SVE2:
+                value: "$(toolchain-feature,SVE2)"
+                if: "$(eq,$ARCH,arm64)"
+            CPU_HAS_SME:
+                value: "$(toolchain-feature,SME)"
+                if: "$(eq,$ARCH,arm64)"
+
 provideVars:
     # Set default compiler flags
-    CPPFLAGS:   "-Wdate-time"
-    CFLAGS:     "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
-    CXXFLAGS:   "-O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe"
-    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
+    CPPFLAGS: "-Wdate-time"
+    CFLAGS: &cflags >-
+        -O${BASEMENT_OPTIMIZE}$(if-then-else,${BASEMENT_DEBUG}, -g,) -pipe
+        ${CROSS_TOOLCHAIN_CPU+ -mcpu=$CROSS_TOOLCHAIN_CPU}
+        ${CROSS_TOOLCHAIN_ARCH+ -march=$CROSS_TOOLCHAIN_ARCH}
+    CXXFLAGS: *cflags
+    LDFLAGS: "-Wl,-O1"
 
 multiPackage:
     # Keep an unconfigured package that can be tweaked by the consumer. This is
@@ -92,9 +145,8 @@ multiPackage:
         environment:
             AUTOCONF_TARGET: "arm-linux-gnueabihf"
             ARCH: "arm"
-            GCC_TARGET_ARCH: "armv7-a"
+            GCC_TARGET_ARCH: "armv7-a+fp"
             GCC_TARGET_FLOAT_ABI: "hard"
-            GCC_TARGET_FPU: "vfpv4"
             GCC_LIBC: "glibc"
 
     # ARMv7 bare metal toolchain with newlib libc
@@ -129,3 +181,12 @@ multiPackage:
             ARCH: "arm64"
             GCC_TARGET_ARCH: "armv8-a"
             GCC_LIBC: "newlib"
+
+    # RISC-V 64 bit, standard, general-purpose ISA
+    riscv64-linux-gnu:
+        environment:
+            AUTOCONF_TARGET: "riscv64-linux-gnu"
+            ARCH: "riscv"
+            GCC_TARGET_ARCH: "rv64gc"
+            GCC_TARGET_ABI: "lp64d"
+            GCC_LIBC: "glibc"

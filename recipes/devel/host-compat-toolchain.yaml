@@ -172,4 +172,4 @@ provideTools:
             CPPFLAGS:   "-Wdate-time"
             CFLAGS:     "-Os -pipe -fPIC"
             CXXFLAGS:   "-Os -pipe -fPIC"
-            LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
+            LDFLAGS:    "-Wl,-O1"

@@ -25,7 +25,7 @@ checkoutScript: |
         $<<gcc/buildroot-libtool-v2.2.patch>> \
         $<<gcc/0003-fix-canadian-cross-includes.patch>>
 
-buildTools: [host-toolchain, m4]
+buildTools: [host-toolchain, target-toolchain, m4]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU]
 buildScript: |
@@ -56,8 +56,8 @@ buildScript: |
         if [[ $GCC_SRC/configure -nt .configure.stamp ]] ; then
             $GCC_SRC/configure \
                 --build=${AUTOCONF_BUILD} \
-                --host=${AUTOCONF_HOST} \
-                --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST}} \
+                --host=${AUTOCONF_HOST:-${AUTOCONF_BUILD}} \
+                --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST:-${AUTOCONF_BUILD}}} \
                 --prefix=/usr \
                 ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
                 ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
@@ -116,7 +116,36 @@ multiPackage:
             installStripAll usr/bin
 
         provideTools:
-            target-toolchain: usr/bin
+            target-toolchain:
+                path: usr/bin
+                environment:
+                    # usual compiler variables
+                    AR: "${AUTOCONF_TARGET}-ar"
+                    AS: "${AUTOCONF_TARGET}-as"
+                    CC: "${AUTOCONF_TARGET}-gcc"
+                    CPP: "${AUTOCONF_TARGET}-cpp"
+                    CXX: "${AUTOCONF_TARGET}-g++"
+                    GDB: "${AUTOCONF_TARGET}-gdb"
+                    LD: "${AUTOCONF_TARGET}-ld"
+                    NM: "${AUTOCONF_TARGET}-nm"
+                    OBJCOPY: "${AUTOCONF_TARGET}-objcopy"
+                    OBJDUMP: "${AUTOCONF_TARGET}-objdump"
+                    RANLIB: "${AUTOCONF_TARGET}-ranlib"
+                    READELF: "${AUTOCONF_TARGET}-readelf"
+                    STRIP: "${AUTOCONF_TARGET}-strip"
+
+                    # Host system definition. Note that we do not touch the build
+                    # system definition (AUTOCONF_BUILD) because this is a cross
+                    # compiling toolchain.
+                    ARCH: "${ARCH}"
+                    AUTOCONF_HOST: "${AUTOCONF_TARGET}"
+                    CROSS_COMPILE: "${AUTOCONF_TARGET}-"
+
+                    # Reset compiler flags
+                    CPPFLAGS:   "-Wdate-time"
+                    CFLAGS:     "-Os -pipe"
+                    CXXFLAGS:   "-Os -pipe"
+                    LDFLAGS:    "-Wl,-O1"
 
     cross:
         depends:
@@ -144,7 +173,6 @@ multiPackage:
             - libs::compat::glibc
 
     canadian-cross:
-        buildTools: [target-toolchain]
         buildVars: [TOOLCHAIN_SYSROOT, GCC_ENABLE_LANGUAGES]
         buildScript: |
             # Normally there should be a AUTOCONF_BUILD -> AUTOCONF_TARGET

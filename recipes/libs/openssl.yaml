@@ -59,7 +59,7 @@ buildScript: |
             ;;
     esac
 
-    case "$AUTOCONF_HOST" in
+    case "${AUTOCONF_HOST:-$AUTOCONF_BUILD}" in
         *-l4re)
             TARGET_OS=l4re
             ;;
@@ -67,7 +67,7 @@ buildScript: |
             TARGET_OS=linux
             ;;
         *)
-            echo "Deriving target OS from $AUTOCONF_HOST not supported." >&2
+            echo "Deriving target OS from ${AUTOCONF_HOST:-$AUTOCONF_BUILD} not supported." >&2
             exit 1
             ;;
     esac

@@ -152,6 +152,7 @@ Examples::
         FOO_DEBUG:
             type: bool
             help: Enable debugging. Disabled by default.
+            default: False
         FOO_COLOR:
             type: choice
             required: True
@@ -166,6 +167,7 @@ Examples::
         FOO_USERS:
             type: int          # A C/C++ integer literal
             range: [1, 10]
+            default: 5
         FOO_BASE_ADDRESS:
             type: hex
             prefix: True               # Require "0x" prefix
@@ -214,6 +216,9 @@ a ``range`` property::
 
     type: int
     range: [0, 100]
+
+Optionally, a ``default`` property might set a default value if the variable is
+not present.
 
 Enforced checks:
 

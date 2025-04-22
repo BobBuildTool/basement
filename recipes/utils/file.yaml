@@ -13,7 +13,7 @@ buildTools: [host-toolchain]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST]
 buildScript: |
     # need host "file" tool when cross-compiling
-    if [[ ${AUTOCONF_BUILD:-unknown} != ${AUTOCONF_HOST:-unknown} ]] ; then
+    if [[ ${AUTOCONF_BUILD} != ${AUTOCONF_HOST:-$AUTOCONF_BUILD} ]] ; then
         mkdir -p host
         pushd host
         AUTOCONF_HOST="$AUTOCONF_BUILD" autotoolsBuild $1

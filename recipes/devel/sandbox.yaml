@@ -1,4 +1,4 @@
-inherit: [sandbox]
+inherit: ["basement::bits::sandbox"]
 
 environment:
     GLIBC_ENABLE_KERNEL: "5.4"
@@ -79,7 +79,6 @@ depends:
     - devel::diffutils
     - devel::fakeroot
     - devel::git
-    - devel::gperf
     - devel::patch
     - editors::ed
     - net::make-ca

@@ -47,6 +47,9 @@ buildScript: |
 packageScript: |
     autotoolsPackageTgt
 
+    # remove loadable modules examples
+    rm -rf usr/lib/bash
+
 provideDeps: [ "*-tgt" ]
 
 provideVars:

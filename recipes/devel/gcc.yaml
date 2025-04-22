@@ -39,6 +39,11 @@ Config:
             values, possibly consisting of a single value. The permissible
             values depend on the target CPU architecture. If unset or empty,
             multilibs are disabled.
+    GCC_EXTRA_OPTIONS:
+        help: >
+            Additional options that are passed to gcc configure. May be used to
+            pass options that are not provided by the other standard GCC_
+            knobs.
 
 checkoutSCM:
     scm: url
@@ -52,9 +57,9 @@ checkoutScript: |
         $<<gcc/0001-squash-multilib-libdir-suffix.patch>> \
         $<<gcc/0003-Remove-crypt-and-crypt_r-interceptors.patch>>
 
-buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
+buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET, GCC_TARGET_ABI,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU,
-            GCC_MULTILIB]
+            GCC_MULTILIB, GCC_EXTRA_OPTIONS]
 buildTools: [m4]
 buildScript: |
     GCC_SRC=$1
@@ -66,13 +71,15 @@ buildScript: |
         if [[ $GCC_SRC/configure -nt .configure.stamp ]] ; then
             $GCC_SRC/configure \
                 --build=${AUTOCONF_BUILD} \
-                --host=${AUTOCONF_HOST} \
-                --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST}} \
+                --host=${AUTOCONF_HOST:-${AUTOCONF_BUILD}} \
+                --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST:-${AUTOCONF_BUILD}}} \
                 --prefix=/usr \
+                ${GCC_TARGET_ABI:+--with-abi=$GCC_TARGET_ABI} \
                 ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
                 ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
                 ${GCC_TARGET_FLOAT_ABI:+--with-float=$GCC_TARGET_FLOAT_ABI} \
                 --enable-initfini-array \
+                ${GCC_EXTRA_OPTIONS:-} \
                 "${@}" \
                 --disable-gtk-doc \
                 --disable-gtk-doc-html \
@@ -134,7 +141,7 @@ multiPackage:
                 --disable-libstdcxx                            \
                 --disable-shared                               \
                 --disable-bootstrap                            \
-                --enable-languages=c
+                --enable-languages=c,c++
             cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
 
         packageScript: |
@@ -172,7 +179,7 @@ multiPackage:
                     CPPFLAGS:   "-Wdate-time"
                     CFLAGS:     "-Os -pipe"
                     CXXFLAGS:   "-Os -pipe"
-                    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
+                    LDFLAGS:    "-Wl,-O1"
 
     cross:
         depends:
@@ -181,14 +188,15 @@ multiPackage:
             - name: devel::gcc-cross-bare
               use: [tools]
               forward: True
-            - name: libs::glibc
-              if: "$(eq,${GCC_LIBC},glibc)"
-              tools:
+            - tools:
                   target-toolchain: cross-target-toolchain
-            - name: libs::newlib
-              if: "$(eq,${GCC_LIBC},newlib)"
-              tools:
-                  target-toolchain: cross-target-toolchain
+              depends:
+                  - name: libs::glibc
+                    if: "$(eq,${GCC_LIBC},glibc)"
+                  - name: libs::newlib
+                    if: "$(eq,${GCC_LIBC},newlib)"
+                  - name: libs::uclibc-ng
+                    if: "$(eq,${GCC_LIBC},uclibc-ng)"
 
         Config:
             GCC_LIBC:
@@ -197,6 +205,7 @@ multiPackage:
                 choice:
                     glibc:
                     newlib:
+                    uclibc-ng:
 
             GCC_ENABLE_LANGUAGES:
                 help: >
@@ -215,9 +224,15 @@ multiPackage:
                 OPTIONS=( "--with-multilib-list=$GCC_MULTILIB" )
             fi
 
-            if [[ "$GCC_LIBC" = newlib ]] ; then
-                OPTIONS+=( --with-newlib )
-            fi
+            case "$GCC_LIBC" in
+                newlib)
+                    OPTIONS+=( --with-newlib )
+                    ;;
+                uclibc-ng)
+                    # libsanitizer does not build with uclibc-ng
+                    OPTIONS+=( --disable-libsanitizer )
+                    ;;
+            esac
 
             configureGcc \
                 --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET} \
@@ -234,6 +249,7 @@ multiPackage:
             - devel::binutils
             - libs::glibc
             - libs::newlib
+            - libs::uclibc-ng
 
         multiPackage:
             # Straightforward cross compiler. This is a regular cross compiler
@@ -279,7 +295,7 @@ multiPackage:
         buildTools: [host-toolchain, target-toolchain]
         buildVars: [TOOLCHAIN_SYSROOT, GCC_PREFIX, GCC_ENABLE_LANGUAGES]
         buildScript: |
-            TARGET_SYSROOT="${GCC_PREFIX:-/usr}/sysroots/${AUTOCONF_HOST}"
+            TARGET_SYSROOT="${GCC_PREFIX:-/usr}/sysroots/${AUTOCONF_HOST:-${AUTOCONF_BUILD}}"
             buildGcc \
                 ${GCC_PREFIX:+--prefix=${GCC_PREFIX}} \
                 --with-sysroot="${TARGET_SYSROOT}" \

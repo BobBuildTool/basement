@@ -14,30 +14,13 @@ environment:
     # should not be overridden by the user.
     ##########################################################################
 
-    # The default build (i.e. the system that the build runs on) and host
-    # system (i.e. the system where the produced executables run on)
+    # The default build system triplet (i.e. the system that the build runs on)
     # definition.
     ARCH:           "$(host-arch)"
     AUTOCONF_BUILD: "$(host-autoconf)"
-    AUTOCONF_HOST:  "$(host-autoconf)"
-
-    # Default tool names.
-    AR: "ar"
-    AS: "as"
-    CC: "gcc"
-    CPP: "cpp"
-    CXX: "g++"
-    GDB: "gdb"
-    LD: "ld"
-    NM: "nm"
-    OBJCOPY: "objcopy"
-    OBJDUMP: "objdump"
-    RANLIB: "ranlib"
-    READELF: "readelf"
-    STRIP: "strip"
 
     # Default host compilation flags. Only cross-compiling target toolchains
-    # will override these based on the BASEMENT_OPTIMIZE and BASEMENT_OPTIMIZE
+    # will override these based on the BASEMENT_DEBUG and BASEMENT_OPTIMIZE
     # settings above.
     #
     # We build everything static on host builds without debug symbols. Some
@@ -50,6 +33,7 @@ environment:
 
 archiveAppend:
     backend: http
+    name: ci.bobbuildtool.dev
     url: http://ci.bobbuildtool.dev/artifacts/
     flags: [download]
 

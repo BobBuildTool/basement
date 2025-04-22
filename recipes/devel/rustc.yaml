@@ -8,7 +8,7 @@ multiPackage:
     # rust compiler + std lib + tools like cargo
     "":
         environment:
-            RUST_ARCH: $(rustc-target,$(get-tool-env,"target-toolchain","AUTOCONF_HOST"))
+            RUST_ARCH: $(rustc-target,$(get-tool-env,"target-toolchain","AUTOCONF_HOST","$AUTOCONF_BUILD"))
 
         checkoutSCM:
             scm: url
@@ -34,7 +34,7 @@ multiPackage:
     # extra rust std lib used for cross compiling
     std:
         environment:
-            RUST_ARCH: ${RUST_ARCH:-$(rustc-target,$(get-tool-env,"target-toolchain","AUTOCONF_HOST"))}
+            RUST_ARCH: "${RUST_ARCH:-$(rustc-target,$(get-tool-env,target-toolchain,AUTOCONF_HOST,$AUTOCONF_BUILD))}"
 
         checkoutSCM:
             scm: url
@@ -65,7 +65,7 @@ multiPackage:
             - name: devel::rustc-std
               if: !expr >
                 rustc-target("$AUTOCONF_BUILD") !=
-                    rustc-target(get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_HOST"))
+                    rustc-target(get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_BUILD"))
 
         buildScript: |
             # copy both deps into this package, because for tools we don't

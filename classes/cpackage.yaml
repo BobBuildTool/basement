@@ -43,7 +43,7 @@ buildSetup: |
     ${VS_PATH:+export PATH="$PATH:$VS_PATH"}
 
     # Gather all include and library paths.
-    if [[ $AUTOCONF_HOST == *-win32 ]] ; then
+    if [[ ${AUTOCONF_HOST:-$AUTOCONF_BUILD} == *-win32 ]] ; then
         for i in "${@:2}" ; do
             if [[ -d "$i/usr/include" ]] ; then
                 CPPFLAGS+=" -I $(cygpath -w "$i/usr/include")"
