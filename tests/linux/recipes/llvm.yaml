@@ -1,0 +1,12 @@
+inherit: ['basement::rootrecipe']
+
+environment:
+    BASEMENT_HAS_CLANG: "true"
+
+depends:
+    - devel::llvm-libclc-dev
+
+buildScript: |
+    true
+packageScript: |
+    true
