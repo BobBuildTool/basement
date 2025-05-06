@@ -26,6 +26,9 @@ environment:
     # We build everything static on host builds without debug symbols. Some
     # packages still build shared libraries, though. Make sure we compile
     # position independent code in case static and dynamic libraries are mixed.
+    #
+    # Attention: keep in sync with devel::host-compat-toolchain! These flags
+    # should be reset by the compat-toolchain exactly to their default values.
     CPPFLAGS:   "-Wdate-time"
     CFLAGS:     "-Os -pipe -fPIC"
     CXXFLAGS:   "-Os -pipe -fPIC"

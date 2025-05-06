@@ -167,7 +167,10 @@ provideTools:
             TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
 
             # Override compiler flags to mask active settings.
+            #
+            # Attention: keep in sync with default.yaml! These flags should be
+            # reset exactly to their default values.
             CPPFLAGS:   "-Wdate-time"
             CFLAGS:     "-Os -pipe -fPIC"
             CXXFLAGS:   "-Os -pipe -fPIC"
-            LDFLAGS:    "-Wl,-O1"
+            LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
