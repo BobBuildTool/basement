@@ -13,10 +13,14 @@ buildTools: [host-toolchain]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST]
 buildScript: |
     # need host "file" tool when cross-compiling
-    if [[ ${AUTOCONF_BUILD} != ${AUTOCONF_HOST:-$AUTOCONF_BUILD} ]] ; then
+    if cpackageCrossCompiling ; then
         mkdir -p host
         pushd host
-        AUTOCONF_HOST="$AUTOCONF_BUILD" autotoolsBuild $1
+        (
+            export AUTOCONF_HOST="$AUTOCONF_BUILD"
+            unset AR CC CXX
+            autotoolsBuild $1
+        )
         export PATH="$PWD/install/usr/bin:$PATH"
         popd
     fi
