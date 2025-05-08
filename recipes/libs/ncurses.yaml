@@ -20,9 +20,12 @@ buildScript: |
     # terminal database can be created without errors.
     mkdir -p tic
     pushd tic
-    $1/configure
-    make -C include
-    make -C progs tic
+    (
+        unset AR CC CXX
+        $1/configure
+        make -C include
+        make -C progs tic
+    )
     export TIC_PATH=$(pwd)/progs/tic
     popd
 
