@@ -1,6 +1,6 @@
 inherit: [cpackage, libtool, make, install, "basement::update-config"]
 
-buildVars: [AUTOTOOLS_AUTO_STATIC]
+buildVars: [AUTOTOOLS_AUTO_STATIC, AR, CC, CXX]
 buildSetup: |
     # $1 : source path
     autotoolsBuild()
