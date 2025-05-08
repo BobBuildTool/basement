@@ -33,82 +33,27 @@ packageScript: |
     # crashes. The target architecture symbols need to be retained, though...
     find usr/bin usr/libexec -type d -name .debug | xargs /bin/rm -rf
 
-provideTools:
-    target-toolchain:
-        path: "usr/bin"
-        environment:
-            # usual compiler variables
-            AR: "${AUTOCONF_TARGET}-ar"
-            AS: "${AUTOCONF_TARGET}-as"
-            CC: "${AUTOCONF_TARGET}-gcc"
-            CPP: "${AUTOCONF_TARGET}-cpp"
-            CXX: "${AUTOCONF_TARGET}-g++"
-            LD: "${AUTOCONF_TARGET}-ld"
-            NM: "${AUTOCONF_TARGET}-nm"
-            OBJCOPY: "${AUTOCONF_TARGET}-objcopy"
-            OBJDUMP: "${AUTOCONF_TARGET}-objdump"
-            RANLIB: "${AUTOCONF_TARGET}-ranlib"
-            READELF: "${AUTOCONF_TARGET}-readelf"
-            STRIP: "${AUTOCONF_TARGET}-strip"
+    # Prepare for clang. Only the cross-toolchain-clang- variants use it but we
+    # do not want to pay for the extra packaging of the whole toolchain, just
+    # for these scripts...
+    pushd usr/bin
 
-            # Host system definition. Note that we do not touch the build
-            # system definition (AUTOCONF_BUILD) because this is a cross
-            # compiling toolchain.
-            ARCH: "${ARCH}"
-            AUTOCONF_HOST: "${AUTOCONF_TARGET}"
-            CROSS_COMPILE: "${AUTOCONF_TARGET}-"
-            TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
-            TOOLCHAIN_FLAVOUR: gcc
+    GCC_INSTALL_DIR_REL=$(realpath --relative-to=.\
+                          "$("./${AUTOCONF_TARGET}-gcc" -print-search-dirs | sed -n -e 's/^install: \(.*\)/\1/p')")
 
-            # Target CPU feature flags. The "toolchain-feature" function
-            # implicitly reads ARCH, CROSS_TOOLCHAIN_CPU, GCC_TARGET_ARCH and
-            # CROSS_TOOLCHAIN_ARCH...
+    for i in clang clang-cpp clang++ ; do
+        cat > "$AUTOCONF_TARGET-$i" << EOF
+    #!/bin/bash -eu
+    exec -a "\$(type -p $i)" "$i" \\
+        --target="$AUTOCONF_TARGET" \\
+        --sysroot="\${0%/*}/../sysroots/${AUTOCONF_TARGET}" \\
+        --gcc-install-dir="\${0%/*}/$GCC_INSTALL_DIR_REL" \\
+        "\$@"
+    EOF
+        chmod a+x "$AUTOCONF_TARGET-$i"
+    done
 
-            # x86 toolchains take MMX, SSE and SSE2 for granted...
-            CPU_HAS_SSE3:
-                value: "$(toolchain-feature,sse3)"
-                if: "$(eq,$ARCH,x86_64)"
-            CPU_HAS_SSSE3:
-                value: "$(toolchain-feature,ssse3)"
-                if: "$(eq,$ARCH,x86_64)"
-            CPU_HAS_SSE41:
-                value: "$(toolchain-feature,sse4.1)"
-                if: "$(eq,$ARCH,x86_64)"
-            CPU_HAS_SSE42:
-                value: "$(toolchain-feature,sse4.2)"
-                if: "$(eq,$ARCH,x86_64)"
-            CPU_HAS_AVX:
-                value: "$(toolchain-feature,avx)"
-                if: "$(eq,$ARCH,x86_64)"
-            CPU_HAS_AVX2:
-                value: "$(toolchain-feature,avx2)"
-                if: "$(eq,$ARCH,x86_64)"
-            CPU_HAS_AVX512:
-                value: "$(toolchain-feature,avx512)"
-                if: "$(eq,$ARCH,x86_64)"
-
-            CPU_HAS_VFPV2:
-                value: "$(toolchain-feature,vfpv2)"
-                if: "$(eq,$ARCH,arm)"
-            CPU_HAS_VFPV3:
-                value: "$(toolchain-feature,vfpv3)"
-                if: "$(eq,$ARCH,arm)"
-            CPU_HAS_VFPV4:
-                value: "$(toolchain-feature,vfpv4)"
-                if: "$(eq,$ARCH,arm)"
-            CPU_HAS_NEON:
-                value: "$(toolchain-feature,neon)"
-                if: "$(eq,$ARCH,arm)"
-
-            CPU_HAS_SVE:
-                value: "$(toolchain-feature,SVE)"
-                if: "$(eq,$ARCH,arm64)"
-            CPU_HAS_SVE2:
-                value: "$(toolchain-feature,SVE2)"
-                if: "$(eq,$ARCH,arm64)"
-            CPU_HAS_SME:
-                value: "$(toolchain-feature,SME)"
-                if: "$(eq,$ARCH,arm64)"
+    popd
 
 provideVars:
     # Set default compiler flags
@@ -118,88 +63,263 @@ provideVars:
         ${CROSS_TOOLCHAIN_CPU+ -mcpu=$CROSS_TOOLCHAIN_CPU}
         ${CROSS_TOOLCHAIN_ARCH+ -march=$CROSS_TOOLCHAIN_ARCH}
     CXXFLAGS: *cflags
-    LDFLAGS: "-Wl,-O1"
+    LDFLAGS: "-Wl,-O1$(if-then-else,${CROSS_TOOLCHAIN_CLANG_LLD:-0}, -fuse-ld=lld,)"
 
 multiPackage:
-    # Keep an unconfigured package that can be tweaked by the consumer. This is
-    # available for special use cases.
-    "": {}
+    # Regular GNU toolchains. Everything is built with gcc and linked with binutils.
+    "":
+        provideTools:
+            target-toolchain:
+                path: "usr/bin"
+                environment:
+                    # usual compiler variables
+                    AR: "${AUTOCONF_TARGET}-ar"
+                    AS: "${AUTOCONF_TARGET}-as"
+                    CC: "${AUTOCONF_TARGET}-gcc"
+                    CPP: "${AUTOCONF_TARGET}-cpp"
+                    CXX: "${AUTOCONF_TARGET}-g++"
+                    LD: "${AUTOCONF_TARGET}-ld"
+                    NM: "${AUTOCONF_TARGET}-nm"
+                    OBJCOPY: "${AUTOCONF_TARGET}-objcopy"
+                    OBJDUMP: "${AUTOCONF_TARGET}-objdump"
+                    RANLIB: "${AUTOCONF_TARGET}-ranlib"
+                    READELF: "${AUTOCONF_TARGET}-readelf"
+                    STRIP: "${AUTOCONF_TARGET}-strip"
 
-    x86_64-l4re:
-        environment:
-            AUTOCONF_TARGET: "x86_64-l4re"
-            ARCH: "x86_64"
-            GCC_LIBC: "uclibc-l4re"
+                    # Host system definition. Note that we do not touch the build
+                    # system definition (AUTOCONF_BUILD) because this is a cross
+                    # compiling toolchain.
+                    ARCH: "${ARCH}"
+                    AUTOCONF_HOST: "${AUTOCONF_TARGET}"
+                    CROSS_COMPILE: "${AUTOCONF_TARGET}-"
+                    TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
+                    TOOLCHAIN_FLAVOUR: gcc
 
-    # x86_64 "cross" compiling toolchain. Ships its own glibc.
-    x86_64-linux-gnu:
-        environment:
-            AUTOCONF_TARGET: "x86_64-cross-linux-gnu"
-            ARCH: "x86_64"
-            GCC_LIBC: "glibc"
-            GCC_MULTILIB: "m32,m64"
+                    # Target CPU feature flags. The "toolchain-feature" function
+                    # implicitly reads ARCH, CROSS_TOOLCHAIN_CPU, GCC_TARGET_ARCH and
+                    # CROSS_TOOLCHAIN_ARCH...
 
-    x86_64-linux-gnu-ada:
-        environment:
-            AUTOCONF_TARGET: "x86_64-cross-linux-gnu"
-            ARCH: "x86_64"
-            GCC_LIBC: "glibc"
-            GCC_ENABLE_LANGUAGES: "c,c++,ada"
+                    # x86 toolchains take MMX, SSE and SSE2 for granted...
+                    # Attention: keep in sync with the "clang" toolchain
+                    # definition below!
+                    CPU_HAS_SSE3:
+                        value: "$(toolchain-feature,sse3)"
+                        if: "$(eq,$ARCH,x86_64)"
+                    CPU_HAS_SSSE3:
+                        value: "$(toolchain-feature,ssse3)"
+                        if: "$(eq,$ARCH,x86_64)"
+                    CPU_HAS_SSE41:
+                        value: "$(toolchain-feature,sse4.1)"
+                        if: "$(eq,$ARCH,x86_64)"
+                    CPU_HAS_SSE42:
+                        value: "$(toolchain-feature,sse4.2)"
+                        if: "$(eq,$ARCH,x86_64)"
+                    CPU_HAS_AVX:
+                        value: "$(toolchain-feature,avx)"
+                        if: "$(eq,$ARCH,x86_64)"
+                    CPU_HAS_AVX2:
+                        value: "$(toolchain-feature,avx2)"
+                        if: "$(eq,$ARCH,x86_64)"
+                    CPU_HAS_AVX512:
+                        value: "$(toolchain-feature,avx512)"
+                        if: "$(eq,$ARCH,x86_64)"
 
-    # ARMv7 Linux CortexA toolchain with hard floating point
-    arm-linux-gnueabihf:
-        environment:
-            AUTOCONF_TARGET: "arm-linux-gnueabihf"
-            ARCH: "arm"
-            GCC_TARGET_ARCH: "armv7-a+fp"
-            GCC_TARGET_FLOAT_ABI: "hard"
-            GCC_LIBC: "glibc"
+                    CPU_HAS_VFPV2:
+                        value: "$(toolchain-feature,vfpv2)"
+                        if: "$(eq,$ARCH,arm)"
+                    CPU_HAS_VFPV3:
+                        value: "$(toolchain-feature,vfpv3)"
+                        if: "$(eq,$ARCH,arm)"
+                    CPU_HAS_VFPV4:
+                        value: "$(toolchain-feature,vfpv4)"
+                        if: "$(eq,$ARCH,arm)"
+                    CPU_HAS_NEON:
+                        value: "$(toolchain-feature,neon)"
+                        if: "$(eq,$ARCH,arm)"
 
-    # ARMv7 bare metal toolchain with newlib libc
-    arm-none-eabi:
-        environment:
-            AUTOCONF_TARGET: "arm-none-eabi"
-            ARCH: "arm"
-            GCC_ENABLE_LANGUAGES: "c"
-            GCC_LIBC: "newlib"
+                    CPU_HAS_SVE:
+                        value: "$(toolchain-feature,SVE)"
+                        if: "$(eq,$ARCH,arm64)"
+                    CPU_HAS_SVE2:
+                        value: "$(toolchain-feature,SVE2)"
+                        if: "$(eq,$ARCH,arm64)"
+                    CPU_HAS_SME:
+                        value: "$(toolchain-feature,SME)"
+                        if: "$(eq,$ARCH,arm64)"
 
-    aarch64-l4re:
-        environment:
-            AUTOCONF_TARGET: "aarch64-l4re"
-            ARCH: "arm64"
-            GCC_LIBC: "uclibc-l4re"
-            GCC_TARGET_ARCH: "armv8-a"
+        multiPackage: &toolchains
+            # Keep an unconfigured package that can be tweaked by the consumer. This is
+            # available for special use cases.
+            "": {}
 
-    # ARMv8-A AArch64 Linux toolchain
-    aarch64-linux-gnu:
-        environment:
-            AUTOCONF_TARGET: "aarch64-linux-gnu"
-            ARCH: "arm64"
-            GCC_TARGET_ARCH: "armv8-a"
-            GCC_LIBC: "glibc"
+            x86_64-l4re:
+                environment:
+                    AUTOCONF_TARGET: "x86_64-l4re"
+                    ARCH: "x86_64"
+                    GCC_LIBC: "uclibc-l4re"
 
-    # ARMv8-A AArch64 Linux toolchain with ada
-    aarch64-linux-gnu-ada:
-        environment:
-            AUTOCONF_TARGET: "aarch64-linux-gnu"
-            ARCH: "arm64"
-            GCC_TARGET_ARCH: "armv8-a"
-            GCC_LIBC: "glibc"
-            GCC_ENABLE_LANGUAGES: "c,c++,ada"
+            # x86_64 "cross" compiling toolchain. Ships its own glibc.
+            x86_64-linux-gnu:
+                environment:
+                    AUTOCONF_TARGET: "x86_64-cross-linux-gnu"
+                    ARCH: "x86_64"
+                    GCC_LIBC: "glibc"
+                    GCC_MULTILIB: "m32,m64"
 
-    # ARMv8-A/R AArch64 bare metal toolchain
-    aarch64-none-elf:
-        environment:
-            AUTOCONF_TARGET: "aarch64-none-elf"
-            ARCH: "arm64"
-            GCC_TARGET_ARCH: "armv8-a"
-            GCC_LIBC: "newlib"
+            x86_64-linux-gnu-ada:
+                environment:
+                    AUTOCONF_TARGET: "x86_64-cross-linux-gnu"
+                    ARCH: "x86_64"
+                    GCC_LIBC: "glibc"
+                    GCC_ENABLE_LANGUAGES: "c,c++,ada"
 
-    # RISC-V 64 bit, standard, general-purpose ISA
-    riscv64-linux-gnu:
-        environment:
-            AUTOCONF_TARGET: "riscv64-linux-gnu"
-            ARCH: "riscv"
-            GCC_TARGET_ARCH: "rv64gc"
-            GCC_TARGET_ABI: "lp64d"
-            GCC_LIBC: "glibc"
+            # ARMv7 Linux CortexA toolchain with hard floating point
+            arm-linux-gnueabihf:
+                environment:
+                    AUTOCONF_TARGET: "arm-linux-gnueabihf"
+                    ARCH: "arm"
+                    GCC_TARGET_ARCH: "armv7-a+fp"
+                    GCC_TARGET_FLOAT_ABI: "hard"
+                    GCC_LIBC: "glibc"
+
+            # ARMv7 bare metal toolchain with newlib libc
+            arm-none-eabi:
+                environment:
+                    AUTOCONF_TARGET: "arm-none-eabi"
+                    ARCH: "arm"
+                    GCC_ENABLE_LANGUAGES: "c"
+                    GCC_LIBC: "newlib"
+
+            aarch64-l4re:
+                environment:
+                    AUTOCONF_TARGET: "aarch64-l4re"
+                    ARCH: "arm64"
+                    GCC_LIBC: "uclibc-l4re"
+                    GCC_TARGET_ARCH: "armv8-a"
+
+            # ARMv8-A AArch64 Linux toolchain
+            aarch64-linux-gnu:
+                environment:
+                    AUTOCONF_TARGET: "aarch64-linux-gnu"
+                    ARCH: "arm64"
+                    GCC_TARGET_ARCH: "armv8-a"
+                    GCC_LIBC: "glibc"
+
+            # ARMv8-A AArch64 Linux toolchain with ada
+            aarch64-linux-gnu-ada:
+                environment:
+                    AUTOCONF_TARGET: "aarch64-linux-gnu"
+                    ARCH: "arm64"
+                    GCC_TARGET_ARCH: "armv8-a"
+                    GCC_LIBC: "glibc"
+                    GCC_ENABLE_LANGUAGES: "c,c++,ada"
+
+            # ARMv8-A/R AArch64 bare metal toolchain
+            aarch64-none-elf:
+                environment:
+                    AUTOCONF_TARGET: "aarch64-none-elf"
+                    ARCH: "arm64"
+                    GCC_TARGET_ARCH: "armv8-a"
+                    GCC_LIBC: "newlib"
+
+            # RISC-V 64 bit, standard, general-purpose ISA
+            riscv64-linux-gnu:
+                environment:
+                    AUTOCONF_TARGET: "riscv64-linux-gnu"
+                    ARCH: "riscv"
+                    GCC_TARGET_ARCH: "rv64gc"
+                    GCC_TARGET_ABI: "lp64d"
+                    GCC_LIBC: "glibc"
+
+    # Clang based toolchains. The underlying system is still primarily based on gcc.
+    clang:
+        Config:
+            CROSS_TOOLCHAIN_CLANG_LLD:
+                type: bool
+                default: True
+                help: Use lld instead of GNU ld.
+
+        provideTools:
+            target-toolchain:
+                path: "usr/bin"
+                environment:
+                    AR: "${AUTOCONF_TARGET}-ar"
+                    AS: "${AUTOCONF_TARGET}-as"
+                    CC: "${AUTOCONF_TARGET}-clang"
+                    CPP: "${AUTOCONF_TARGET}-clang-cpp"
+                    CXX: "${AUTOCONF_TARGET}-clang++"
+                    LD: "$(if-then-else,$CROSS_TOOLCHAIN_CLANG_LLD,ld.lld,${AUTOCONF_TARGET}-ld)"
+                    NM: "${AUTOCONF_TARGET}-nm"
+                    OBJCOPY: "${AUTOCONF_TARGET}-objcopy"
+                    OBJDUMP: "${AUTOCONF_TARGET}-objdump"
+                    RANLIB: "${AUTOCONF_TARGET}-ranlib"
+                    READELF: "${AUTOCONF_TARGET}-readelf"
+                    STRIP: "${AUTOCONF_TARGET}-strip"
+
+                    # Fallback variables for recipes that cannot work with clang.
+                    GNU_CC: "${AUTOCONF_TARGET}-gcc"
+                    GNU_CPP: "${AUTOCONF_TARGET}-cpp"
+                    GNU_CXX: "${AUTOCONF_TARGET}-g++"
+                    GNU_LD: "${AUTOCONF_TARGET}-ld"
+
+                    ARCH: "${ARCH}"
+                    AUTOCONF_HOST: "${AUTOCONF_TARGET}"
+                    TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
+                    TOOLCHAIN_FLAVOUR: clang
+
+                    # Intentionally does not define "CROSS_COMPILE". This
+                    # variable implies a GNU complete toolchain. We do not want
+                    # to accidentally lead a package to use the cross gcc,
+                    # which is still available!
+
+                    # Keep in sync with the gcc toolchain above!
+                    CPU_HAS_SSE3:
+                        value: "$(toolchain-feature,sse3)"
+                        if: "$(eq,$ARCH,x86_64)"
+                    CPU_HAS_SSSE3:
+                        value: "$(toolchain-feature,ssse3)"
+                        if: "$(eq,$ARCH,x86_64)"
+                    CPU_HAS_SSE41:
+                        value: "$(toolchain-feature,sse4.1)"
+                        if: "$(eq,$ARCH,x86_64)"
+                    CPU_HAS_SSE42:
+                        value: "$(toolchain-feature,sse4.2)"
+                        if: "$(eq,$ARCH,x86_64)"
+                    CPU_HAS_AVX:
+                        value: "$(toolchain-feature,avx)"
+                        if: "$(eq,$ARCH,x86_64)"
+                    CPU_HAS_AVX2:
+                        value: "$(toolchain-feature,avx2)"
+                        if: "$(eq,$ARCH,x86_64)"
+                    CPU_HAS_AVX512:
+                        value: "$(toolchain-feature,avx512)"
+                        if: "$(eq,$ARCH,x86_64)"
+
+                    CPU_HAS_VFPV2:
+                        value: "$(toolchain-feature,vfpv2)"
+                        if: "$(eq,$ARCH,arm)"
+                    CPU_HAS_VFPV3:
+                        value: "$(toolchain-feature,vfpv3)"
+                        if: "$(eq,$ARCH,arm)"
+                    CPU_HAS_VFPV4:
+                        value: "$(toolchain-feature,vfpv4)"
+                        if: "$(eq,$ARCH,arm)"
+                    CPU_HAS_NEON:
+                        value: "$(toolchain-feature,neon)"
+                        if: "$(eq,$ARCH,arm)"
+
+                    CPU_HAS_SVE:
+                        value: "$(toolchain-feature,SVE)"
+                        if: "$(eq,$ARCH,arm64)"
+                    CPU_HAS_SVE2:
+                        value: "$(toolchain-feature,SVE2)"
+                        if: "$(eq,$ARCH,arm64)"
+                    CPU_HAS_SME:
+                        value: "$(toolchain-feature,SME)"
+                        if: "$(eq,$ARCH,arm64)"
+
+                # Using a devel::cross-toolchain-clang-* toolchain implies
+                # using clang...
+                dependTools: [clang]
+
+        multiPackage: *toolchains
