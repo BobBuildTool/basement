@@ -139,6 +139,7 @@ multiPackage:
                     ARCH: "${ARCH}"
                     AUTOCONF_HOST: "${AUTOCONF_TARGET}"
                     CROSS_COMPILE: "${AUTOCONF_TARGET}-"
+                    TOOLCHAIN_FLAVOUR: gcc
 
                     # Reset compiler flags
                     CPPFLAGS:   "-Wdate-time"

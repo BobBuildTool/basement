@@ -38,6 +38,7 @@ provideTools:
             AUTOCONF_HOST: "${AUTOCONF_TARGET}"
             CROSS_COMPILE: "${AUTOCONF_TARGET}-"
             TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
+            TOOLCHAIN_FLAVOUR: gcc
 
 provideVars:
     # Set some more constrained compiler flags

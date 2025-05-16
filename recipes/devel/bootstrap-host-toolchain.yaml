@@ -20,6 +20,9 @@ provideTools:
             RANLIB: "ranlib"
             READELF: "readelf"
             STRIP: "strip"
+
+            # meta information
+            TOOLCHAIN_FLAVOUR: gcc
         fingerprintIf: True
         fingerprintScript: |
             bob-libc-version gcc

@@ -134,6 +134,7 @@ provideTools:
             AUTOCONF_HOST: "${AUTOCONF_TARGET}"
             CROSS_COMPILE: "${AUTOCONF_TARGET}-"
             TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
+            TOOLCHAIN_FLAVOUR: gcc
 
     # Provide as "host-compat-toolchain". Used by recipes to explicitly compile
     # for the host, overriding their currently set default target toolchain.
@@ -165,6 +166,7 @@ provideTools:
             AUTOCONF_HOST: "${AUTOCONF_TARGET}"
             CROSS_COMPILE: "${AUTOCONF_TARGET}-"
             TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
+            TOOLCHAIN_FLAVOUR: gcc
 
             # Override compiler flags to mask active settings.
             #

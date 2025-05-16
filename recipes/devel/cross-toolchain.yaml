@@ -58,6 +58,7 @@ provideTools:
             AUTOCONF_HOST: "${AUTOCONF_TARGET}"
             CROSS_COMPILE: "${AUTOCONF_TARGET}-"
             TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
+            TOOLCHAIN_FLAVOUR: gcc
 
             # Target CPU feature flags. The "toolchain-feature" function
             # implicitly reads ARCH, CROSS_TOOLCHAIN_CPU, GCC_TARGET_ARCH and
