@@ -169,7 +169,6 @@ multiPackage:
                     CC: "${AUTOCONF_TARGET}-gcc"
                     CPP: "${AUTOCONF_TARGET}-cpp"
                     CXX: "${AUTOCONF_TARGET}-g++"
-                    GDB: "${AUTOCONF_TARGET}-gdb"
                     LD: "${AUTOCONF_TARGET}-ld"
                     NM: "${AUTOCONF_TARGET}-nm"
                     OBJCOPY: "${AUTOCONF_TARGET}-objcopy"

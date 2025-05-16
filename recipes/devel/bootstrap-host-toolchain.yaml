@@ -13,7 +13,6 @@ provideTools:
             CC: "gcc"
             CPP: "cpp"
             CXX: "g++"
-            GDB: "gdb"
             LD: "ld"
             NM: "nm"
             OBJCOPY: "objcopy"
