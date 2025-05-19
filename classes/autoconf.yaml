@@ -25,21 +25,26 @@ checkoutSetup: |
     #
     # Options: -a     Run "aclocal -I m4 --install" before autoreconf
     #          -A     Add argument to aclocal, replacing the default ones
+    #          -u     Just update, no force install (remove "-fi" switch)
     autoconfReconfigure()
     {
+        local AUTORECONF_FORCE=y
         local CALL_ACLOCAL=
         local ACLOCAL_ARGS=()
 
         # parse arguments
         OPTIND=1
         local opt
-        while getopts "aA:" opt ; do
+        while getopts "aA:u" opt ; do
             case "$opt" in
                 a)
                     CALL_ACLOCAL=y
                     ;;
                 A)
                     ACLOCAL_ARGS+=( "$OPTARG" )
+                    ;;
+                u)
+                    AUTORECONF_FORCE=
                     ;;
                 \?)
                   echo "Invalid option: -$OPTARG" >&2
@@ -73,7 +78,8 @@ checkoutSetup: |
                         aclocal -I m4 --install
                     fi
                 fi
-                autoreconf -vfi ${AUTOCONF_EXTRA_PKGS[@]+"${AUTOCONF_EXTRA_PKGS[@]/#/-I}"}
+                autoreconf -v ${AUTORECONF_FORCE:+-fi} \
+                    ${AUTOCONF_EXTRA_PKGS[@]+"${AUTOCONF_EXTRA_PKGS[@]/#/-I}"}
             )
             rm -rf autom4te.cache
             find . -name '*.bob-backup' -delete
