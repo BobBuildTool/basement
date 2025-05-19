@@ -1,0 +1,42 @@
+diff -Nurp a/m4/libtool.m4 workspace/m4/libtool.m4
+--- a/m4/libtool.m4	2024-03-10 17:09:20.797914329 +0100
++++ workspace/m4/libtool.m4	2024-03-10 17:15:58.758398735 +0100
+@@ -2507,6 +2507,16 @@ beos*)
+   shlibpath_var=LIBRARY_PATH
+   ;;
+ 
++l4re*)
++  version_type=linux
++  need_lib_prefix=no
++  need_version=no
++  library_names_spec='$libname$release$shared_ext$versuffix $libname$release$shared_ext$major $libname$shared_ext'
++  soname_spec='$libname$release$shared_ext$major'
++  dynamic_linker="$host_os ld.so"
++  shlibpath_var=LIBRARY_PATH
++  ;;
++
+ bsdi[[45]]*)
+   version_type=linux # correct to gnu/linux during the next big refactor
+   need_version=no
+@@ -3541,6 +3551,10 @@ irix5* | irix6* | nonstopux*)
+   lt_cv_deplibs_check_method=pass_all
+   ;;
+ 
++l4re*)
++  lt_cv_deplibs_check_method=pass_all
++  ;;
++
+ # This must be glibc/ELF.
+ linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
+   lt_cv_deplibs_check_method=pass_all
+@@ -6766,6 +6780,10 @@ if test yes != "$_lt_caught_CXX_error";
+         _LT_TAGVAR(ld_shlibs, $1)=yes
+         ;;
+ 
++      l4re*)
++        _LT_TAGVAR(ld_shlibs, $1)=yes
++        ;;
++
+       haiku*)
+         _LT_TAGVAR(archive_cmds, $1)='$CC -shared $libobjs $deplibs $compiler_flags $wl-soname $wl$soname -o $lib'
+         _LT_TAGVAR(link_all_deplibs, $1)=yes

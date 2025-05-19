@@ -17,7 +17,7 @@ checkoutSCM:
 
 checkoutDeterministic: True
 checkoutScript: |
-    patchApplySeries $<<libtool/buildroot-libtool-v2.4.4.patch>>
+    patchApplySeries $<@libtool/*.patch@>
 
 multiPackage:
     # Special package which does not depend on autotools class and does not use
