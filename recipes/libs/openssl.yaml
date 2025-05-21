@@ -32,11 +32,11 @@ buildScript: |
             SHARED_STATIC=( "-static" "zlib" )
             ;;
         shared)
-            SHARED_STATIC=( "shared" "zlib-dynamic" )
+            SHARED_STATIC=( "shared" "zlib" )
             SHARED_ONLY="true"
             ;;
         both)
-            SHARED_STATIC=( "shared" "zlib-dynamic" )
+            SHARED_STATIC=( "shared" "zlib" )
             ;;
     esac
 
