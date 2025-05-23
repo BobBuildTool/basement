@@ -125,6 +125,12 @@ multiPackage:
     # available for special use cases.
     "": {}
 
+    x86_64-l4re:
+        environment:
+            AUTOCONF_TARGET: "x86_64-l4re"
+            ARCH: "x86_64"
+            GCC_LIBC: "uclibc-l4re"
+
     # x86_64 "cross" compiling toolchain. Ships its own glibc.
     x86_64-linux-gnu:
         environment:
@@ -156,6 +162,13 @@ multiPackage:
             ARCH: "arm"
             GCC_ENABLE_LANGUAGES: "c"
             GCC_LIBC: "newlib"
+
+    aarch64-l4re:
+        environment:
+            AUTOCONF_TARGET: "aarch64-l4re"
+            ARCH: "arm64"
+            GCC_LIBC: "uclibc-l4re"
+            GCC_TARGET_ARCH: "armv8-a"
 
     # ARMv8-A AArch64 Linux toolchain
     aarch64-linux-gnu:
