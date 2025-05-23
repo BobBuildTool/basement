@@ -1,0 +1,28 @@
+From 2ea6534db19dd53eb6ab313d3b6d3045538da1cc Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20Kl=C3=B6tzke?= <jan.kloetzke@kernkonzept.com>
+Date: Mon, 12 May 2025 16:57:29 +0200
+Subject: [PATCH 4/5] gcc: add arch-specific system header dir
+
+It looks like L4Re is the only one requiring an additional architecture
+specific header directory...
+---
+ gcc/cppdefault.cc | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/gcc/cppdefault.cc b/gcc/cppdefault.cc
+index 141bb4d25f6..77334f71cf2 100644
+--- a/gcc/cppdefault.cc
++++ b/gcc/cppdefault.cc
+@@ -95,6 +95,9 @@ const struct default_include cpp_include_defaults[]
+     /* Another place the target system's headers might be.  */
+     { TOOL_INCLUDE_DIR, "BINUTILS", 0, 1, 0, 0 },
+ #endif
++#ifdef NATIVE_SYSTEM_HEADER_DIR_ARCH
++    { NATIVE_SYSTEM_HEADER_DIR_ARCH, NATIVE_SYSTEM_HEADER_COMPONENT, 0, 1, 1, 0 },
++#endif
+ #ifdef NATIVE_SYSTEM_HEADER_DIR
+     /* /usr/include comes dead last.  */
+     { NATIVE_SYSTEM_HEADER_DIR, NATIVE_SYSTEM_HEADER_COMPONENT, 0, 0, 1, 2 },
+-- 
+2.39.5
+

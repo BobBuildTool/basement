@@ -1,4 +1,4 @@
-inherit: [make, install, patch, libtool]
+inherit: [autoconf, make, patch, install, "basement::update-config"]
 
 metaEnvironment:
     PKG_VERSION: "13.3.0"
@@ -15,6 +15,12 @@ depends:
           - libs::mpfr-tgt
           - libs::mpc-tgt
           - libs::isl-tgt
+
+    # We need explicitly autoconf-2.69 for gcc! Oh lord.
+    - name: devel::autotools-2.69
+      use: [tools]
+      tools:
+          target-toolchain: host-compat-toolchain
 
 Config:
     GCC_TARGET_ARCH:
@@ -53,9 +59,13 @@ checkoutSCM:
 
 checkoutDeterministic: True
 checkoutScript: |
-    patchApplySeries -p1 \
-        $<<gcc/0001-squash-multilib-libdir-suffix.patch>> \
-        $<<gcc/0003-Remove-crypt-and-crypt_r-interceptors.patch>>
+    patchApplySeries $<@gcc/*.patch@>
+
+    for i in gcc libstdc++-v3 ; do
+        pushd $i
+        autoconfReconfigure -u
+        popd
+    done
 
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET, GCC_TARGET_ABI,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU,
@@ -197,6 +207,8 @@ multiPackage:
                     if: "$(eq,${GCC_LIBC},newlib)"
                   - name: libs::uclibc-ng
                     if: "$(eq,${GCC_LIBC},uclibc-ng)"
+                  - name: libs::uclibc-l4re
+                    if: "$(eq,${GCC_LIBC},uclibc-l4re)"
 
         Config:
             GCC_LIBC:
@@ -206,6 +218,7 @@ multiPackage:
                     glibc:
                     newlib:
                     uclibc-ng:
+                    uclibc-l4re:
 
             GCC_ENABLE_LANGUAGES:
                 help: >
@@ -250,6 +263,7 @@ multiPackage:
             - libs::glibc
             - libs::newlib
             - libs::uclibc-ng
+            - libs::uclibc-l4re
 
         multiPackage:
             # Straightforward cross compiler. This is a regular cross compiler

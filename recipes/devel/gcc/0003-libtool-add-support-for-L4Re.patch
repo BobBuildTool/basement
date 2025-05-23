@@ -1,0 +1,58 @@
+From bdb7e5ec50e4a8c2dba05275a2e2810c4bb1999d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan=20Kl=C3=B6tzke?= <jan.kloetzke@kernkonzept.com>
+Date: Mon, 12 May 2025 16:55:14 +0200
+Subject: [PATCH 3/5] libtool: add support for L4Re
+
+Unfortunately, using "autoreconf -fi" in the gcc source tree leaves
+behind an unusable mess. So instead of installing the right libtool
+version we have to patch it explicitly.
+---
+ libtool.m4 | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/libtool.m4 b/libtool.m4
+index b92e284d9f9..4f992148f57 100644
+--- a/libtool.m4
++++ b/libtool.m4
+@@ -2192,6 +2192,16 @@ beos*)
+   shlibpath_var=LIBRARY_PATH
+   ;;
+ 
++l4re*)
++  version_type=linux
++  need_lib_prefix=no
++  need_version=no
++  library_names_spec='$libname$release$shared_ext$versuffix $libname$release$shared_ext$major $libname$shared_ext'
++  soname_spec='$libname$release$shared_ext$major'
++  dynamic_linker="$host_os ld.so"
++  shlibpath_var=LIBRARY_PATH
++  ;;
++
+ bsdi[[45]]*)
+   version_type=linux
+   need_version=no
+@@ -3104,6 +3114,10 @@ irix5* | irix6* | nonstopux*)
+   lt_cv_deplibs_check_method=pass_all
+   ;;
+ 
++l4re*)
++  lt_cv_deplibs_check_method=pass_all
++  ;;
++
+ # This must be Linux ELF.
+ linux* | k*bsd*-gnu | kopensolaris*-gnu | uclinuxfdpiceabi)
+   lt_cv_deplibs_check_method=pass_all
+@@ -5806,6 +5820,10 @@ if test "$_lt_caught_CXX_error" != yes; then
+       gnu*)
+         ;;
+ 
++      l4re*)
++        _LT_TAGVAR(ld_shlibs, $1)=yes
++        ;;
++
+       haiku*)
+         _LT_TAGVAR(archive_cmds, $1)='$CC -shared $libobjs $deplibs $compiler_flags ${wl}-soname $wl$soname -o $lib'
+         _LT_TAGVAR(link_all_deplibs, $1)=yes
+-- 
+2.39.5
+
