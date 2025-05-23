@@ -9,6 +9,10 @@ checkoutSCM:
     digestSHA1: "44da41792c60419863d7e13fa1deaf6b24dd69b8"
     stripComponents: 1
 
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<@binutils/*.patch@>
+
 # Some parts are compiled for the host during compilation. Hence we need the
 # host toolchain too.
 buildTools: [host-toolchain, bison, m4]
