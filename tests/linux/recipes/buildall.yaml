@@ -4,9 +4,11 @@ root: !expr |
   "${BOB_HOST_PLATFORM}" == "linux"
 
 depends:
+    - devel::cross-toolchain-x86_64-l4re
     - devel::cross-toolchain-x86_64-linux-gnu
     - devel::cross-toolchain-arm-linux-gnueabihf
     - devel::cross-toolchain-arm-none-eabi
+    - devel::cross-toolchain-aarch64-l4re
     - devel::cross-toolchain-aarch64-linux-gnu
     - devel::cross-toolchain-aarch64-none-elf
     - devel::ocaml

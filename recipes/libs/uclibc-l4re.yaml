@@ -1,0 +1,49 @@
+inherit: [make, strip, patch]
+
+checkoutSCM:
+    - scm: url
+      dir: .
+      url: https://github.com/kernkonzept/mk/archive/bd33b157a8b160967340f56c37f548b07c983417.tar.gz
+      digestSHA1: 4e329a85cb50511df2360cb041421dcf0229ff55
+      stripComponents: 1
+    - scm: url
+      dir: pkg/l4re-core
+      url: https://github.com/kernkonzept/l4re-core/archive/3e8d8f8c9a527d8680b463d58ea016954348774d.tar.gz
+      digestSHA1: 81e908bc24b90bd481fe48309d34cbb36a43197d
+      stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<@uclibc-l4re/*.patch@>
+
+buildTools: [host-toolchain, target-toolchain, flex, bison, m4]
+buildVars: [ARCH, CROSS_COMPILE]
+buildScript: |
+    case $ARCH in
+        arm64)
+            DEFCONFIG=config.arm64-virt-v8a
+            ;;
+        x86_64)
+            DEFCONFIG=config.amd64
+            ;;
+        *)
+            echo "Unsupported: $ARCH" >&2
+            exit 1
+    esac
+
+    if [[ ! -e build/.bob-init-done ]] ; then
+        cp "$1/mk/defconfig/$DEFCONFIG" defconfig
+        echo "CONFIG_COMPILER_RT_USE_TOOLCHAIN_LIBGCC=n" >> defconfig
+        echo "CONFIG_BID_STRIP_BINARIES=n" >> defconfig
+        rm -rf build
+        makeParallel -C "$1" B="$PWD/build" DEFCONFIG="$PWD/defconfig"
+        makeParallel -C build olddefconfig
+        touch build/.bob-init-done
+    fi
+
+    cd build
+    makeParallel sysroot
+
+packageScript: |
+    cp -a $1/build/sysroot/* .
+    stripAll .

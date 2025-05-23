@@ -1,7 +1,7 @@
 # Dedicated autotools class for packages that only use scripting languages.
 # This class will never cross-compile because it does not depend on the
 # target toolchain at all.
-inherit: [make, install]
+inherit: [make, install, "basement::update-config"]
 
 buildSetup: |
     # $1 : source path

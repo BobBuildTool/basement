@@ -1,4 +1,4 @@
-inherit: [autotools, patch]
+inherit: [autotools, autoconf, patch]
 
 metaEnvironment:
     PKG_VERSION: "3.2.1"
@@ -12,6 +12,7 @@ checkoutSCM:
 checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<@libffi/*.diff@>
+    autoconfReconfigure -a
 
 buildScript: |
    autotoolsBuild $1
