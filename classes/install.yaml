@@ -35,6 +35,8 @@ packageSetup: |
         local K V
 
         while IFS=: read -r K V ; do
+            # remove any comments at the end of line
+            V="${V%%#*}"
             # Skip empty values to not introduce empty elements in the Requires
             # list that lead to parsing errors.
             if [[ $V == *([[:space:]]) ]] ; then
