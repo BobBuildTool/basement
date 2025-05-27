@@ -41,6 +41,11 @@ packageSetup: |
                 echo "$K"
                 continue
             fi
+            # Skip values which are a comment
+            if [[ $V =~ [:space:]*#+.* ]] ; then
+                echo "$K"
+                continue
+            fi
             case "$K" in
                 Requires|Requires.private)
                     Requires+=( "$V" )
