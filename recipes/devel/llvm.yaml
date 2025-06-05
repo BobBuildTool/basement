@@ -1,0 +1,283 @@
+inherit: [cmake, python3, patch]
+
+metaEnvironment:
+    PKG_VERSION: "20.1.2"
+    PKG_DESCRIPTION: "A collection of modular and reusable compiler and toolchain technologies"
+    PKG_LICENSE: "Apache-2.0 WITH LLVM-exception"
+
+checkoutSCM:
+    scm: url
+    url: ${GITHUB_MIRROR}/llvm/llvm-project/archive/refs/tags/llvmorg-${PKG_VERSION}.tar.gz
+    digestSHA256: 9ee597456405ddf4809bcf66a4765137a68a85361347ca2a4bb13d9176e932ab
+    stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries -p1 $<<llvm/*.patch>>
+
+privateEnvironment:
+    LLVM_TARGETS: "${LLVM_TARGETS:-X86;AArch64}"
+
+depends:
+    - libs::libffi-dev
+    - libs::zlib-dev
+    - use: []
+      depends:
+          - libs::libffi-tgt
+          - libs::zlib-tgt
+
+multiPackage:
+    libclc:
+        inherit: [clang]
+
+        depends:
+            - name: devel::llvm-native-tools
+              use: [tools]
+              tools:
+                  target-toolchain: host-compat-toolchain
+
+            - devel::llvm-libs-dev
+            - use: []
+              depends:
+                  - devel::llvm-libs-tgt
+
+        buildVars: [LLVM_TARGETS]
+        buildTools: [llvm_native_tools]
+        buildScript: |
+            export PATH=".:${PATH}" # fix prepare_builtins command not found error
+            cmakeBuild $1/libclc \
+               -DLLVM_ENABLE_FFI=ON                      \
+               -DLLVM_ENABLE_RTTI=ON                     \
+               -DCMAKE_BUILD_TYPE=Release      \
+               -DLLVM_TARGETS_TO_BUILD="${LLVM_TARGETS}" \
+               -DLLVM_NATIVE_TOOL_DIR=${BOB_TOOL_PATHS[llvm_native_tools]} \
+               -DLIBCLC_CUSTOM_LLVM_TOOLS_BINARY_DIR=${BOB_TOOL_PATHS[llvm_native_tools]}
+
+        multiPackage:
+            dev:
+                provideDeps: ['*-dev']
+                packageScript: |
+                    cmakePackageDev
+            tgt:
+                provideDeps: ['*-tgt']
+                packageScript: |
+                    cmakePackageTgt
+    libs:
+        inherit: [clang]
+
+        depends:
+            - name: devel::llvm-native-tools
+              use: [tools]
+              tools:
+                  target-toolchain: host-compat-toolchain
+
+        buildVars: [LLVM_TARGETS]
+        buildTools: [llvm_native_tools]
+        buildScript: |
+            cmakeBuild $1/llvm \
+               -DLLVM_ENABLE_FFI=ON                      \
+               -DCMAKE_BUILD_TYPE=Release                \
+               -DLLVM_ENABLE_RTTI=ON                     \
+               -DLLVM_ENABLE_PROJECTS="clang"            \
+               -DLLVM_TARGETS_TO_BUILD="${LLVM_TARGETS}" \
+               -DLLVM_INCLUDE_BENCHMARKS=OFF             \
+               -DLLVM_INCLUDE_DOCS=OFF                   \
+               -DLLVM_INCLUDE_EXAMPLES=OFF               \
+               -DLLVM_INCLUDE_TESTS=OFF                  \
+               -DLLVM_ENABLE_ZSTD=OFF                    \
+               -DLLVM_ENABLE_OCAMLDOC=OFF                \
+               -DCMAKE_BUILD_TYPE=Release                \
+               -DLLVM_HOST_TRIPLE=${AUTOCONF_HOST}       \
+               -DLLVM_NATIVE_TOOL_DIR=${BOB_TOOL_PATHS[llvm_native_tools]}
+
+        multiPackage:
+            dev:
+                provideDeps: ['*-dev']
+                packageScript: |
+                    # this doesn't work without the shared libs:
+                    # CMake Error at usr/lib/cmake/llvm/LLVMExports.cmake:1044 (message):
+                    #   The imported target "LTO" references the file
+                    #
+                    #      "usr/lib/libLTO.so.19.1"
+                    export INSTALL_SHARED=yes
+                    cmakePackageDev
+                    # also package the binaries. Otherwise errors like
+                    # CMake Error at usr/lib/cmake/llvm/LLVMExports.cmake:1044 (message):
+                    #  The imported target "llvm-tblgen" references the file
+                    #     "usr/bin/llvm-tblgen"
+                    cmakePackageBin
+
+            tgt:
+                provideDeps: ['*-tgt']
+                packageScript: |
+                    cmakePackageLib $1 "!/usr/lib/clang/***" "!/usr/lib/libclang**"
+                    # FIXME: installPackageLib copies excluded libs. remove them again
+                    rm usr/lib/clang usr/lib/libclang* -rf
+    "":
+        # this builds the llvm toolchain as well as the native tools needed for cross compiling
+        # the libs.
+        inherit: [ocaml]
+
+        depends:
+            - devel::binutils-dev
+            - libs::ncurses-dev
+
+            - tools:
+                  host-toolchain: host-compat-toolchain
+              depends:
+                  - name: devel::ocaml
+                    use: [tools]
+                    forward: True
+                  - name: devel::opam
+                    use: [tools]
+                    forward: True
+                  - name: devel::ocamlfind
+                    use: [tools]
+                    forward: True
+
+            - libs::ocaml-ctypes-dev
+
+        buildVars: [LLVM_TARGETS]
+        buildTools: [ocaml, ocamlfind]
+        buildScript: |
+            cmakeBuild $1/llvm \
+               -DLLVM_ENABLE_FFI=ON                      \
+               -DCMAKE_BUILD_TYPE=Release                \
+               -DLLVM_ENABLE_RTTI=ON                     \
+               -DLLVM_ENABLE_PROJECTS="clang;lld;clang-tools-extra" \
+               -DLLVM_TARGETS_TO_BUILD="${LLVM_TARGETS}" \
+               -DLLVM_INCLUDE_BENCHMARKS=OFF             \
+               -DLLVM_INCLUDE_DOCS=OFF                   \
+               -DLLVM_INCLUDE_EXAMPLES=OFF               \
+               -DLLVM_INCLUDE_TESTS=OFF                  \
+               -DCMAKE_BUILD_TYPE=Release                \
+               -DCLANG_DEFAULT_PIE_ON_LINUX=OFF          \
+               -DCLANG_ENABLE_CLANGD=On                  \
+               -DLLVM_ENABLE_OCAMLDOC=OFF                \
+               -DLIBCLANG_BUILD_STATIC=ON                \
+               -DLLVM_ENABLE_ZSTD=OFF                    \
+
+        multiPackage:
+            native-tools:
+                # This package is needed to avoid recompiling the host-tools when building the target
+                # libs. See  -DLLVM_NATIVE_TOOL_DIR= setting above.
+                packageScript: |
+                    cmakePackageBin
+                provideTools:
+                    llvm_native_tools: "bin"
+            "":
+                shared: True
+                packageScript: |
+                    cmakePackageBin
+                    # rsync -a --delete $1/install/ .
+
+                    pushd usr/bin
+
+                    # taken from:
+                    # https://github.com/openembedded/openembedded-core/blob/master/meta/\
+                    #   recipes-devtools/llvm/llvm/llvm-config
+                    mv llvm-config _llvm-config
+
+                    cat > llvm-config << 'EOF'
+                    #!/bin/bash
+                    #
+                    # Copyright OpenEmbedded Contributors
+                    #
+                    # SPDX-License-Identifier: MIT
+                    #
+                    # Wrap llvm-config since the native llvm-config will remap some values correctly
+                    # if placed in the target sysroot but for flags, it would provide the native ones.
+                    # Provide ours from the environment instead.
+
+                    NEXT_LLVM_CONFIG="$(which _llvm-config)"
+                    if [[ $# == 0 ]]; then
+                      exec "$NEXT_LLVM_CONFIG"
+                    fi
+
+                    remain=""
+                    output=""
+                    for arg in "$@"; do
+                      case "$arg" in
+                        --cppflags)
+                         output="${output} ${LLVM_CXXFLAGS:-${CPPFLAGS}}"
+                          ;;
+                        --cflags)
+                          output="${output} ${LLVM_CFLAGS:-${CFLAGS}}"
+                          ;;
+                        --cxxflags)
+                          output="${output} ${LLVM_CXXFLAGS:-${CXXFLAGS}}"
+                          ;;
+                        --ldflags)
+                          output="${output} ${LLVM_LDFLAGS:-${LLVM_LDFLAGS}}"
+                          ;;
+                        --shared-mode)
+                          output="${output} shared"
+                          ;;
+                        #--libs)
+                        #  output="${output} -lLLVM"
+                        #  ;;
+                        --link-shared)
+                          break
+                          ;;
+                        *)
+                          remain="${remain} ${arg}"
+                          ;;
+                      esac
+                    done
+
+                    if [ "${remain}" != "" ]; then
+                          output="${output} "$("$NEXT_LLVM_CONFIG" ${remain})
+                    fi
+
+                    echo "${output}"
+                    EOF
+                    chmod +x llvm-config
+
+                    # Provide some wrapper scripts to make clang use the correct target + sysroot.
+                    # We can not access $BOB_TOOL_PATHS from a wrapper script but we need to pass the
+                    # gcc-toolchain and the sysroot to clang. To solve this the clang-class provides
+                    # CLANG_TARGET_TOOLCHAIN.
+                    mkdir -p _
+                    pushd _
+                    ln -snf ../clang-19 clang
+                    ln -snf ../clang-19 clang++
+                    popd
+
+                    rm clang clang++
+
+                    cat > "clang" << EOF
+                    #!/bin/bash
+                    if [[ -z \${CLANG_TARGET+x} ]]; then
+                       CLANG_TARGET="--target=\${AUTOCONF_TARGET:-\${AUTOCONF_HOST}}"
+                    fi
+                    exec \$(dirname \$(realpath "\${BASH_SOURCE[0]}"))/_/clang \
+                                \${CLANG_TARGET} \
+                                \${TOOLCHAIN_SYSROOT:+--sysroot=\${CLANG_TARGET_TOOLCHAIN}/\${TOOLCHAIN_SYSROOT}} \
+                                \${CLANG_GCC_INSTALL_DIR:+--gcc-install-dir=\${CLANG_GCC_INSTALL_DIR}} \
+                                \${CLANG_TARGET_TOOLCHAIN:+-L \${CLANG_TARGET_TOOLCHAIN}/../lib} \
+                               "\$@" \
+                               -Wno-unused-command-line-argument \
+                               -Wno-error=unused-command-line-argument
+                    EOF
+
+                    cat > "clang++" << EOF
+                    #!/bin/bash
+                    if [[ -z \${CLANG_TARGET+x} ]]; then
+                       CLANG_TARGET="--target=\${AUTOCONF_TARGET:-\${AUTOCONF_HOST}}"
+                    fi
+                    exec \$(dirname \$(realpath "\${BASH_SOURCE[0]}"))/_/clang++ \
+                                \${CLANG_TARGET} \
+                                \${TOOLCHAIN_SYSROOT:+--sysroot=\${CLANG_TARGET_TOOLCHAIN}/\${TOOLCHAIN_SYSROOT}} \
+                                \${CLANG_GCC_INSTALL_DIR:+--gcc-install-dir=\${CLANG_GCC_INSTALL_DIR}} \
+                                \${CLANG_TARGET_TOOLCHAIN:+-L \${CLANG_TARGET_TOOLCHAIN}/../lib} \
+                                -stdlib=libstdc++ \
+                               "\$@" \
+                               -Wno-unused-command-line-argument \
+                               -Wno-error=unused-command-line-argument
+                    EOF
+                    chmod +x clang clang++
+
+                    stripAll .
+
+                provideTools:
+                    clang: "usr/bin"
