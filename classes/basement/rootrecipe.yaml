@@ -83,6 +83,12 @@ depends:
           - name: core::util-linux
             use: [tools]
             forward: True
+          - name: devel::llvm
+            use: [tools]
+            forward: true
+          - name: devel::llvm-clang
+            use: [tools]
+            forward: true
 
     - if: !expr |
         "${BOB_HOST_PLATFORM}" == "msys"

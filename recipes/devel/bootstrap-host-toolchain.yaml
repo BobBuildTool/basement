@@ -13,7 +13,6 @@ provideTools:
             CC: "gcc"
             CPP: "cpp"
             CXX: "g++"
-            GDB: "gdb"
             LD: "ld"
             NM: "nm"
             OBJCOPY: "objcopy"
@@ -21,6 +20,9 @@ provideTools:
             RANLIB: "ranlib"
             READELF: "readelf"
             STRIP: "strip"
+
+            # meta information
+            TOOLCHAIN_FLAVOUR: gcc
         fingerprintIf: True
         fingerprintScript: |
             bob-libc-version gcc

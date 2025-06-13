@@ -1,7 +1,7 @@
 inherit: [autoconf, make, patch, install, "basement::update-config"]
 
 metaEnvironment:
-    PKG_VERSION: "13.3.0"
+    PKG_VERSION: "13.4.0"
 
 depends:
     - libs::gmp-dev
@@ -54,7 +54,8 @@ Config:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gcc/gcc-${PKG_VERSION}/gcc-${PKG_VERSION}.tar.xz
-    digestSHA256: "0845e9621c9543a13f484e94584a49ffc0129970e9914624235fc1d061a0c083"
+    digestSHA512: "9b4b83ecf51ef355b868608b8d257b2fa435c06d2719cb86657a7c2c2a0828f\
+                   f4ce04e9bac1055bbcad8ed5b4da524cafaef654785e23a50233d95d89201e35f"
     stripComponents: 1
 
 checkoutDeterministic: True
@@ -169,7 +170,6 @@ multiPackage:
                     CC: "${AUTOCONF_TARGET}-gcc"
                     CPP: "${AUTOCONF_TARGET}-cpp"
                     CXX: "${AUTOCONF_TARGET}-g++"
-                    GDB: "${AUTOCONF_TARGET}-gdb"
                     LD: "${AUTOCONF_TARGET}-ld"
                     NM: "${AUTOCONF_TARGET}-nm"
                     OBJCOPY: "${AUTOCONF_TARGET}-objcopy"
@@ -184,6 +184,7 @@ multiPackage:
                     ARCH: "${ARCH}"
                     AUTOCONF_HOST: "${AUTOCONF_TARGET}"
                     CROSS_COMPILE: "${AUTOCONF_TARGET}-"
+                    TOOLCHAIN_FLAVOUR: gcc
 
                     # Reset compiler flags
                     CPPFLAGS:   "-Wdate-time"

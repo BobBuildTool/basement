@@ -1,0 +1,32 @@
+From: Ralf Hubert <ralf.hubert@secunet.com>
+Date: Thu, 23 Jan 2025 05:13:11 +0000
+Subject: AddOcaml: extract additional linker flags + disable doc
+
+Ocaml can't handle all the linker flags we usually provide. But the
+linker search paths provided to cmake are neccessary for linking the
+ocal bindings.
+---
+ llvm/cmake/modules/AddOCaml.cmake | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/llvm/cmake/modules/AddOCaml.cmake b/llvm/cmake/modules/AddOCaml.cmake
+index 2d9116b08a526..6c94f94c8d033 100644
+--- a/llvm/cmake/modules/AddOCaml.cmake
++++ b/llvm/cmake/modules/AddOCaml.cmake
+@@ -66,6 +66,13 @@ function(add_ocaml_library name)
+     list(APPEND ocaml_flags "-custom")
+   endif()
+ 
++  separate_arguments(flags UNIX_COMMAND ${CMAKE_MODULE_LINKER_FLAGS})
++  foreach(link_flag ${flags})
++    if (link_flag MATCHES "-L.*")
++      list(APPEND ocaml_flags ${link_flag})
++    endif()
++  endforeach()
++
+   if(LLVM_LINK_LLVM_DYLIB)
+     list(APPEND ocaml_flags "-lLLVM")
+   else()
+-- 
+GitLab
+

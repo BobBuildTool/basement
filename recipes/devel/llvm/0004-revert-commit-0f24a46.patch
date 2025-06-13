@@ -1,0 +1,24 @@
+From: Jan Klötzke <jan@kloetzke.net>
+Subject: Revert commit 0f24a46
+
+Adding the full path of the zstd library breaks the OCaml binding link.
+
+diff --git a/llvm/lib/Support/CMakeLists.txt b/llvm/lib/Support/CMakeLists.txt
+index 0c69ac99f5bc6..c87785994fec7 100644
+--- a/llvm/lib/Support/CMakeLists.txt
++++ b/llvm/lib/Support/CMakeLists.txt
+@@ -323,12 +323,8 @@ if(LLVM_ENABLE_ZSTD)
+   if(NOT zstd_library)
+     get_property(zstd_library TARGET ${zstd_target} PROPERTY LOCATION)
+   endif()
+-  if (zstd_target STREQUAL zstd::libzstd_shared)
+-    get_library_name(${zstd_library} zstd_library)
+-    set(llvm_system_libs ${llvm_system_libs} "${zstd_library}")
+-  else()
+-    set(llvm_system_libs ${llvm_system_libs} "${zstd_STATIC_LIBRARY}")
+-  endif()
++  get_library_name(${zstd_library} zstd_library)
++  set(llvm_system_libs ${llvm_system_libs} "${zstd_library}")
+ endif()
+ 
+ set_property(TARGET LLVMSupport PROPERTY LLVM_SYSTEM_LIBS "${llvm_system_libs}")

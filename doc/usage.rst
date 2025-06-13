@@ -378,6 +378,9 @@ executable are:
   cross-compiling toolchain, e.g., ``riscv64-linux-gnu-`` for a RISC-V Linux
   cross toolchain. Some build systems use this method to find the right tools
   instead of the individual variables above (``AR``, ...).
+* ``TOOLCHAIN_FLAVOUR``: Basically the compiler vendor. Can be ``gcc`` which is
+  the basement layer main compiler, ``clang`` for LLVM clang and ``msvc`` for
+  Windows builds with the Microsoft Visual C++ compiler.
 
 .. attention::
    The above variables are defined by ``target-toolchain`` only. If it is

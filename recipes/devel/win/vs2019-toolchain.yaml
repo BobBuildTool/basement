@@ -15,6 +15,7 @@ provideTools:
         path: "just_a_placeholder"
         environment:
             AUTOCONF_HOST: "x86_64-pc-win32"
+            TOOLCHAIN_FLAVOUR: msvc
 
             INCLUDE: "$(vsvars2019,INCLUDE,$VC_ARCH,-vcvars_ver=$VC_VERSION)"
             LIBPATH: "$(vsvars2019,LIBPATH,$VC_ARCH,-vcvars_ver=$VC_VERSION)"

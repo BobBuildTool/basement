@@ -1,26 +1,17 @@
-inherit: [autotools, autoconf, patch]
+inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "1.07.1"
+    PKG_VERSION: "1.08.1"
 
 checkoutSCM:
     scm: url
-    url: ${GNU_MIRROR}/bc/bc-${PKG_VERSION}.tar.gz
-    digestSHA256: "62adfca89b0a1c0164c2cdca59ca210c1d44c3ffc46daf9931cf4942664cb02a"
+    url: ${GNU_MIRROR}/bc/bc-${PKG_VERSION}.tar.xz
+    digestSHA256: "515430115b3334c636317503460a0950dff79940aa3259ce2c1aa67c2881d023"
     stripComponents: 1
 
-checkoutDeterministic: True
-checkoutScript: |
-    patchApplySeries $<@bc/*.patch@>
-    autoconfReconfigure
-
-# Cannot be built out-of-tree because somebody decided some 20 years ago that
-# .info files are built in the source tree. m(
 buildTools: [flex]
 buildScript: |
-    rsync -a $1/ src
-    export MAKEINFO=true
-    autotoolsBuild $PWD/src
+    autotoolsBuild -o MAKEINFO=true -O MAKEINFO=true $1
 
 packageScript: |
     autotoolsPackageTgt

@@ -25,7 +25,6 @@ provideTools:
             CC: "${AUTOCONF_TARGET}-gcc"
             CPP: "${AUTOCONF_TARGET}-cpp"
             CXX: "${AUTOCONF_TARGET}-g++"
-            GDB: "${AUTOCONF_TARGET}-gdb"
             LD: "${AUTOCONF_TARGET}-ld"
             NM: "${AUTOCONF_TARGET}-nm"
             OBJCOPY: "${AUTOCONF_TARGET}-objcopy"
@@ -39,6 +38,7 @@ provideTools:
             AUTOCONF_HOST: "${AUTOCONF_TARGET}"
             CROSS_COMPILE: "${AUTOCONF_TARGET}-"
             TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
+            TOOLCHAIN_FLAVOUR: gcc
 
 provideVars:
     # Set some more constrained compiler flags

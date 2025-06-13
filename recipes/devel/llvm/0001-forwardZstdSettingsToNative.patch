@@ -1,0 +1,11 @@
+--- a/llvm/cmake/modules/CrossCompile.cmake	2024-11-25 21:19:32.021873064 +0100
++++ b/llvm/cmake/modules/CrossCompile.cmake	2024-11-25 21:19:34.718570373 +0100
+@@ -88,6 +88,8 @@ function(llvm_create_cross_target projec
+         -DLLVM_ENABLE_PROJECTS="${llvm_enable_projects_arg}"
+         -DLLVM_EXTERNAL_PROJECTS="${llvm_external_projects_arg}"
+         -DLLVM_ENABLE_RUNTIMES="${llvm_enable_runtimes_arg}"
++        -DLLVM_ENABLE_ZSTD="${LLVM_ENABLE_ZSTD}"
++        -DLLVM_USE_STATIC_ZSTD="${LLVM_USE_STATIC_ZSTD}"
+         ${external_project_source_dirs}
+         -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN="${LLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN}"
+         -DLLVM_INCLUDE_BENCHMARKS=OFF

@@ -13,6 +13,9 @@ depends:
     - devel::cross-toolchain-aarch64-none-elf
     - devel::ocaml
 
+    - devel::llvm-libs-dev
+    - devel::llvm-libs-tgt
+
 buildScript: |
     true
 
@@ -27,3 +30,6 @@ packageTools:
     - ninja
     - pkg-config
     - util-linux
+
+    - llvm
+    - clang

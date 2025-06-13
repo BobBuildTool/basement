@@ -9,13 +9,8 @@ checkoutSCM:
     digestSHA256: 17e88863f3600672ab49182f217281b6fc4d3c762bde361935e436a95214d05c
     extract: False
 
-buildVars: [CROSS_COMPILE, PKG_VERSION]
+buildVars: [AR, CC, NM, RANLIB, PKG_VERSION]
 buildScript: |
-    # zlib uses CROSS_PREFIX instead of CROSS_COMPILE
-    if [[ ${CROSS_COMPILE:+true} ]] ; then
-        export CROSS_PREFIX="${CROSS_COMPILE}"
-    fi
-
     # standard options
     CONFIGURE_OPTS=(
         --prefix=/usr
@@ -38,7 +33,7 @@ buildScript: |
     tar -xzf $1/v${PKG_VERSION}.tar.gz
     pushd zlib-${PKG_VERSION}
     ./configure "${CONFIGURE_OPTS[@]}"
-    make install DESTDIR=${PWD}/../install
+    makeParallel install DESTDIR=${PWD}/../install
     popd
 
     if [[ "$SHARED_ONLY" == "true" ]] ; then
