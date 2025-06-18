@@ -1,4 +1,6 @@
 buildSetup: |
+    # Updates a kconfig option
+    #
     # $1: option (e.g. ENABLE_FOO)
     # $2: replacement (e.g. "ENABLE_FOO=y" or "# ENABLE_FOO is not set")
     # $3: kconfig-file (optional, defaults to ".config")
@@ -8,6 +10,8 @@ buildSetup: |
         echo "$2" >> "${3:-.config}"
     }
 
+    # Enables a kconfig option
+    #
     # $1: option
     # $2: kconfig-file (optional, defaults to ".config")
     kconfigEnable()
@@ -15,6 +19,8 @@ buildSetup: |
         kconfigUpdate "$1" "$1=y" "${2:-.config}"
     }
 
+    # Disables a kconfig option
+    #
     # $1: option
     # $2: kconfig-file (optional, defaults to ".config")
     kconfigDisable()
@@ -22,6 +28,8 @@ buildSetup: |
         kconfigUpdate "$1" "# $1 is not set" "${2:-.config}"
     }
 
+    # Enables/disables a kconfig option
+    #
     # $1: option
     # $2: value ("n" or "0" -> disable, "y" or "1" -> enable)
     # $3: kconfig-file (optional, defaults to ".config")
@@ -38,4 +46,13 @@ buildSetup: |
                 echo "kconfigSetBool: invalid value '$2'" >&2
                 exit 1
         esac
+    }
+
+    # Checks if a kconfig option is set
+    #
+    # $1: option (e.g. ENABLE_FOO)
+    # $2: kconfig-file (optional, defaults to ".config")
+    kconfigIsSet()
+    {
+        grep -qE "^$1=y$" "${2:-.config}"
     }
