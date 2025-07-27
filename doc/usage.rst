@@ -503,11 +503,23 @@ Available development tools
 The following tools can be used by naming them in
 :external:ref:`configuration-recipes-tools`:
 
+* autotools (comprised of autoconf, automake and libtool)
 * bison
-* cpio
+* clang
+* cmake
 * flex
+* gettext
+* help2man
+* llvm
+* m4
 * make
+* meson
+* ninja
 * pkg-config
-* squashfs-tools
-* e2fsprogs
+* python3
+* texinfo
 * util-linux
+
+They are provided by default by the ``basement::rootrecipe`` class. Usually,
+these tools are picked up automatically by the respective classes and it is not
+necessary to name them explicitly.
