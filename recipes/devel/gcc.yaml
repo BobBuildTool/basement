@@ -178,6 +178,12 @@ multiPackage:
                     READELF: "${AUTOCONF_TARGET}-readelf"
                     STRIP: "${AUTOCONF_TARGET}-strip"
 
+                    # Fallback variables for recipes that cannot work with clang.
+                    GNU_CC: "${AUTOCONF_TARGET}-gcc"
+                    GNU_CPP: "${AUTOCONF_TARGET}-cpp"
+                    GNU_CXX: "${AUTOCONF_TARGET}-g++"
+                    GNU_LD: "${AUTOCONF_TARGET}-ld"
+
                     # Host system definition. Note that we do not touch the build
                     # system definition (AUTOCONF_BUILD) because this is a cross
                     # compiling toolchain.

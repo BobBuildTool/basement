@@ -33,6 +33,12 @@ provideTools:
             READELF: "${AUTOCONF_TARGET}-readelf"
             STRIP: "${AUTOCONF_TARGET}-strip"
 
+            # Fallback variables for recipes that cannot work with clang.
+            GNU_CC: "${AUTOCONF_TARGET}-gcc"
+            GNU_CPP: "${AUTOCONF_TARGET}-cpp"
+            GNU_CXX: "${AUTOCONF_TARGET}-g++"
+            GNU_LD: "${AUTOCONF_TARGET}-ld"
+
             # meta information
             ARCH: "${ARCH}"
             AUTOCONF_HOST: "${AUTOCONF_TARGET}"

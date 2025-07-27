@@ -21,6 +21,12 @@ provideTools:
             READELF: "readelf"
             STRIP: "strip"
 
+            # Fallback variables for recipes that cannot work with clang.
+            GNU_CC: "gcc"
+            GNU_CPP: "cpp"
+            GNU_CXX: "g++"
+            GNU_LD: "ld"
+
             # meta information
             TOOLCHAIN_FLAVOUR: gcc
         fingerprintIf: True
