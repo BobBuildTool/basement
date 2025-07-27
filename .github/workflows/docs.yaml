@@ -1,0 +1,21 @@
+name: docs
+description: Build Sphinx documentation
+"on": [pull_request]
+jobs:
+    docs:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Sphinx
+              run: python -m pip install sphinx sphinx-rtd-theme
+
+            - name: Build Sphinx docs
+              run: make -C doc html
+
+            - name: Store HTML docs
+              uses: actions/upload-artifact@v4
+              with:
+                  name: Sphinx-html
+                  path: doc/_build/html/
