@@ -80,8 +80,9 @@ in your project dependency list::
           use: [tools, environment]
           forward: True
 
-The following toolchains are predefined for commonly used target systems:
+The following GCC toolchains are predefined for commonly used target systems:
 
+* ``devel::cross-toolchain-aarch64-l4re``: ARMv8-A AArch64 L4Re.
 * ``devel::cross-toolchain-aarch64-linux-gnu``: ARMv8-A AArch64 Linux with glibc.
 * ``devel::cross-toolchain-aarch64-none-elf``: ARMv8-A/R AArch64 bare metal
   toolchain with newlib libc.
@@ -90,6 +91,7 @@ The following toolchains are predefined for commonly used target systems:
 * ``devel::cross-toolchain-arm-none-eabi``: ARMv7 bare metal toolchain with
   newlib libc.
 * ``devel::cross-toolchain-x86_64-linux-gnu``: x86_64 toolchain for Linux with glibc.
+* ``devel::cross-toolchain-x86_64-l4re``: x86_64 toolchain for L4Re.
 * ``devel::cross-toolchain-riscv64-linux-gnu``: RISC-V toolchain targeting the GC
   profile.
 
@@ -115,6 +117,62 @@ following variables may be optionally set when pulling in the toolchain.
 ``CROSS_TOOLCHAIN_ARCH``
     If set, adds an ``-march=`` option to the compiler flags with the value. It
     overrides the default architecture selection of the toolchain.
+
+Example::
+
+    depends:
+        - name: devel::cross-toolchain-aarch64-linux-gnu
+          use: [tools, environment]
+          forward: True
+          environment:
+              CROSS_TOOLCHAIN_CPU: neoverse-n1
+
+Using clang instead of GCC
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The same toolchains are additionally available as LLVM/clang variants. Just
+prepend a ``clang-`` prefix before the target triplet, e.g.:
+
+* ``devel::cross-toolchain-clang-aarch64-linux-gnu``
+* ``devel::cross-toolchain-clang-x86_64-linux-gnu``
+
+By default, the clang toolchains use the LLVM lld linker.  This can be
+controlled for the whole toolchain with the ``CROSS_TOOLCHAIN_CLANG_LLD``
+variable::
+
+    depends:
+        - name: devel::cross-toolchain-clang-aarch64-linux-gnu
+          use: [tools, environment]
+          forward: True
+          environment:
+              CROSS_TOOLCHAIN_CLANG_LLD: "0"
+
+Note that some recipes may not compile with clang toolchains. Such problems
+should be handled in the affected recipe directly. There are a number of
+options to deal with clang incompatibilities. In the best case, the sources can
+be patched to work with clang. If this is not feasible, the recipe may choose
+to explicitly request GCC as compiler. Override the ``CC`` and/or ``CXX``
+variable in this case::
+
+    privateEnvironment:
+        CC: "$GNU_CC"
+        CXX: "$GNU_CXX"
+
+There is also ``GNU_CPP`` (C preprocessor) and ``GNU_LD`` (linker) for packages
+that use these tools directly. In case the linker is called implicitly by
+clang, its behaviour must be controlled through ``LDFLAGS``. The default is
+selected by ``CROSS_TOOLCHAIN_CLANG_LLD``. The recipe must append to
+``LDFLAGS`` to override this default consistently::
+
+    privateEnvironment:
+        LDFLAGS: "${LDFLAGS}$(if-then-else,$(eq,$TOOLCHAIN_FLAVOUR,clang), -fuse-ld=ld,)"
+
+Likewise, additional compiler options can be passed if this fixes compile problems
+with clang. Example::
+
+    privateEnvironment:
+        # LLVM assembler is not fully compatible
+        CFLAGS: "${CFLAGS}$(if-then-else,$(eq,$TOOLCHAIN_FLAVOUR,clang), -no-integrated-as,)"
 
 Standard tools
 ~~~~~~~~~~~~~~
@@ -445,11 +503,23 @@ Available development tools
 The following tools can be used by naming them in
 :external:ref:`configuration-recipes-tools`:
 
+* autotools (comprised of autoconf, automake and libtool)
 * bison
-* cpio
+* clang
+* cmake
 * flex
+* gettext
+* help2man
+* llvm
+* m4
 * make
+* meson
+* ninja
 * pkg-config
-* squashfs-tools
-* e2fsprogs
+* python3
+* texinfo
 * util-linux
+
+They are provided by default by the ``basement::rootrecipe`` class. Usually,
+these tools are picked up automatically by the respective classes and it is not
+necessary to name them explicitly.
