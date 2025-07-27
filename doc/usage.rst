@@ -82,6 +82,7 @@ in your project dependency list::
 
 The following GCC toolchains are predefined for commonly used target systems:
 
+* ``devel::cross-toolchain-aarch64-l4re``: ARMv8-A AArch64 L4Re.
 * ``devel::cross-toolchain-aarch64-linux-gnu``: ARMv8-A AArch64 Linux with glibc.
 * ``devel::cross-toolchain-aarch64-none-elf``: ARMv8-A/R AArch64 bare metal
   toolchain with newlib libc.
@@ -90,6 +91,7 @@ The following GCC toolchains are predefined for commonly used target systems:
 * ``devel::cross-toolchain-arm-none-eabi``: ARMv7 bare metal toolchain with
   newlib libc.
 * ``devel::cross-toolchain-x86_64-linux-gnu``: x86_64 toolchain for Linux with glibc.
+* ``devel::cross-toolchain-x86_64-l4re``: x86_64 toolchain for L4Re.
 * ``devel::cross-toolchain-riscv64-linux-gnu``: RISC-V toolchain targeting the GC
   profile.
 
