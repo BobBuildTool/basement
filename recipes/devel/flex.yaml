@@ -27,4 +27,6 @@ packageScript: |
     autotoolsPackageTgt
 
 provideTools:
-    flex: usr/bin
+    flex:
+        path: usr/bin
+        dependTools: [ m4 ]
