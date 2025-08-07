@@ -2,12 +2,12 @@ checkoutDeterministic: True
 checkoutSetup: |
     patchApplySeries()
     {
-        local i p=1 fuzz=0 name=""
+        local i p=1 fuzz=0 name="" b=""
 
         # parse arguments
         OPTIND=1
         local opt
-        while getopts "n:p:F:" opt ; do
+        while getopts "n:p:F:b" opt ; do
             case "$opt" in
                 n)
                     name="-$OPTARG"
@@ -17,6 +17,9 @@ checkoutSetup: |
                     ;;
                 p)
                     p="$OPTARG"
+                    ;;
+                b)
+                    b="--binary"
                     ;;
                 \?)
                   echo "Invalid option: -$OPTARG" >&2
@@ -76,8 +79,8 @@ checkoutSetup: |
                                             p; q                    # one is enough
                                         }' "$fn" )"
             subject="$(printf "%04d-%s.patch" $i "$subject")"
-            patch --dry-run -p $p -F $fuzz -f < "$fn"
-            patch -p $p -F $fuzz -f < "$fn"
+            patch $b --dry-run -p $p -F $fuzz -f < "$fn"
+            patch $b -p $p -F $fuzz -f < "$fn"
             cp "$fn" "$name/$subject"
             echo "$subject" >> "$name/series"
         done
