@@ -4,12 +4,12 @@
 inherit: [libtool, patch]
 
 metaEnvironment:
-    PKG_VERSION: "0.29.1"
+    PKG_VERSION: "0.29.2"
 
 checkoutSCM:
     scm: url
     url: https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_VERSION}.tar.gz
-    digestSHA1: "271ce928f6d673cc16cbced2bfd14a5f2e5d3d37"
+    digestSHA1: "76e501663b29cb7580245720edfb6106164fad2b"
     stripComponents: 1
 
 checkoutDeterministic: True
