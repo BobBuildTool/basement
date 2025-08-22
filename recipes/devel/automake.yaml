@@ -16,7 +16,7 @@ checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<@automake/*.patch@>
 
-buildTools: [m4, help2man]
+buildTools: [m4, help2man, perl]
 buildScript: |
     export PATH="${BOB_DEP_PATHS[devel::autoconf]}/usr/bin:$PATH"
     autotoolsNoarchBuild $1
@@ -25,4 +25,6 @@ packageScript: |
     autotoolsNoarchPackageTgt
 
 provideTools:
-    automake: "usr/bin"
+    automake:
+        path: "usr/bin"
+        dependTools: ["perl"]
