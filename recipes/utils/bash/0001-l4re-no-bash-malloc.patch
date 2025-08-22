@@ -1,10 +1,10 @@
 diff -urN a/configure b/configure
---- a/configure	2022-09-23 16:13:22.000000000 +0200
-+++ b/configure	2024-09-05 12:08:53.493867231 +0200
-@@ -3298,6 +3298,7 @@
- *-nsk*)		opt_bash_malloc=no ;;	# HP NonStop
- *-haiku*)	opt_bash_malloc=no ;;	# Haiku OS
+--- a/configure	2025-08-15 12:40:25.114956329 +0200
++++ b/configure	2025-08-15 12:41:28.599194193 +0200
+@@ -3345,6 +3345,7 @@
  *-genode*)	opt_bash_malloc=no ;;	# Genode has no sbrk
+ i370-openedition*)	opt_bash_malloc=no LOCAL_LIBS=-lzoslib LIBS_FOR_BUILD=-lzoslib ;;	# IBM z/OS machines
+ i370-*)		opt_bash_malloc=no ;;	# generic (?) IBM 370 machines
 +*-l4re*)	opt_bash_malloc=no ;;	# L4Re's malloc is great
  esac
  
