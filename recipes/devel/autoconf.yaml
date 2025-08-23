@@ -16,7 +16,7 @@ checkoutScript: |
     # Prevent that...
     touch man/*.1
 
-buildTools: [m4]
+buildTools: [m4, perl]
 buildScript: |
     export EMACS="no"
     export HELP2MAN=false
@@ -33,4 +33,6 @@ packageScript: |
         usr/share/autoconf/m4sugar/m4sh.m4
 
 provideTools:
-    autoconf: "usr/bin"
+    autoconf:
+        path: "usr/bin"
+        dependTools: ["perl"]

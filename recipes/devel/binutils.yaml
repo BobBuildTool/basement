@@ -1,12 +1,12 @@
 inherit: [autotools, patch]
 
 metaEnvironment:
-    PKG_VERSION: "2.42"
+    PKG_VERSION: "2.45"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/binutils/binutils-${PKG_VERSION}.tar.xz
-    digestSHA1: "44da41792c60419863d7e13fa1deaf6b24dd69b8"
+    digestSHA1: "09fd8a50a95be4a94412fe3847d16280996679c5"
     stripComponents: 1
 
 checkoutDeterministic: True

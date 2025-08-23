@@ -18,4 +18,6 @@ buildScript: |
 packageScript: |
     cp -a $1/* .
 provideTools:
-    autotools: usr/bin
+    autotools:
+        path: "usr/bin"
+        dependTools: ["perl"]

@@ -23,6 +23,7 @@ checkoutScript: |
         rm -f include/curl/curlbuild.h
     fi
 
+buildTools: [perl]
 buildScript: |
     # Force configure script to use pkg-config, even when cross compiling.
     export PKGTEST=yes
