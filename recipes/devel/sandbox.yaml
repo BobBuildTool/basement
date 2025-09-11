@@ -26,6 +26,10 @@ depends:
         use: [tools]
         forward: True
     -
+        name: perl::perl
+        use: [tools]
+        forward: True
+    -
         name: devel::m4
         use: [tools]
         forward: True
@@ -81,8 +85,14 @@ depends:
     - devel::git
     - devel::patch
     - editors::ed
+    # Our host-compat-toolchain uses glibc 2.31 ATM. This version
+    # still had libcrypt support which was later removed in glibc 2.38.
+    # Since we have glibc 2.39 the is no libxcrypt in the sandbox and thus
+    # tools linked shared against the host-compat toolchains libcrypt can
+    # not be started without libxcrypt. It should be safe to remove it once
+    # we update host-compat toolchain.
+    - libs::libxcrypt-tgt
     - net::make-ca
-    - perl::perl
     - utils::bash
     - utils::bc
     - utils::bzip2

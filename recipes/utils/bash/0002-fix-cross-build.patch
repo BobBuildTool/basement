@@ -1,0 +1,22 @@
+From: Ralf Hubert <rhubert@gmx.de>
+Subject: [PATCH] Fix cross build
+
+Bash has CFLAGS and CFLAGS_FOR_BUILD. CFLAGS are used for (cross)compiling
+bash, while CFLAGS_FOR_BUILD are used with the host-gcc. Therefore, the
+CROSS_COMPILE information needs to be at CFLAGS instead of CFLAGS_FOR_BUILD.
+Otherwise, the wrong settings detected by configure are picked up.
+
+--- a/builtins/Makefile.in	2025-08-15 14:00:35.031135773 +0200
++++ b/builtins/Makefile.in	2025-08-15 13:30:10.331840411 +0200
+@@ -59,8 +59,8 @@
+ DEBUG = @DEBUG@
+ 
+ PROFILE_FLAGS = @PROFILE_FLAGS@
+-CFLAGS = @CFLAGS@
+-CFLAGS_FOR_BUILD = @CFLAGS_FOR_BUILD@ @CROSS_COMPILE@
++CFLAGS = @CFLAGS@ @CROSS_COMPILE@
++CFLAGS_FOR_BUILD = @CFLAGS_FOR_BUILD@
+ STYLE_CFLAGS = @STYLE_CFLAGS@
+ CPPFLAGS = @CPPFLAGS@
+ CPPFLAGS_FOR_BUILD = @CPPFLAGS_FOR_BUILD@
+

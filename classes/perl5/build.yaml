@@ -1,0 +1,14 @@
+inherit: [perl5, 'basement::bits::libs']
+
+depends:
+    - name: perl::perl-dev
+      use: [result, deps, environment]
+
+buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, PERL_ARCH, PERL_VERSION]
+buildSetup: |
+    export PERL_INC=${BOB_DEP_PATHS['perl::perl-dev']}/usr/lib/perl5/${PERL_VERSION}/${PERL_ARCH}/CORE
+    export PERL_SRC=${BOB_DEP_PATHS['perl::perl-dev']}/usr/lib/perl5/${PERL_VERSION}
+    export PERL_ARCHLIB=${BOB_DEP_PATHS['perl::perl-dev']}/usr/lib/perl5/${PERL_VERSION}/${PERL_ARCH}
+    if basementBitsCrossCompiling; then
+      export PERLCONFIGTARGET=yes
+    fi

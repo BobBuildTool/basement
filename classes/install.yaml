@@ -10,7 +10,7 @@ inherit: [strip, "basement::bits::libs"]
 # be adapted to promote *.private dependencies to regular dependencies (We do
 # not pass --static to pkg-config.  Executables are still linked dynamically
 # because glibc cannot be linked statically).
-packageVars: [READELF]
+packageVars: [READELF, INSTALL_APPLY_SHEBANG_FIXUP]
 packageSetup: |
     case "$(basementBitsLibraryType)" in
         shared|both)
@@ -163,6 +163,25 @@ packageSetup: |
         fi
     }
 
+    # replace absolute interpreter paths with /usr/bin/env <interpreter>
+    installFixShebang()
+    {
+        local f old new
+        while IFS= read -r -d $'\0' f; do
+            if cmp -s -n2 "$f" <<<'#!' ; then
+                read -r old_cmd old_arg < "$f"
+                if [[ "$old_cmd" == "#!/usr/bin/env" ]]; then
+                    continue
+                else
+                    old_cmd="${old_cmd:2}"
+                    old_cmd="${old_cmd##*/}"
+                fi
+                new="#!/usr/bin/env ${old_arg:+-S }${old_cmd}${old_arg:+ ${old_arg@Q}}"
+                sed -i -e "1c $new" "$f"
+            fi
+       done < <(find "${1:-.}" -type f -perm -/111 -print0)
+    }
+
     # Everything except shared or static libraries or header files.
     installPackageBin()
     {
@@ -173,6 +192,9 @@ packageSetup: |
             "!/usr/share/pkgconfig" \
             "!/usr/lib/cmake"
         installStripAll .
+        if [[ ${INSTALL_APPLY_SHEBANG_FIXUP:-yes} != no ]] ; then
+            installFixShebang
+        fi
     }
 
     installPackageTgt()
