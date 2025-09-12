@@ -163,23 +163,34 @@ packageSetup: |
         fi
     }
 
-    # replace absolute interpreter paths with /usr/bin/env <interpreter>
+    # Replace absolute interpreter paths with "/usr/bin/env <interpreter>" for
+    # all executable scripts in directory.
+    #
+    # $1: directory (optional, defaults to ".")
     installFixShebang()
     {
-        local f old new
+        local shebang
         while IFS= read -r -d $'\0' f; do
-            if cmp -s -n2 "$f" <<<'#!' ; then
-                read -r old_cmd old_arg < "$f"
-                if [[ "$old_cmd" == "#!/usr/bin/env" ]]; then
-                    continue
+            read -n 4096 -r shebang < "$f"
+            if [[ "${shebang:0:2}" == "#!" ]] ; then
+                # Match part after "#!". Tabs and spaces before and after the
+                # command are stripped by the kernel. We need to do the same!
+                if [[ "${shebang:2}" =~ ^[$' \t']*([$'^ \t']+)[$' \t']*(.*)$ ]] ; then
+                    case "${BASH_REMATCH[1]}" in
+                        /usr/bin/env | /bin/sh | /bin/bash)
+                            continue
+                            ;;
+                    esac
+
+                    local cmd="${BASH_REMATCH[1]##*/}"
+                    local arg="${BASH_REMATCH[2]}"
+                    new="#!/usr/bin/env ${arg:+-S }${cmd}${arg:+ ${arg@Q}}"
+                    sed -i -e "1c $new" "$f"
                 else
-                    old_cmd="${old_cmd:2}"
-                    old_cmd="${old_cmd##*/}"
+                    echo "WARNING: unrecognized shebang: $shebang"
                 fi
-                new="#!/usr/bin/env ${old_arg:+-S }${old_cmd}${old_arg:+ ${old_arg@Q}}"
-                sed -i -e "1c $new" "$f"
             fi
-       done < <(find "${1:-.}" -type f -perm -/111 -print0)
+       done < <(find "${1:-.}" -type f -perm /111 -print0)
     }
 
     # Everything except shared or static libraries or header files.
