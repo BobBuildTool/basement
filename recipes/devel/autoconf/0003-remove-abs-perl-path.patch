@@ -1,0 +1,99 @@
+From: Jan Kloetzke <jan@kloetzke.net>
+Subject: [PATCH] Remove absolute perl path
+
+The variaous autoconf scipts contain the trick that let's them execute
+even if they are interpreted by the shell. This line has the full path
+to perl which will not be correct in Bobs environment. As it is
+unneeded in the first place, just remove it.
+
+diff -Nurp a/bin/autoconf.in b/bin/autoconf.in
+--- a/bin/autoconf.in	2025-09-12 11:22:28.208013268 +0200
++++ b/bin/autoconf.in	2025-09-12 15:37:32.333735416 +0200
+@@ -2,9 +2,6 @@
+ # -*- Perl -*-
+ # @configure_input@
+ 
+-eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+-    if 0;
+-
+ # autoconf -- create 'configure' using m4 macros.
+ 
+ # Copyright (C) 1992-1994, 1996, 1999-2017, 2020-2023 Free Software
+diff -Nurp a/bin/autoheader.in b/bin/autoheader.in
+--- a/bin/autoheader.in	2025-09-12 11:22:28.208013268 +0200
++++ b/bin/autoheader.in	2025-09-12 15:37:35.989891503 +0200
+@@ -2,9 +2,6 @@
+ # -*- Perl -*-
+ # @configure_input@
+ 
+-eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+-    if 0;
+-
+ # autoheader -- create 'config.h.in' from 'configure.ac'.
+ 
+ # Copyright (C) 1992-1994, 1996, 1998-2017, 2020-2023 Free Software
+diff -Nurp a/bin/autom4te.in b/bin/autom4te.in
+--- a/bin/autom4te.in	2025-09-12 11:22:28.212013444 +0200
++++ b/bin/autom4te.in	2025-09-12 15:37:39.382036313 +0200
+@@ -2,9 +2,6 @@
+ # -*- perl -*-
+ # @configure_input@
+ 
+-eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+-    if 0;
+-
+ # autom4te - Wrapper around M4 libraries.
+ # Copyright (C) 2001-2003, 2005-2017, 2020-2023 Free Software
+ # Foundation, Inc.
+diff -Nurp a/bin/autoreconf.in b/bin/autoreconf.in
+--- a/bin/autoreconf.in	2025-09-12 11:22:28.212013444 +0200
++++ b/bin/autoreconf.in	2025-09-12 15:37:44.074236624 +0200
+@@ -2,9 +2,6 @@
+ # -*- perl -*-
+ # @configure_input@
+ 
+-eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+-    if 0;
+-
+ # autoreconf - install the GNU Build System in a directory tree
+ # Copyright (C) 1994, 1999-2017, 2020-2023 Free Software Foundation,
+ # Inc.
+diff -Nurp a/bin/autoscan.in b/bin/autoscan.in
+--- a/bin/autoscan.in	2025-09-12 11:22:28.212013444 +0200
++++ b/bin/autoscan.in	2025-09-12 15:38:05.559153749 +0200
+@@ -21,9 +21,6 @@
+ 
+ # Written by David MacKenzie <djm@gnu.ai.mit.edu>.
+ 
+-eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+-    if 0;
+-
+ use 5.006;
+ use strict;
+ use warnings FATAL => 'all';
+diff -Nurp a/bin/autoupdate.in b/bin/autoupdate.in
+--- a/bin/autoupdate.in	2025-09-12 11:22:28.212013444 +0200
++++ b/bin/autoupdate.in	2025-09-12 15:38:05.683159042 +0200
+@@ -22,9 +22,6 @@
+ # Originally written by David MacKenzie <djm@gnu.ai.mit.edu>.
+ # Rewritten by Akim Demaille <akim@freefriends.org>.
+ 
+-eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+-    if 0;
+-
+ use 5.006;
+ use strict;
+ use warnings FATAL => 'all';
+diff -Nurp a/bin/ifnames.in b/bin/ifnames.in
+--- a/bin/ifnames.in	2025-09-12 11:22:28.212013444 +0200
++++ b/bin/ifnames.in	2025-09-12 15:38:05.735161261 +0200
+@@ -2,9 +2,6 @@
+ # -*- perl -*-
+ # @configure_input@
+ 
+-eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+-    if 0;
+-
+ # ifnames - print the identifiers used in C preprocessor conditionals
+ 
+ # Copyright (C) 1994-1995, 1999-2003, 2005-2017, 2020-2023 Free Software

@@ -1,0 +1,86 @@
+From: Jan Kloetzke <jan@kloetzke.net>
+Subject: [PATCH] Remove absolute perl path
+
+The variaous autoconf scipts contain the trick that let's them execute
+even if they are interpreted by the shell. This line has the full path
+to perl which will not be correct in Bobs environment. As it is
+unneeded in the first place, just remove it.
+
+diff -Nurp a/bin/autoheader.in b/bin/autoheader.in
+--- a/bin/autoheader.in	2025-09-12 15:51:09.408126785 +0200
++++ b/bin/autoheader.in	2025-09-12 15:53:30.661992545 +0200
+@@ -2,9 +2,6 @@
+ # -*- Perl -*-
+ # @configure_input@
+ 
+-eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+-    if 0;
+-
+ # autoheader -- create `config.h.in' from `configure.ac'
+ 
+ # Copyright (C) 1992-1994, 1996, 1998-2012 Free Software Foundation,
+diff -Nurp a/bin/autom4te.in b/bin/autom4te.in
+--- a/bin/autom4te.in	2025-09-12 15:51:09.408126785 +0200
++++ b/bin/autom4te.in	2025-09-12 15:53:30.753996376 +0200
+@@ -2,9 +2,6 @@
+ # -*- perl -*-
+ # @configure_input@
+ 
+-eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+-    if 0;
+-
+ # autom4te - Wrapper around M4 libraries.
+ # Copyright (C) 2001-2003, 2005-2012 Free Software Foundation, Inc.
+ 
+diff -Nurp a/bin/autoreconf.in b/bin/autoreconf.in
+--- a/bin/autoreconf.in	2025-09-12 15:51:09.408126785 +0200
++++ b/bin/autoreconf.in	2025-09-12 15:53:30.850000372 +0200
+@@ -2,9 +2,6 @@
+ # -*- perl -*-
+ # @configure_input@
+ 
+-eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+-    if 0;
+-
+ # autoreconf - install the GNU Build System in a directory tree
+ # Copyright (C) 1994, 1999-2012 Free Software Foundation, Inc.
+ 
+diff -Nurp a/bin/autoscan.in b/bin/autoscan.in
+--- a/bin/autoscan.in	2025-09-12 15:51:09.408126785 +0200
++++ b/bin/autoscan.in	2025-09-12 15:53:30.934003871 +0200
+@@ -20,9 +20,6 @@
+ 
+ # Written by David MacKenzie <djm@gnu.ai.mit.edu>.
+ 
+-eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+-    if 0;
+-
+ BEGIN
+ {
+   use File::Basename;
+diff -Nurp a/bin/autoupdate.in b/bin/autoupdate.in
+--- a/bin/autoupdate.in	2025-09-12 15:51:09.408126785 +0200
++++ b/bin/autoupdate.in	2025-09-12 15:53:31.026007701 +0200
+@@ -21,9 +21,6 @@
+ # Originally written by David MacKenzie <djm@gnu.ai.mit.edu>.
+ # Rewritten by Akim Demaille <akim@freefriends.org>.
+ 
+-eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+-    if 0;
+-
+ BEGIN
+ {
+   use File::Basename;
+diff -Nurp a/bin/ifnames.in b/bin/ifnames.in
+--- a/bin/ifnames.in	2025-09-12 15:51:09.408126785 +0200
++++ b/bin/ifnames.in	2025-09-12 15:53:31.074009699 +0200
+@@ -2,9 +2,6 @@
+ # -*- perl -*-
+ # @configure_input@
+ 
+-eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
+-    if 0;
+-
+ # ifnames - print the identifiers used in C preprocessor conditionals
+ 
+ # Copyright (C) 1994-1995, 1999-2003, 2005-2012 Free Software
