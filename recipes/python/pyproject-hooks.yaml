@@ -1,13 +1,13 @@
 inherit: ["python3::flit"]
 
 metaEnvironment:
-    PKG_VERSION: "1.1.0"
+    PKG_VERSION: "1.2.0"
     PKG_LICENSE: "MIT"
 
 checkoutSCM:
     scm: url
     url: https://files.pythonhosted.org/packages/source/p/pyproject_hooks/pyproject_hooks-${PKG_VERSION}.tar.gz
-    digestSHA256: 4b37730834edbd6bd37f26ece6b44802fb1c1ee2ece0e54ddff8bfc06db86965
+    digestSHA256: 1e859bd5c40fae9448642dd871adf459e5e2084186e8d2c2a79a824c970da1f8
     stripComponents: 1
 
 buildScript: |
