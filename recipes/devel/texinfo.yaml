@@ -9,7 +9,7 @@ checkoutSCM:
     digestSHA1: "d39c2e35ddb0aff6ebdd323ce53729bd215534fa"
     stripComponents: 1
 
-buildTools: [host-toolchain]
+buildTools: [host-toolchain, perl]
 buildScript: |
     autotoolsBuild $1
 
