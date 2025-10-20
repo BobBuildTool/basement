@@ -15,7 +15,7 @@ buildScript: |
     # Note: the configure script is broken - it generates the makefiles in the
     # directory of configure not in cwd. But the autotools-class expects the makefiles
     # to be in build. rsync the sources into 'build' dir as workaround
-    mkdir build
+    mkdir -p build
     rsync -a $1/ build/
 
     # The makefile expects 'strip' in the path...
