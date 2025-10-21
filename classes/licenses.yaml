@@ -1,0 +1,48 @@
+buildScript: |
+    ln -snf $1 .bob-license-src
+
+packageVars: [PKG_LICENSE, PKG_LICENSE_PATH, BASEMENT_ADD_LICENSE]
+packageSetup: |
+    __LICENSES_SRC=$1/.bob-license-src
+    # check if the supplied ref is has a valid idString SPDX-Spec v2.3 Annex D.1
+    licensesCheckValidRef () {
+        if [[ $1 =~ ^[A-Za-z0-9.\-]+$ ]]; then
+            return 0
+        fi
+        echo "Invalid License idRef: $1" >&2
+        return 1
+    }
+
+    licensesPackage () {
+        if [ -z "${PKG_LICENSE:-}" ]; then
+            echo "PKG_LICENSE is missing!" >&2
+            return 1
+        fi
+        mkdir -p .bob
+        echo "${PKG_LICENSE}" > .bob/license
+
+        declare -A LICENSE_REFS
+        while IFS=: read -r id file ; do
+            if [[ -n $id && -n $file ]] ; then
+                licensesCheckValidRef "$id"
+                LICENSE_REFS["$id"]="$file"
+            fi
+        done <<< "${PKG_LICENSE_PATH:-}"
+
+        local L="$PKG_LICENSE"
+        while [[ $L =~ LicenseRef-([A-Za-z0-9.-]+)(.*) ]] ; do
+            ID="${BASH_REMATCH[1]}"
+            L="${BASH_REMATCH[2]}"
+            if licensesCheckValidRef $ID && [ ${LICENSE_REFS[$ID]+set} ]; then
+                mkdir -p .bob/licenses
+                cp $__LICENSES_SRC/${LICENSE_REFS[$ID]} .bob/licenses/$ID
+            fi
+        done
+
+        return 0
+    }
+
+packageScript: |
+    if [ ${BASEMENT_ADD_LICENSE:-true} == true ]; then
+        licensesPackage
+    fi

@@ -1,4 +1,4 @@
-inherit: [cpackage, ninja, install]
+inherit: [cpackage, ninja, install, licenses]
 
 buildToolsWeak: [cmake]
 buildVars: [AUTOCONF_HOST, AR, CC, CXX]
