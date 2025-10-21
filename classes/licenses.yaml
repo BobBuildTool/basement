@@ -1,0 +1,36 @@
+metaEnvironment:
+    PKG_LICENSE: "$(pkg_license)"
+
+privateEnvironment:
+    PKG_LICENSE_PATH: "$(pkg_license_paths)"
+
+buildVars: [PKG_LICENSE, PKG_LICENSE_PATH]
+buildScript: |
+    if [ -z ${PKG_LICENSE:-} ]; then
+        echo "PKG_LICENSE is missing!" 1>&2
+        exit 1
+    fi
+    mkdir -p .bob
+    if [[ ${PKG_LICENSE} == LicenseRef* ]]; then
+        ID=${PKG_LICENSE#LicenseRef-}
+        if [[ $ID =~ ^[A-Za-z0-9.\-]+$ ]]; then
+            mkdir -p .bob/licenses/$ID
+        else
+            echo "LicenseRef contains invalid characters: ${PKG_LICENSE}"
+            false
+        fi
+        while read -r lic; do
+            _path=""
+            _file=${lic}
+            if [[ ${lic} == *:* ]]; then
+                IFS=: read -r _path _file <<< ${lic}
+            fi
+            mkdir -p .bob/licenses/$ID/${_path:-}
+            cp $1/$_file .bob/licenses/$ID/${_path:-}
+        done <<< ${PKG_LICENSE_PATH}
+    else
+        echo "${PKG_LICENSE}" >> .bob/license
+    fi
+
+packageScript: |
+    cp -r $1/.bob .
