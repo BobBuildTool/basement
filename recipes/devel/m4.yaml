@@ -1,5 +1,7 @@
 inherit: [autotools, patch]
 
+License: "GPL-3.0"
+
 metaEnvironment:
     PKG_VERSION: "1.4.20"
 
