@@ -6,3 +6,4 @@ plugins:
     - vsenv
     - msbuild
     - config
+    - licenses
