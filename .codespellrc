@@ -1,3 +1,3 @@
 [codespell]
 skip = */config.guess,*.diff,*.patch
-ignore-words-list = SME, sme
+ignore-words-list = lief, SME, sme

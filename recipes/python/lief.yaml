@@ -1,0 +1,12 @@
+inherit: [ "python3::pip" ]
+
+metaEnvironment:
+    PKG_VERSION: "0.17.1"
+
+buildNetAccess: True
+buildVars: [PKG_VERSION]
+buildScript: |
+    python3InstallPip lief==${PKG_VERSION}
+
+packageScript: |
+    python3PackageTgt
