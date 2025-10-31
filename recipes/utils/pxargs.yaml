@@ -1,0 +1,15 @@
+# We don't inherit the cpackage class here on purpose! We want to keep the
+# dependencies to a minimum!
+buildTools: [target-toolchain]
+buildVars: [CC, CPPFLAGS, CFLAGS, LDFLAGS]
+buildScript: |
+    cp $<<pxargs/main.c>> main.c
+    cp $<<pxargs/list.h>> list.h
+    $CC -g ${CPPFLAGS:-} ${CFLAGS:-} ${LDFLAGS:-} main.c -o pxargs
+
+packageScript: |
+    mkdir -p usr/bin
+    cp "$1/pxargs" usr/bin/
+
+provideTools:
+    pxargs: usr/bin
