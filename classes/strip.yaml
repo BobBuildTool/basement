@@ -1,4 +1,10 @@
+jobServer: True
+packageToolsWeak:
+    - name: pxargs
+      if: !expr |
+        "${BOB_HOST_PLATFORM}" == "linux"
 packageVars: [OBJCOPY, STRIP]
+packageVarsWeak: [MAKE_JOBS]
 packageSetup: |
     # $1: binary file
     stripBinary()
@@ -33,11 +39,33 @@ packageSetup: |
         fi
     }
 
-    # $1: directory to process
-    stripAll()
-    {
-        find "$1" -type f -not -path '*/.debug/*' -print0 \
-        | while IFS= read -r -d $'\0' f ; do
-            stripBinary "$f"
-        done
-    }
+    # On Windows, pxargs is not available...
+    if [[ ${BOB_TOOL_PATHS[pxargs]+exists} ]] ; then
+        export -f stripBinary
+
+        # $1: directory to process
+        stripAll()
+        {
+            local JOBARGS=() BASH_ARGS=( -eu -o pipefail )
+            if [[ ! "${MAKEFLAGS+set}" ]] ; then
+                JOBARGS+=( -j "${MAKE_JOBS-$(nproc)}" )
+            fi
+            JOBARGS+=( -- )
+
+            if [[ $(set -o | awk '/xtrace/ { print $2 }') == on ]] ; then
+                BASH_ARGS+=( -x )
+            fi
+
+            find "$1" -type f -not -path '*/.debug/*' -print0 \
+            | pxargs "${JOBARGS[@]}" bash "${BASH_ARGS[@]}" -c 'stripBinary "$@"' bash
+        }
+    else
+        # $1: directory to process
+        stripAll()
+        {
+            find "$1" -type f -not -path '*/.debug/*' -print0 \
+            | while IFS= read -r -d $'\0' f ; do
+                stripBinary "$f"
+            done
+        }
+    fi
