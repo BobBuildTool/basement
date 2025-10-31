@@ -170,7 +170,8 @@ packageSetup: |
     installFixShebang()
     {
         local shebang
-        while IFS= read -r -d $'\0' f; do
+        find "${1:-.}" -type f -perm /111 -print0 \
+        | while IFS= read -r -d $'\0' f; do
             read -n 4096 -r shebang < "$f"
             if [[ "${shebang:0:2}" == "#!" ]] ; then
                 # Match part after "#!". Tabs and spaces before and after the
@@ -190,7 +191,7 @@ packageSetup: |
                     echo "WARNING: unrecognized shebang: $shebang"
                 fi
             fi
-       done < <(find "${1:-.}" -type f -perm /111 -print0)
+       done
     }
 
     # Everything except shared or static libraries or header files.
