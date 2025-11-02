@@ -172,8 +172,7 @@ multiPackage:
             cp -a ${BOB_DEP_PATHS[devel::compat::binutils]}/* install/
 
         packageScript: |
-            installStripAll usr/bin
-            installStripAll usr/libexec
+            installStripAll usr/bin usr/libexec
 
         provideDeps:
             - libs::compat::glibc
@@ -199,5 +198,4 @@ multiPackage:
                 --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
 
         packageScript: |
-            installStripAll usr/bin
-            installStripAll usr/libexec
+            installStripAll usr/bin usr/libexec
