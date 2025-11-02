@@ -19,7 +19,8 @@ checkoutScript: |
     updateConfigFile config.sub configfsf.sub
     autoconfReconfigure
 
-buildTools: [host-toolchain, m4]
+buildTools: [host-toolchain]
+buildToolsWeak: [m4]
 buildScript: |
     autotoolsBuild $1
 

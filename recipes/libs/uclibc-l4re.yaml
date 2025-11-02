@@ -16,7 +16,8 @@ checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<@uclibc-l4re/*.patch@>
 
-buildTools: [host-toolchain, target-toolchain, flex, bison, m4, perl]
+buildTools: [host-toolchain, target-toolchain, flex, bison]
+buildToolsWeak: [m4, perl]
 buildVars: [ARCH, CROSS_COMPILE]
 buildScript: |
     case $ARCH in

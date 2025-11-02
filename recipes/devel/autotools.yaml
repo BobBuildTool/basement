@@ -20,4 +20,4 @@ packageScript: |
 provideTools:
     autotools:
         path: "usr/bin"
-        dependTools: ["perl"]
+        dependToolsWeak: [m4, perl]

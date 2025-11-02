@@ -8,7 +8,8 @@ privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"
 
 checkoutDeterministic: True
-checkoutTools: [autotools, m4]
+checkoutTools: [autotools]
+checkoutToolsWeak: [m4]
 checkoutSetup: |
     # Other classes can add paths to this array to pick up additional aclocal
     # m4 files.

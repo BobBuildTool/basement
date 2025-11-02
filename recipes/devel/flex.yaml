@@ -10,7 +10,8 @@ checkoutSCM:
     stripComponents: 1
 
 checkoutDeterministic: True
-checkoutTools: [gettext, m4]
+checkoutTools: [gettext]
+checkoutToolsWeak: [m4]
 checkoutScript: |
     patchApplySeries $<@flex/*.patch@>
     autoconfReconfigure
@@ -29,4 +30,4 @@ packageScript: |
 provideTools:
     flex:
         path: usr/bin
-        dependTools: [ m4 ]
+        dependToolsWeak: [ m4 ]

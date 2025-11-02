@@ -15,7 +15,8 @@ checkoutScript: |
 
 # Some parts are compiled for the host during compilation. Hence we need the
 # host toolchain too.
-buildTools: [host-toolchain, bison, m4]
+buildTools: [host-toolchain, bison]
+buildToolsWeak: [m4]
 multiPackage:
     "":
         buildVars: [AUTOCONF_HOST, AUTOCONF_TARGET, BINUTILS_PREFIX]

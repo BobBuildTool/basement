@@ -9,7 +9,7 @@ checkoutSCM:
     digestSHA256: eb9eab2f21758d3cfb1e78c7f83f0b4dd6302824316aba4abee047a5a4f85029
     stripComponents: 1
 
-buildTools: [m4]
+buildToolsWeak: [m4]
 buildVars: [STRIP]
 buildScript: |
     # Note: the configure script is broken - it generates the makefiles in the
