@@ -159,7 +159,7 @@ packageSetup: |
                 done
             done
 
-            installStripAll .
+            installStripAll
         fi
     }
 
@@ -203,7 +203,7 @@ packageSetup: |
             "!/usr/lib/pkgconfig" \
             "!/usr/share/pkgconfig" \
             "!/usr/lib/cmake"
-        installStripAll .
+        installStripAll
         if [[ ${INSTALL_APPLY_SHEBANG_FIXUP:-yes} != no ]] ; then
             installFixShebang
         fi
