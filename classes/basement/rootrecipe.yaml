@@ -29,6 +29,9 @@ depends:
           # can pick them as they like. Make sure to update the basement::buildall
           # class to catch added tools too.
 
+          - name: utils::pxargs
+            use: [tools]
+            forward: True
           - name: devel::make
             use: [tools]
             forward: True
