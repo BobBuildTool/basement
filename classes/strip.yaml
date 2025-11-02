@@ -43,7 +43,7 @@ packageSetup: |
     if [[ ${BOB_TOOL_PATHS[pxargs]+exists} ]] ; then
         export -f stripBinary
 
-        # $1: directory to process
+        # $*: directories to process
         stripAll()
         {
             local JOBARGS=() BASH_ARGS=( -eu -o pipefail )
@@ -56,14 +56,14 @@ packageSetup: |
                 BASH_ARGS+=( -x )
             fi
 
-            find "$1" -type f -not -path '*/.debug/*' -print0 \
+            find "$@" -type f -not -path '*/.debug/*' -print0 \
             | pxargs "${JOBARGS[@]}" bash "${BASH_ARGS[@]}" -c 'stripBinary "$@"' bash
         }
     else
-        # $1: directory to process
+        # $*: directories to process
         stripAll()
         {
-            find "$1" -type f -not -path '*/.debug/*' -print0 \
+            find "$@" -type f -not -path '*/.debug/*' -print0 \
             | while IFS= read -r -d $'\0' f ; do
                 stripBinary "$f"
             done

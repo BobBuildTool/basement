@@ -66,12 +66,12 @@ packageSetup: |
 
     installStripBinary()
     {
-        stripBinary "$1"
+        stripBinary "$@"
     }
 
     installStripAll()
     {
-        stripAll "$1"
+        stripAll "$@"
     }
 
     # Copy files matching the given patterns,
