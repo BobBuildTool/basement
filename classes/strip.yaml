@@ -9,10 +9,6 @@ packageSetup: |
     # $1: binary file
     stripBinary()
     {
-        if [[ $1 == *.o ]] ; then
-            return 0
-        fi
-
         local type="$(file -b "$1")"
         if [[ $type == *ELF*not\ stripped ]] ; then
             echo "Stripping ${1} ..."
@@ -56,14 +52,14 @@ packageSetup: |
                 BASH_ARGS+=( -x )
             fi
 
-            find "$@" -type f -not -path '*/.debug/*' -print0 \
+            find "$@" -type f -not -path '*/.debug/*' -not -name '*.o' -print0 \
             | pxargs "${JOBARGS[@]}" bash "${BASH_ARGS[@]}" -c 'stripBinary "$@"' bash
         }
     else
         # $*: directories to process
         stripAll()
         {
-            find "$@" -type f -not -path '*/.debug/*' -print0 \
+            find "$@" -type f -not -path '*/.debug/*' -not -name '*.o' -print0 \
             | while IFS= read -r -d $'\0' f ; do
                 stripBinary "$f"
             done
