@@ -22,6 +22,10 @@ depends:
 
     # some required host tools
     -
+        name: utils::pxargs
+        use: [tools]
+        forward: True
+    -
         name: devel::make
         use: [tools]
         forward: True

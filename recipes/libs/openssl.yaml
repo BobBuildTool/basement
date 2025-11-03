@@ -20,7 +20,8 @@ checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<@openssl/*.patch@>
 
-buildTools: [target-toolchain, perl]
+buildTools: [target-toolchain]
+buildToolsWeak: [perl]
 buildVars: [CC, AR, RANLIB, ARCH, AUTOCONF_HOST]
 buildScript: |
     mkdir -p install build

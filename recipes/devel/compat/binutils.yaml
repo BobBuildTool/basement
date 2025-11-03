@@ -11,7 +11,8 @@ checkoutSCM:
 
 # Some parts are compiled for the host during compilation. Hence we need the
 # host toolchain too.
-buildTools: [host-toolchain, m4]
+buildTools: [host-toolchain]
+buildToolsWeak: [m4]
 
 buildVars: [AUTOCONF_HOST, AUTOCONF_TARGET, BINUTILS_PREFIX]
 buildScript: |

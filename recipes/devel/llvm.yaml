@@ -219,7 +219,7 @@ multiPackage:
                                 /usr/bin/{ld.lld,lld,lld-link,wasm-ld} \
                                 /usr/lib/ "/usr/lib/clang/***" \
                                 "!*"
-                            installStripAll .
+                            installStripAll
 
                         provideTools:
                             clang: "usr/bin"
@@ -229,7 +229,7 @@ multiPackage:
                             installCopy "$1/install/" \
                                 /usr/ /usr/bin/ /usr/bin/clangd \
                                 "!*"
-                            installStripAll .
+                            installStripAll
 
                         provideTools:
                             clangd: "usr/bin"
@@ -239,7 +239,7 @@ multiPackage:
                             installCopy "$1/install/" \
                                 /usr/ /usr/bin/ /usr/bin/{,git-}clang-format \
                                 "!*"
-                            installStripAll .
+                            installStripAll
 
                         provideTools:
                             clang-format: "usr/bin"
@@ -249,7 +249,7 @@ multiPackage:
                             installCopy "$1/install/" \
                                 /usr/ /usr/bin/ /usr/bin/{,run-}clang-tidy \
                                 "!*"
-                            installStripAll .
+                            installStripAll
 
                         provideTools:
                             clang-tidy: "usr/bin"

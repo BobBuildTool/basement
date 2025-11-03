@@ -17,8 +17,8 @@ checkoutSCM:
     stripComponents: 1
 
 buildVars: [AS, CC, CXX, LD, AUTOCONF_HOST, GCC_MULTILIB, GLIBC_ENABLE_KERNEL]
-buildTools: [host-toolchain, target-toolchain, bison, m4]
-buildToolsWeak: [python3]
+buildTools: [host-toolchain, target-toolchain, bison]
+buildToolsWeak: [python3, m4]
 buildScript: |
     EXTRA=
     [ -e $1/usr/include/selinux/selinux.h ] || EXTRA+=" --without-selinux"

@@ -71,7 +71,7 @@ checkoutScript: |
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET, GCC_TARGET_ABI,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU,
             GCC_MULTILIB, GCC_EXTRA_OPTIONS]
-buildTools: [m4]
+buildToolsWeak: [m4]
 buildScript: |
     GCC_SRC=$1
     mkdir -p build install
@@ -262,8 +262,7 @@ multiPackage:
                 --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
 
         packageScript: |
-            installStripAll usr/bin
-            installStripAll usr/libexec
+            installStripAll usr/bin usr/libexec
 
         provideDeps:
             - devel::binutils
@@ -331,7 +330,6 @@ multiPackage:
             cp -an ${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT/* "install/${TARGET_SYSROOT}"
 
         packageScript: |
-            installStripAll ./${GCC_PREFIX:-/usr}/bin
-            installStripAll ./${GCC_PREFIX:-/usr}/libexec
+            installStripAll ./${GCC_PREFIX:-/usr}/bin ./${GCC_PREFIX:-/usr}/libexec
 
         provideDeps: [ "*-tgt" ]
