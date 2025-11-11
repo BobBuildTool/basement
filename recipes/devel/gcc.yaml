@@ -62,18 +62,19 @@ checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<@gcc/*.patch@>
 
-    for i in gcc libstdc++-v3 ; do
-        pushd $i
-        autoconfReconfigure -u
-        popd
-    done
-
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET, GCC_TARGET_ABI,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU,
             GCC_MULTILIB, GCC_EXTRA_OPTIONS]
 buildToolsWeak: [m4]
 buildScript: |
-    GCC_SRC=$1
+    GCC_SRC=$(pwd)/src
+    autoconfSync $1 $GCC_SRC
+    for i in gcc libstdc++-v3 ; do
+        pushd $GCC_SRC/$i
+        autoconfReconfigure -u
+        popd
+    done
+
     mkdir -p build install
 
     configureGcc()

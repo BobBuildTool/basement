@@ -10,6 +10,8 @@ buildSetup: |
         local INSTALL_TAGET=install
         local INSTALL_OPTIONS=( )
         local SHARED_STATIC=( )
+        local AUTOCONF_OPTS=()
+        local AUTOCONF_SYNC_RECONFIGURE=0
 
         # Explicitly build everything static on host builds and shared on
         # cross-builds. The package may disable this behaviour if the configure
@@ -33,7 +35,7 @@ buildSetup: |
         # parse arguments
         OPTIND=1
         local opt
-        while getopts "i:m:o:O:s" opt ; do
+        while getopts "i:m:o:O:sS:" opt ; do
             case "$opt" in
                 i)
                     INSTALL_TAGET="$OPTARG"
@@ -47,6 +49,12 @@ buildSetup: |
                 O)
                     INSTALL_OPTIONS+=( "$OPTARG" )
                     ;;
+                s)
+                    AUTOCONF_SYNC_RECONFIGURE=1
+                    ;;
+                S)
+                    AUTOCONF_OPTS+=( "-$OPTARG" )
+                    ;;
                 \?)
                   echo "Invalid option: -$OPTARG" >&2
                   exit 1
@@ -55,12 +63,18 @@ buildSetup: |
         done
         shift $(( OPTIND -1 ))
 
+        local AUTOTOOLS_SRC=$1
+        if [ ${AUTOCONF_SYNC_RECONFIGURE:-} -eq 1 ]; then
+            AUTOTOOLS_SRC=$(pwd)/src
+            autoconfSyncReconfigure $1 $AUTOTOOLS_SRC ${AUTOCONF_OPTS[@]}
+        fi
+
         rm -rf install
         mkdir -p build install
         pushd build
 
-        if [[ $1/configure -nt .configure.stamp ]] ; then
-            $1/configure \
+        if [[ ${AUTOTOOLS_SRC}/configure -nt .configure.stamp ]] ; then
+            ${AUTOTOOLS_SRC}/configure \
                 ${AUTOCONF_BUILD:+--build=${AUTOCONF_BUILD}} \
                 ${AUTOCONF_HOST:+--host=${AUTOCONF_HOST}} \
                 ${AUTOCONF_TARGET:+--target=${AUTOCONF_TARGET}} \

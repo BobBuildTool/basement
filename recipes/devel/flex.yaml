@@ -14,14 +14,13 @@ checkoutTools: [gettext]
 checkoutToolsWeak: [m4]
 checkoutScript: |
     patchApplySeries $<@flex/*.patch@>
-    autoconfReconfigure
     # prevent Makefile from updating the file because it's older than "configure"
     touch doc/stamp-vti
 
 buildTools: [bison, host-toolchain]
 buildScript: |
     export M4=m4
-    autotoolsBuild $1 \
+    autotoolsBuild -s $1 \
         --disable-nls
 
 packageScript: |
