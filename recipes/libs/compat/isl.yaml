@@ -2,6 +2,7 @@ inherit: [autotools]
 
 metaEnvironment:
     PKG_VERSION: "0.22.1"
+    PKG_LICENSE: "MIT"
 
 privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"

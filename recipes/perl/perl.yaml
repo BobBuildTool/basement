@@ -1,6 +1,7 @@
 inherit: [make, strip, "basement::update-config", install, patch]
 
 metaEnvironment:
+    PKG_LICENSE: "Artistic-1.0-Perl OR GPL-1.0-or-later"
     PKG_VERSION: "5.40.2"
 
 privateEnvironment:

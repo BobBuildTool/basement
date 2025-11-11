@@ -1,7 +1,10 @@
 inherit: [make, install]
 
 metaEnvironment:
+    PKG_LICENSE: "LicenseRef-unzip"
     PKG_VERSION: "60"
+    PKG_LICENSE_PATH: |
+        unzip:LICENSE
 
 checkoutSCM:
     scm: url

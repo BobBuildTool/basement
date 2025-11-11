@@ -2,6 +2,7 @@ inherit: [autoconf, autotools]
 
 metaEnvironment:
     PKG_VERSION: 4.4.36
+    PKG_LICENSE: "LGPL-2.1"
 
 checkoutSCM:
     scm: url

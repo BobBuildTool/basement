@@ -2,6 +2,7 @@ inherit: [patch]
 
 metaEnvironment:
     PKG_VERSION: "75.3.2"
+    PKG_LICENSE: "MIT"
 
 checkoutSCM:
     scm: url

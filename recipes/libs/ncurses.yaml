@@ -1,6 +1,7 @@
 inherit: [autotools, patch]
 
 metaEnvironment:
+    PKG_LICENSE: "MIT-open-group"
     PKG_VERSION: "6.5"
 
 checkoutSCM:

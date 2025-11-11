@@ -2,6 +2,7 @@ inherit: [autotools, patch]
 
 metaEnvironment:
     PKG_VERSION: "9.5"
+    PKG_LICENSE: "GFDL-1.3-or-later AND GPL-3.0-or-later"
 
 depends:
     - libs::gmp-dev
