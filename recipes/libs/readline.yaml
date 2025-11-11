@@ -1,6 +1,7 @@
 inherit: [autotools, patch]
 
 metaEnvironment:
+    PKG_LICENSE: "GPL-3.0"
     PKG_VERSION: "8.3"
 
 depends:

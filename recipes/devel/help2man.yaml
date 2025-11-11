@@ -1,6 +1,7 @@
 inherit: [autotools]
 metaEnvironment:
     PKG_VERSION: "1.49.3"
+    PKG_LICENSE: "GPL-3.0"
 
 checkoutSCM:
     scm: url

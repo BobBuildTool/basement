@@ -1,5 +1,8 @@
 inherit: [cmake]
 
+metaEnvironment:
+    PKG_LICENSE: "MIT"
+
 depends:
     - cmake::libholler-dev
     - use: []

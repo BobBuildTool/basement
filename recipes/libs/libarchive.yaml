@@ -2,6 +2,9 @@ inherit: [autotools]
 
 metaEnvironment:
     PKG_VERSION: "3.4.3"
+    PKG_LICENSE: "LicenseRef-libarchive"
+    PKG_LICENSE_PATH: |
+        libarchive:COPYING
 
 depends:
     - libs::zlib-dev

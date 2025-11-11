@@ -1,6 +1,7 @@
 inherit: [autotools]
 
 metaEnvironment:
+    PKG_LICENSE: "0BSD AND GPL-2.0-or-later AND LGPL-2.1-or-later"
     PKG_VERSION: "5.4.6"
 
 checkoutSCM:

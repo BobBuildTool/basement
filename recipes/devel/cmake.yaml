@@ -2,6 +2,7 @@ inherit: [patch]
 
 metaEnvironment:
     PKG_VERSION: "3.25.1"
+    PKG_LICENSE: "BSD-3-Clause"
 
 checkoutSCM:
     scm: url

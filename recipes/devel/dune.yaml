@@ -2,6 +2,7 @@ inherit: [cpackage, make]
 
 metaEnvironment:
     PKG_VERSION: "3.17.2"
+    PKG_LICENSE: "MIT"
 
 depends:
     - libs::zstd-dev

@@ -3,6 +3,9 @@ inherit: [autotools]
 metaEnvironment:
     PKG_VERSION_MAJOR: "2.40"
     PKG_VERSION: "2.40.2"
+    PKG_LICENSE: "LicenseRef-util-linux"
+    PKG_LICENSE_PATH:
+        util-linux:README.licensing
 
 depends:
     - libs::ncurses-dev

@@ -1,5 +1,8 @@
 inherit: [meson]
 
+metaEnvironment:
+    PKG_LICENSE: "MIT"
+
 depends:
     - meson::libholler-dev
     - use: []

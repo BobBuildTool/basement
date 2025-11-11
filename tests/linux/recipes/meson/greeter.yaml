@@ -1,5 +1,8 @@
 inherit: [ "basement::rootrecipe", meson ]
 
+metaEnvironment:
+    PKG_LICENSE: "MIT"
+
 root: !expr |
   "${BOB_HOST_PLATFORM}" == "linux"
 

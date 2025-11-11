@@ -2,6 +2,7 @@ inherit: [make, install]
 
 metaEnvironment:
     PKG_VERSION: "2.70"
+    PKG_LICENSE: "BSD-3-Clause or GPL-2.0-only"
 
 checkoutSCM:
     scm: url

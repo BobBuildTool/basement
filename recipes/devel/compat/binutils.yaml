@@ -2,6 +2,7 @@ inherit: [autotools]
 
 metaEnvironment:
     PKG_VERSION: "2.34"
+    PKG_LICENSE: "FSFAP AND GFDL-1.3 AND GPL-2.0-or-later AND LGPL-2.0-or-later"
 
 checkoutSCM:
     scm: url

@@ -1,7 +1,10 @@
 inherit: [meson]
 
 metaEnvironment:
+    PKG_LICENSE: "LicenseRef-jsoncpp"
     PKG_VERSION: "1.9.3"
+    PKG_LICENSE_PATH: |
+        jsoncpp:LICENSE
 
 checkoutSCM:
     scm: url

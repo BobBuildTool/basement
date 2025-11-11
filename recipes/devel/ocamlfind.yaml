@@ -2,6 +2,7 @@ inherit: [autotools]
 
 metaEnvironment:
     PKG_VERSION: "1.9.8"
+    PKG_LICENSE: "MIT"
 
 depends:
     - libs::zstd-dev

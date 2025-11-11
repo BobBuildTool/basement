@@ -2,6 +2,7 @@ inherit: [make, install, patch]
 
 metaEnvironment:
     PKG_VERSION: "9.5.0"
+    PKG_LICENSE: "GPL-3.0-with-GCC-exception"
 
 depends:
     - environment:

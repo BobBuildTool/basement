@@ -2,6 +2,7 @@ inherit: [ "python3::build" ]
 
 metaEnvironment:
     PKG_VERSION: "25.0.1"
+    PKG_LICENSE: "MIT"
 
 depends:
     - python::python3-setuptools
