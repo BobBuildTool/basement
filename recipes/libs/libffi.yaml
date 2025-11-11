@@ -12,10 +12,9 @@ checkoutSCM:
 checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<@libffi/*.diff@>
-    autoconfReconfigure -a
 
 buildScript: |
-   autotoolsBuild $1
+   autotoolsBuild -s -Sa $1
 
 multiPackage:
     dev:
