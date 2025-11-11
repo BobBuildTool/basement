@@ -1,0 +1,81 @@
+root: true
+inherit: [licenses]
+
+privateEnvironment:
+    BASEMENT_ADD_LICENSE: "false"
+
+packageScript: |
+    expect_exist()
+    {
+        local i
+        for i in "$@" ; do
+            if [[ ! -e "$i" ]] ; then
+                echo "Missing expected file: $i" >&2
+                return 1
+            fi
+        done
+        return 0
+    }
+
+    expect_not_exist()
+    {
+            local i
+            for i in "$@" ; do
+                    if [[ -e "$i" ]] ; then
+                            echo "Unexpected file: $i" >&2
+                            return 1
+                    fi
+            done
+
+            return 0
+    }
+
+    expect_content_equals () {
+        if [[ "$(< $1)" != "$2" ]]; then
+            echo "File \"$1\" doesn't contain \"$2\"" >&2
+            return 1
+        fi
+        return 0
+    }
+
+multiPackage:
+    pkg_license_missing:
+        packageScript: |
+            if licensesPackage; then
+                echo "licensesBuild did not fail as expected!"
+                exit 1
+            fi
+            expect_not_exist ".bob/license"
+
+    pkg_license_only:
+        metaEnvironment:
+            PKG_LICENSE: "GPLv3"
+
+        packageScript: |
+            licensesPackage
+            # simulate incremental builds...
+            licensesPackage
+            licensesPackage
+            expect_exist ".bob/license"
+            expect_content_equals ".bob/license" "${PKG_LICENSE}"
+
+    pkg_license_refs:
+        metaEnvironment:
+            PKG_LICENSE: "GPLv3 OR LicenseRef-a AND LicenseRef-test12.3-4 WITH Foo"
+            PKG_LICENSE_PATH: |
+                a:license_a.txt
+                test12.3-4:test/test-lic
+
+        checkoutDeterministic: True
+        checkoutScript: |
+            echo "Text of license_a" > license_a.txt
+            mkdir -p test
+            echo "Text of test" > test/test-lic
+
+        packageScript: |
+            licensesPackage
+            expect_exist ".bob/license"
+            expect_content_equals ".bob/license" "${PKG_LICENSE}"
+            expect_exist ".bob/licenses/a" ".bob/licenses/test12.3-4"
+            expect_content_equals ".bob/licenses/a" "Text of license_a"
+            expect_content_equals ".bob/licenses/test12.3-4" "Text of test"
