@@ -9,15 +9,14 @@ checkoutSCM:
     digestSHA1: "50ba1b1d45ce33fd44e4fdaaf3b55a9d8f3dc418"
     stripComponents: 1
 
-checkoutTools: [gettext]
 checkoutDeterministic: True
 checkoutScript: |
-    autoconfReconfigure
     # prevent Makefile from updating the file because it's older than "configure"
     touch doc/stamp-vti
 
+buildTools: [gettext]
 buildScript: |
-    autotoolsBuild $1 \
+    autotoolsBuild -s $1 \
         --enable-libgdbm-compat
 
 multiPackage:

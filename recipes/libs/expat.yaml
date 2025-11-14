@@ -10,12 +10,8 @@ checkoutSCM:
     digestSHA256: a00ae8a6b96b63a3910ddc1100b1a7ef50dc26dceb65ced18ded31ab392f132b
     stripComponents: 1
 
-checkoutDeterministic: True
-checkoutScript: |
-   autoconfReconfigure
-
 buildScript: |
-   autotoolsBuild $1 --without-docbook
+   autotoolsBuild -s $1 --without-docbook
 
 multiPackage:
     dev:
