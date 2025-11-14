@@ -14,6 +14,7 @@ checkoutScript: |
     # prevent Makefile from updating the file because it's older than "configure"
     touch doc/stamp-vti
 
+buildTools: [gettext]
 buildScript: |
     autotoolsBuild -s $1 \
         --enable-libgdbm-compat
