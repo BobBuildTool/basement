@@ -1,4 +1,5 @@
-jobServer: True
+# Ninja can only work with named pipes!
+jobServer: "fifo"
 buildToolsWeak: [ninja]
 buildVarsWeak: [MAKE_JOBS]
 buildSetup: |
