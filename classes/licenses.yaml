@@ -1,0 +1,72 @@
+buildVars: [PKG_LICENSE, PKG_LICENSE_PATH, BASEMENT_ADD_LICENSE]
+buildScript: |
+    __LICENSES_SRC=$1
+    # check if the supplied ref is has a valid idString SPDX-Spec v2.3 Annex D.1
+    licensesCheckValidRef () {
+        if [[ $1 =~ ^[A-Za-z0-9.\-]+$ ]]; then
+            return 0
+        fi
+        echo "Invalid License idRef: $1" >&2
+        return 1
+    }
+
+    licensesBuild () {
+        if [ -z "${PKG_LICENSE:-}" ]; then
+            echo "PKG_LICENSE is missing!" >&2
+            return 1
+        fi
+        mkdir -p .bob
+        echo "${PKG_LICENSE}" > .bob/license
+
+        local SPDX_OPERATORS=("AND", "OR", "WITH")
+
+        declare -A LICENSE_REFS
+        if [ ! -z "${PKG_LICENSE_PATH:-}" ]; then
+            for path in ${PKG_LICENSE_PATH}; do
+                local file=""
+                local id=""
+                [ -z "${path}" ] && continue
+                if [[ ${path} == *:* ]]; then
+                    IFS=: read -r id file <<< "${path}"
+                    if licensesCheckValidRef $id; then
+                        LICENSE_REFS["$id"]="$file"
+                    fi
+                else
+                    echo "Invalid PKG_LICENSE_PATH: ${path}" >&2
+                    return 1
+                fi
+            done
+        fi
+
+        for l in ${PKG_LICENSE}; do
+            if [[ "${SPDX_OPERATORS[*]}" =~ ${l} ]]; then
+                continue;
+            fi
+            if [[ $l == LicenseRef* ]]; then
+                ID=${l#LicenseRef-}
+                if licensesCheckValidRef $ID; then
+                    mkdir -p .bob/licenses
+                    cp $__LICENSES_SRC/${LICENSE_REFS[$ID]} .bob/licenses/$ID
+                else
+                    echo "LicenseRef contains invalid characters: ${l}" >&2
+                    return 1
+                fi
+            fi
+        done
+        return 0
+    }
+
+    if [ ${BASEMENT_ADD_LICENSE:-true} == true ]; then
+        licensesBuild
+    fi
+
+packageScript: |
+    __LICENSES_BUILD_PATH=$1
+    licensesPackage () {
+        if [ -d ${1:-${__LICENSES_BUILD_PATH}}/.bob ]; then
+            cp -ar ${1:-${__LICENSES_BUILD_PATH}}/.bob .
+        fi
+    }
+    if [ ${BASEMENT_ADD_LICENSE:-true} == true ]; then
+        licensesPackage
+    fi

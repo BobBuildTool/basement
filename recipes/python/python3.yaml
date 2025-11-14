@@ -2,6 +2,7 @@ inherit: [autotools, autoconf, make, patch]
 
 metaEnvironment:
     PKG_VERSION: "3.13.2"
+    PKG_LICENSE: "PSF-2.0"
 
 privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"

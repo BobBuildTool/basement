@@ -2,6 +2,7 @@ inherit: ["python3::flit"]
 
 metaEnvironment:
     PKG_VERSION: "24.1"
+    PKG_LICENSE: "Apache-2.0 OR BSD-2-Clause"
 
 checkoutSCM:
     scm: url

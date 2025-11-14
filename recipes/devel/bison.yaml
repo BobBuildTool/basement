@@ -2,6 +2,7 @@ inherit: [autotools]
 
 metaEnvironment:
     PKG_VERSION: "3.8.2"
+    PKG_LICENSE: "GPL-3.0-or-later"
 
 # parallel make sometimes fails in examples/c/reccalc/...
 jobServer: False

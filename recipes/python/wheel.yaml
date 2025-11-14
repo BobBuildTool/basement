@@ -2,6 +2,7 @@ inherit: ["python3::flit"]
 
 metaEnvironment:
     PKG_VERSION: "0.44.0"
+    PKG_LICENSE: "MIT"
 
 checkoutSCM:
     scm: url

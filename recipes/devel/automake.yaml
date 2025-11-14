@@ -2,6 +2,7 @@ inherit: [autotools-noarch, patch]
 
 metaEnvironment:
     PKG_VERSION: "1.16.5"
+    PKG_LICENSE: "GPL-2.0-only"
 
 depends:
     - devel::autoconf

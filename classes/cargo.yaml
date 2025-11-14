@@ -1,4 +1,4 @@
-inherit: [pkg-config, install]
+inherit: [pkg-config, install, licenses]
 
 depends:
     # we need a host rustc compiler + a cross std lib for the target arch

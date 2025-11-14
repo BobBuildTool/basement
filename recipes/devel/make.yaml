@@ -2,6 +2,7 @@ inherit: [cpackage, libtool, install, "basement::update-config"]
 
 metaEnvironment:
     PKG_VERSION: "4.3"
+    PKG_LICENSE: "GPL-3.0-only"
 
 checkoutSCM:
     scm: url
