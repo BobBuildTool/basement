@@ -101,8 +101,16 @@ multiPackage:
                     autotoolsPackageDev
                     mkdir -p usr/lib/python${MAJOR_MINOR}
                     cp $1/install/usr/lib/python${MAJOR_MINOR}/_sysconfigdata_*.py usr/lib/python${MAJOR_MINOR}
-                    # remove any absolute include-/library-paths
-                    sed -E -e "s|-[LI]/[^ ']+||" usr/lib/python${MAJOR_MINOR}/_sysconfigdata_*.py
+                    # Remove any absolute include-/library-paths and make the
+                    # data relocatable...
+                    sed -i -E \
+                        -e '1i prefix = "/".join(__file__.split("/")[:-3])' \
+                        -e "s|-[LI]/[^ ']*||g" \
+                        -e "/DESTDIRS/b" \
+                        -e "/INCLDIRSTOMAKE/b" \
+                        -e "/TZPATH/b" \
+                        -e "s|'/usr|prefix + '|" \
+                        usr/lib/python${MAJOR_MINOR}/_sysconfigdata_*.py
                     python3 -m compileall usr/lib/python${MAJOR_MINOR}
                 provideDeps: [ "*-dev" ]
 
