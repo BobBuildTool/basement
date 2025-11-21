@@ -1,5 +1,8 @@
 inherit: [ "basement::rootrecipe", cmake ]
 
+metaEnvironment:
+    PKG_LICENSE: "MIT"
+
 checkoutSCM:
     scm: import
     url: src/greeter/

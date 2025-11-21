@@ -2,6 +2,7 @@ inherit: [cpackage, install, patch]
 
 metaEnvironment:
     PKG_VERSION: "1.11.1.g95dee.kitware.jobserver-1"
+    PKG_LICENSE: "Apache-2.0"
 
 checkoutSCM:
     scm: url

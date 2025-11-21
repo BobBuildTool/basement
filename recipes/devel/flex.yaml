@@ -2,6 +2,9 @@ inherit: [autotools, autoconf, patch]
 
 metaEnvironment:
     PKG_VERSION: "2.6.4"
+    PKG_LICENSE: "LicenseRef-flex"
+    PKG_LICENSE_PATH: |
+        flex:COPYING
 
 checkoutSCM:
     scm: url

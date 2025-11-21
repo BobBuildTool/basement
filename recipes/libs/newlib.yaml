@@ -2,6 +2,9 @@ inherit: [make, strip]
 
 metaEnvironment:
     PKG_VERSION: "4.1.0"
+    PKG_LICENSE: "LicenseRef-newlib"
+    PKG_LICENSE_PATH: |
+        newlib:COPYING.NEWLIB
 
 checkoutSCM:
     scm: url

@@ -1,5 +1,8 @@
 inherit: [cmake]
 
+metaEnvironment:
+    PKG_LICENSE: "MIT"
+
 checkoutSCM:
     scm: import
     url: src/libholler/

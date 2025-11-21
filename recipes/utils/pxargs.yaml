@@ -1,3 +1,6 @@
+metaEnvironment:
+    PKG_LICENSE: "MIT"
+
 # We don't inherit the cpackage class here on purpose! We want to keep the
 # dependencies to a minimum!
 buildTools: [target-toolchain]

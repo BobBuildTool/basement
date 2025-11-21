@@ -1,6 +1,7 @@
 inherit: [make, cpackage, install]
 
 metaEnvironment:
+    PKG_LICENSE: "0BSD"
     PKG_VERSION: "1.3.5"
 
 checkoutSCM:

@@ -2,6 +2,7 @@ inherit: [autotools, patch]
 
 metaEnvironment:
     PKG_VERSION: "5.3"
+    PKG_LICENSE: "GPL-3.0-or-later"
 
 depends:
     - libs::ncurses-dev

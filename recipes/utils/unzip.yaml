@@ -1,6 +1,7 @@
 inherit: [make, install]
 
 metaEnvironment:
+    PKG_LICENSE: "Info-ZIP"
     PKG_VERSION: "60"
 
 checkoutSCM:

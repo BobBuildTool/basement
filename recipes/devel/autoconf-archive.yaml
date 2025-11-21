@@ -2,6 +2,7 @@ inherit: [autotools-noarch]
 
 metaEnvironment:
     PKG_VERSION: "2023.02.20"
+    PKG_LICENSE: "GPL-3.0-or-later WITH Autoconf-exception-3.0"
 
 checkoutSCM:
     scm: url

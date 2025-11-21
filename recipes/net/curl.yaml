@@ -2,6 +2,7 @@ inherit: [autotools]
 
 metaEnvironment:
     PKG_VERSION: "8.7.1"
+    PKG_LICENSE: "curl"
 
 depends:
     - libs::openssl-dev

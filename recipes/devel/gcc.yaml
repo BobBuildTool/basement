@@ -2,6 +2,7 @@ inherit: [autoconf, make, patch, install, "basement::update-config"]
 
 metaEnvironment:
     PKG_VERSION: "13.4.0"
+    PKG_LICENSE: "GPL-3.0-with-GCC-exception"
 
 depends:
     - libs::gmp-dev

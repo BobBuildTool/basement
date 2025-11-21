@@ -1,6 +1,7 @@
 inherit: [autotools]
 
 metaEnvironment:
+    PKG_LICENSE: "BSD-2-Clause"
     PKG_VERSION: "5.43"
 
 checkoutSCM:

@@ -1,6 +1,7 @@
 inherit: [ocaml, install]
 
 metaEnvironment:
+    PKG_LICENSE: "MIT"
     PKG_VERSION: "0.7.0"
 
 depends:

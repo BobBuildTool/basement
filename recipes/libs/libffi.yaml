@@ -2,6 +2,7 @@ inherit: [autotools, autoconf, patch]
 
 metaEnvironment:
     PKG_VERSION: "3.2.1"
+    PKG_LICENSE: "MIT"
 
 checkoutSCM:
     scm: url

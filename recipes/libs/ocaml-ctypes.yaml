@@ -2,6 +2,7 @@ inherit: [make, cpackage, ocaml]
 
 metaEnvironment:
     PKG_VERSION: "0.23.0"
+    PKG_LICENSE: "MIT"
 
 depends:
     - name: devel::dune

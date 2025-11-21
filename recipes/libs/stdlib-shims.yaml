@@ -2,6 +2,9 @@ inherit: [ocaml, install]
 
 metaEnvironment:
     PKG_VERSION: "0.3.0"
+    PKG_LICENSE: "LicenseRef-stdlib-shims"
+    PKG_LICENSE_PATH: |
+        stdlib-shims:LICENSE
 
 checkoutSCM:
     scm: url
