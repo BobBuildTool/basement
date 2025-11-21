@@ -21,10 +21,9 @@ checkoutScript: |
     [ -e m4/libuv-extra-automake-flags.m4 ] || \
         echo "m4_define([UV_EXTRA_AUTOMAKE_FLAGS], [serial-tests])" \
             >m4/libuv-extra-automake-flags.m4
-    autoconfReconfigure
 
 buildScript: |
-    autotoolsBuild "$1"
+    autotoolsBuild -s "$1"
 
 multiPackage:
     dev:

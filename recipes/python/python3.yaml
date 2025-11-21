@@ -16,14 +16,12 @@ checkoutSCM:
 checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<@python3/*@>
-    autoconfReconfigure
 
 # We cannot use out-of-tree builds directly from the source workspace because
 # the build somehow manages to create .pyc files in the sources. Setting
 # PYTHONDONTWRITEBYTECODE does not suffice.
 buildScript: |
-    mkdir -p src
-    rsync -aH --delete $1/ src/
+    autoconfSyncReconfigure $1 src
 
 multiPackage:
     "":

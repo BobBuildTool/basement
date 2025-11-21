@@ -7,10 +7,9 @@
 privateEnvironment:
     APPLY_LIBTOOL_PATCH: "no"
 
-checkoutDeterministic: True
-checkoutTools: [autotools]
-checkoutToolsWeak: [m4]
-checkoutSetup: |
+buildTools: [autotools]
+buildToolsWeak: [m4]
+buildSetup: |
     # Other classes can add paths to this array to pick up additional aclocal
     # m4 files.
     declare -a AUTOCONF_EXTRA_PKGS
@@ -86,4 +85,18 @@ checkoutSetup: |
             find . -name '*.bob-backup' -delete
             touch .autoreconf.stamp
         fi
+    }
+
+    autoconfSync () {
+        mkdir -p $2
+        rsync -aH --delete --exclude=".autoreconf.stamp" $1/ $2/
+    }
+
+    # Moves the sources of $1 to $2 and calls autoconfReconfigure
+    # The remaining arguments are passed to 'autoconfReconfigure'
+    autoconfSyncReconfigure () {
+        autoconfSync $1 $2
+        pushd $2
+        autoconfReconfigure ${@:3}
+        popd
     }

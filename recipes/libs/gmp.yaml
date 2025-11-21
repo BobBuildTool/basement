@@ -18,12 +18,11 @@ checkoutScript: |
     patchApplySeries $<@gmp/*.patch@>
     updateConfigFile config.guess configfsf.guess
     updateConfigFile config.sub configfsf.sub
-    autoconfReconfigure
 
 buildTools: [host-toolchain]
 buildToolsWeak: [m4]
 buildScript: |
-    autotoolsBuild $1
+    autotoolsBuild -s $1
 
 multiPackage:
     dev:
