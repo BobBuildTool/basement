@@ -1,4 +1,4 @@
-inherit: [autotools]
+inherit: [autotools, patch]
 
 metaEnvironment:
     PKG_VERSION: "8.7.1"
@@ -20,6 +20,7 @@ checkoutSCM:
 # ./configure will delete curlbuild.h
 checkoutDeterministic: True
 checkoutScript: |
+    patchApplySeries $<@curl/*.patch@>
     if [[ -f include/curl/curlbuild.h ]] ; then
         rm -f include/curl/curlbuild.h
     fi

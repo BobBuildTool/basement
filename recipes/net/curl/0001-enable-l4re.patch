@@ -1,0 +1,11 @@
+--- a/configure	2025-03-05 21:34:40.342498261 +0100
++++ b/configure	2025-03-05 21:29:58.364828504 +0100
+@@ -15776,7 +15776,7 @@
+   ;;
+ 
+ # This must be glibc/ELF.
+-linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
++linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu* | l4re*)
+   version_type=linux # correct to gnu/linux during the next big refactor
+   need_lib_prefix=no
+   need_version=no
