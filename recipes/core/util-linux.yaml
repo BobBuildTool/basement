@@ -7,6 +7,11 @@ metaEnvironment:
     PKG_LICENSE_PATH:
         util-linux:README.licensing
 
+Config:
+    UTIL_LINUX_SU:
+        type: bool
+        default: False
+
 depends:
     - libs::ncurses-dev
     - libs::zlib-dev
@@ -15,6 +20,12 @@ depends:
       depends:
           - libs::ncurses-tgt
           - libs::zlib-tgt
+
+    - if: "$UTIL_LINUX_SU"
+      depends:
+          - core::linux-pam-dev
+          - use: []
+            name: core::linux-pam-tgt
 
 checkoutSCM:
     scm: url

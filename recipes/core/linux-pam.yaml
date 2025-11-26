@@ -1,0 +1,39 @@
+inherit: [meson]
+
+metaEnvironment:
+    PKG_VERSION: "1.7.1"
+    PKG_LICENSE: BSD-3-Clause
+
+depends:
+    - libs::libxcrypt-dev
+
+    - use: []
+      depends:
+          - libs::libxcrypt-tgt
+
+checkoutSCM:
+    scm: url
+    url: "$GITHUB_MIRROR/linux-pam/linux-pam/releases/download/v${PKG_VERSION}/Linux-PAM-${PKG_VERSION}.tar.xz"
+    digestSHA256: "21dbcec6e01dd578f14789eac9024a18941e6f2702a05cf91b28c232eeb26ab0"
+    stripComponents: 1
+
+buildScript: |
+    mesonBuild "$1" \
+        -Ddocs=disabled \
+        -Dexamples=false \
+        -Disadir=/usr/lib/security \
+        -Dnis=disabled \
+        -Dpam_userdb=disabled
+
+multiPackage:
+    dev:
+        packageScript: mesonPackageDev
+        provideDeps: [ "*-dev" ]
+
+    tgt:
+        packageScript: |
+            mesonPackageTgt
+            install -m 0644 -D $<<linux-pam/login>> etc/pam.d/login
+            install -m 0644 -D $<<linux-pam/other>> etc/pam.d/other
+
+        provideDeps: [ "*-tgt" ]
