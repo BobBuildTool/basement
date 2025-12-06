@@ -18,7 +18,9 @@ checkoutSCM:
 
 checkoutDeterministic: True
 checkoutScript: |
-      patchApplySeries $<@coreutils/*.patch@>
+    patchApplySeries $<@coreutils/*.patch@>
+    # prevent Makefile from updating the file because it's older than "configure"
+    touch doc/stamp-vti
 
 buildScript: |
     autotoolsBuild $1 \

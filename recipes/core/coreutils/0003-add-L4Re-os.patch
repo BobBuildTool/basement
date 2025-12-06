@@ -1,0 +1,10 @@
+--- a/configure	2025-12-06 11:18:47.659006149 +0100
++++ b/configure	2025-12-06 11:18:58.185845210 +0100
+@@ -57172,6 +57172,7 @@
+        mingw* | windows*) os='MinGW';;
+        lynxos*)         os='LynxOS';;
+        linux*)          os='GNU/Linux';;
++       l4re*)           os='L4Re';;
+        hpux*)           os='HP-UX';;
+        hiux*)           os='HI-UX';;
+        gnu*)            os='GNU';;
