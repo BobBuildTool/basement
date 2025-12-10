@@ -17,27 +17,91 @@ checkoutScript: |
     # Work around Makefile bug creating files in the source
     touch libgloss/doc/porting.info
 
+# Inspired by https://gitlab.arm.com/tooling/gnu-devtools-for-arm
 buildTools: [host-toolchain, target-toolchain]
 buildVars: [AUTOCONF_HOST]
 buildScript: |
-    rm -rf install
-    mkdir -p build install
-    pushd build
-    $1/configure \
-        --prefix=/usr \
-        --target=${AUTOCONF_HOST} \
-        --libdir=/usr/lib \
-        --disable-newlib-supplied-syscalls \
-        --enable-lite-exit \
-        --enable-target-optspace
-    makeParallel
-    makeSequential install DESTDIR=${PWD}/../install
-    popd
-    pushd install
-    mv usr/$AUTOCONF_HOST/* usr/
-    rmdir usr/$AUTOCONF_HOST
+    SRC="$1"
+
+    buildNewlib()
+    {
+        rm -rf install
+        mkdir -p build install
+        pushd build
+        $SRC/configure \
+            --prefix=/usr \
+            --target=${AUTOCONF_HOST} \
+            --libdir=/usr/lib \
+            --disable-newlib-supplied-syscalls \
+            --enable-newlib-retargetable-locking \
+            --enable-newlib-reent-check-verify \
+            --enable-newlib-io-long-long \
+            --enable-newlib-io-c99-formats \
+            --enable-newlib-register-fini \
+            --enable-newlib-mb \
+            "$@"
+        makeParallel
+        makeSequential install DESTDIR=${PWD}/../install
+        popd
+        pushd install
+        mv usr/$AUTOCONF_HOST/* usr/
+        rmdir usr/$AUTOCONF_HOST
+        popd
+    }
+
+    mkdir -p std
+    pushd std
+    buildNewlib
     popd
 
+    case "$AUTOCONF_HOST" in
+        arm*-*-eabi | arm*-eabi)
+            BUILD_NANO=1
+            ;;
+        *)
+            BUILD_NANO=0
+            ;;
+    esac
+
+    if [[ $BUILD_NANO -eq 1 ]] ; then
+        mkdir -p nano
+        pushd nano
+        buildNewlib \
+            --enable-newlib-nano-malloc \
+            --disable-newlib-unbuf-stream-opt \
+            --enable-newlib-reent-small \
+            --disable-newlib-fseek-optimization \
+            --enable-newlib-nano-formatted-io \
+            --disable-newlib-fvwrite-in-streamio \
+            --disable-newlib-wide-orient \
+            --enable-lite-exit \
+            --enable-newlib-global-atexit
+        popd
+
+        mkdir -p std/install/usr/include/newlib-nano
+        cp -f nano/install/usr/include/newlib.h \
+            std/install/usr/include/newlib-nano
+
+        for multilib in $(${AUTOCONF_HOST}-gcc -print-multi-lib); do
+            multi_dir="${multilib%%;*}"
+            src_dir="nano/install/usr/lib/$multi_dir"
+            dst_dir="std/install/usr/lib/$multi_dir"
+            cp -f "${src_dir}/libc.a" "${dst_dir}/libc_nano.a"
+            cp -f "${src_dir}/libg.a" "${dst_dir}/libg_nano.a"
+            cp -f "${src_dir}/librdimon.a" "${dst_dir}/librdimon_nano.a"
+            cp -f "${src_dir}/nano.specs" "${dst_dir}/"
+            cp -f "${src_dir}/rdimon.specs" "${dst_dir}/"
+            cp -f "${src_dir}/nosys.specs" "${dst_dir}/"
+            # Here it is safe to replace non-nano *crt0.o with the nano version
+            # because the the only difference in startup is that atexit is made
+            # a weak reference in nano. With lite exit libs, a program not
+            # explicitly calling atexit or on_exit will escape from the burden
+            # of cleaning up code. A program with atexit or on_exit will work
+            # consistently to normal libs.
+            cp -f "${src_dir}/"*crt0.o "${dst_dir}/"
+        done
+    fi
+
 packageScript: |
-    cp -a $1/install/* .
+    cp -a $1/std/install/* .
     stripAll .
