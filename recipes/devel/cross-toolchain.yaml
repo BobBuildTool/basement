@@ -195,6 +195,7 @@ multiPackage:
                     ARCH: "arm"
                     GCC_ENABLE_LANGUAGES: "c"
                     GCC_LIBC: "newlib"
+                    GCC_MULTILIB: "aprofile,rmprofile"
 
             aarch64-l4re:
                 environment:
