@@ -161,7 +161,7 @@ index 00000000000..e1dc638a9be
 +  "%{symbolic:-Bsymbolic} "                                 \
 +  "%{!static:%{!static-pie:                                 \
 +    %{rdynamic:-export-dynamic}                             \
-+    %{!shared:-dynamic-linker=rom/libld-l4.so.1}}} "        \
++    %{!shared:-dynamic-linker=/rom/libld-l4.so.1}}} "       \
 +  "%{static-pie:-Bstatic -pie --no-dynamic-linker -z text}"
 +
 +#define GNU_USER_TARGET_LINK_GCC_C_SEQUENCE_SPEC \
