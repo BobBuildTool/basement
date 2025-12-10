@@ -1,7 +1,7 @@
 inherit: [autoconf, make, patch, install, "basement::update-config"]
 
 metaEnvironment:
-    PKG_VERSION: "13.4.0"
+    PKG_VERSION: "14.3.0"
     PKG_LICENSE: "GPL-3.0-with-GCC-exception"
 
 depends:
@@ -55,8 +55,7 @@ Config:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gcc/gcc-${PKG_VERSION}/gcc-${PKG_VERSION}.tar.xz
-    digestSHA512: "9b4b83ecf51ef355b868608b8d257b2fa435c06d2719cb86657a7c2c2a0828f\
-                   f4ce04e9bac1055bbcad8ed5b4da524cafaef654785e23a50233d95d89201e35f"
+    digestSHA256: "e0dc77297625631ac8e50fa92fffefe899a4eb702592da5c32ef04e2293aca3a"
     stripComponents: 1
 
 checkoutDeterministic: True

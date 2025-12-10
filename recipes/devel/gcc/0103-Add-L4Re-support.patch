@@ -23,8 +23,8 @@ index ae332a88768..49c4b96f986 100644
 --- a/gcc/config.gcc
 +++ b/gcc/config.gcc
 @@ -843,6 +843,21 @@ case ${target} in
- *-*-fuchsia*)
-   native_system_header_dir=/include
+   rust_target_objs="${rust_target_objs} fuchsia-rust.o"
+   target_has_targetrustm=yes
    ;;
 +*-*-l4re*)
 +  extra_options="$extra_options l4re.opt"
@@ -300,8 +300,8 @@ index 8621de4f638..b776aa5e50b 100644
  	tmake_file="${tmake_file} i386/t-dragonfly i386/t-crtstuff"
  	md_unwind_header=i386/dragonfly-unwind.h
 @@ -747,6 +770,12 @@ i[34567]86-*-linux*)
- 	tm_file="${tm_file} i386/elf-lib.h"
  	md_unwind_header=i386/linux-unwind.h
+ 	tmake_file="${tmake_file} i386/t-heap-trampoline"
  	;;
 +i[34567]86-*-l4re*)
 +	extra_parts="$extra_parts crtprec32.o crtprec64.o crtprec80.o"
