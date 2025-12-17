@@ -68,14 +68,22 @@ multiPackage:
                 -DLIBCLANG_BUILD_STATIC=ON                        \
                 -DLLVM_ENABLE_ZSTD=OFF                            \
                 -DLLVM_ENABLE_BINDINGS=OFF                        \
-                -DLLVM_BUILD_LLVM_DYLIB==ON                       \
+                -DLLVM_BUILD_LLVM_DYLIB=ON                        \
                 -DLLVM_LINK_LLVM_DYLIB=ON
 
             # Need to copy extra host tools that are not installed by default.
             cp build/bin/{clang-tidy-confusable-chars-gen,llvm-lit} install/usr/bin/
 
         packageScript: |
-            cmakePackageBin
+            # We must force shared libs installation. The host-tools package
+            # is compiled with the host-compat toolchain which assumes static
+            # linking by default.
+            INSTALL_SHARED=1
+
+            # Package everything. The binaries will link dynamically with
+            # libclang and friends. Luckily, the RPATH is set appropriately...
+            cmakePackageTgt
+
             # Get rid of debug symbols. This package is really just to cross
             # compile the real llvm.
             find -type d -name .debug | xargs /bin/rm -rf
