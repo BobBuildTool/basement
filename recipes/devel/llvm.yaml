@@ -283,6 +283,13 @@ multiPackage:
                                 /usr/ /usr/lib/ /usr/lib/{clang,llvm}/"***" \
                                 /usr/bin/ /usr/bin/llvm-config
 
+                            # If we're cross-compiling, we need to take
+                            # llvm-config from the host-tools package so that
+                            # it can be executed at build time.
+                            if [[ ${BOB_TOOL_PATHS[clang-host]:+true} ]] ; then
+                                cp ${BOB_TOOL_PATHS[clang-host]}/llvm-config usr/bin/
+                            fi
+
                             # Add some wrapper scripts for all executables,
                             # except llvm-config. The CMake exported targets
                             # expect them relative to them and check this!
