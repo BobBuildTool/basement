@@ -58,6 +58,7 @@ multiPackage:
         buildScript: |
             cmakeBuild $1/llvm \
                 -DCMAKE_BUILD_TYPE=Release                        \
+                -DLLVM_ENABLE_RTTI=ON                             \
                 -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra"  \
                 -DLLVM_TARGETS_TO_BUILD="${LLVM_TARGETS}"         \
                 -DLLVM_INCLUDE_BENCHMARKS=OFF                     \
@@ -281,6 +282,13 @@ multiPackage:
                             cmakePackageDev "$1" \
                                 /usr/ /usr/lib/ /usr/lib/{clang,llvm}/"***" \
                                 /usr/bin/ /usr/bin/llvm-config
+
+                            # If we're cross-compiling, we need to take
+                            # llvm-config from the host-tools package so that
+                            # it can be executed at build time.
+                            if [[ ${BOB_TOOL_PATHS[clang-host]:+true} ]] ; then
+                                cp ${BOB_TOOL_PATHS[clang-host]}/llvm-config usr/bin/
+                            fi
 
                             # Add some wrapper scripts for all executables,
                             # except llvm-config. The CMake exported targets
