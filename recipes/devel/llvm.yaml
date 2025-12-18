@@ -58,6 +58,7 @@ multiPackage:
         buildScript: |
             cmakeBuild $1/llvm \
                 -DCMAKE_BUILD_TYPE=Release                        \
+                -DLLVM_ENABLE_RTTI=ON                             \
                 -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra"  \
                 -DLLVM_TARGETS_TO_BUILD="${LLVM_TARGETS}"         \
                 -DLLVM_INCLUDE_BENCHMARKS=OFF                     \
