@@ -13,9 +13,9 @@ depends:
       if: !expr |
         "$AUTOCONF_BUILD" != get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_BUILD")
 
-buildVars: [AUTOCONF_TARGET, GCC_LIBC]
-buildScript: |
-    rm -rf *
+packageDepends: True
+packageVars: [AUTOCONF_TARGET, GCC_LIBC]
+packageScript: |
     cp -an $2/* .
     cp -an ${BOB_DEP_PATHS[devel::binutils]}/* .
     mkdir -p usr/sysroots/$AUTOCONF_TARGET/usr/lib
@@ -27,8 +27,6 @@ buildScript: |
          --exclude '*'
     fi
 
-packageScript: |
-    cp -a $1/* .
     # Remove debug symbols of host executables. We don't care if the toolchain
     # crashes. The target architecture symbols need to be retained, though...
     find usr/bin usr/libexec -type d -name .debug | xargs /bin/rm -rf
