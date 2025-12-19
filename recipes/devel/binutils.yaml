@@ -20,7 +20,25 @@ buildTools: [host-toolchain, bison]
 buildToolsWeak: [m4]
 multiPackage:
     "":
-        buildVars: [AUTOCONF_HOST, AUTOCONF_TARGET, BINUTILS_PREFIX]
+        Config:
+            BINUTILS_ZSTD:
+                type: bool
+                help: "Enable zstd compression support for debug sections"
+                default: False
+            BINUTILS_COMPRESS_DEBUG:
+                type: bool
+                help: "Compress debug sections by default in linker"
+                default: False
+
+        depends:
+            - if: $BINUTILS_ZSTD
+              depends:
+                  - libs::zstd-dev
+                  - name: libs::zstd-tgt
+                    use: []
+
+        buildVars: [AUTOCONF_HOST, AUTOCONF_TARGET, BINUTILS_PREFIX,
+                    BINUTILS_ZSTD, BINUTILS_COMPRESS_DEBUG]
         buildScript: |
             export MAKEINFO=true
             autotoolsBuild -o MAKEINFO=true -O MAKEINFO=true $1 \
@@ -31,12 +49,16 @@ multiPackage:
                 --disable-nls \
                 --disable-werror \
                 --enable-plugins \
-                --enable-lto
+                --enable-lto \
+                --enable-compressed-debug-sections=$([[ $BINUTILS_COMPRESS_DEBUG == 1 ]] && echo ld || echo none) \
+                --enable-default-compressed-debug-sections-algorithm=$(\
+                    [[ $BINUTILS_ZSTD == 1 ]] && echo zstd || echo zlib)
 
         multiPackage:
             dev:
                 packageScript: |
                     autotoolsPackageDev
+                provideDeps: [ "*-dev" ]
             "":
                 packageScript: |
                     autotoolsPackageTgt
@@ -51,6 +73,7 @@ multiPackage:
                         popd
                     fi
 
+                provideDeps: [ "*-tgt" ]
                 provideTools:
                     binutils: usr/bin
 
@@ -67,5 +90,7 @@ multiPackage:
         multiPackage:
             dev:
                 packageScript: autotoolsPackageDev
+                provideDeps: [ "*-dev" ]
             tgt:
                 packageScript: autotoolsPackageTgt
+                provideDeps: [ "*-tgt" ]
