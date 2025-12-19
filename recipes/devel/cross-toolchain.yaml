@@ -20,11 +20,11 @@ packageScript: |
     cp -an ${BOB_DEP_PATHS[devel::binutils]}/* .
     mkdir -p usr/sysroots/$AUTOCONF_TARGET/usr/lib
     if [[ ${GCC_LIBC:+true} ]] ; then
-       cp -an ${BOB_DEP_PATHS[libs::${GCC_LIBC}]}/* usr/sysroots/$AUTOCONF_TARGET
-       rsync -aHSK usr/$AUTOCONF_TARGET/lib/ \
-         usr/sysroots/$AUTOCONF_TARGET/usr/lib/ \
-         --include '*.so.*' \
-         --exclude '*'
+        cp -an ${BOB_DEP_PATHS[libs::${GCC_LIBC}]}/* usr/sysroots/$AUTOCONF_TARGET
+        # Hard link shared libs to sysroot to save space.
+        if compgen -G "usr/$AUTOCONF_TARGET/lib/"*.so.* >/dev/null ; then
+            cp -dl "usr/$AUTOCONF_TARGET/lib/"*.so.* usr/sysroots/$AUTOCONF_TARGET/usr/lib/
+        fi
     fi
 
     # Remove debug symbols of host executables. We don't care if the toolchain
