@@ -1,13 +1,13 @@
 inherit: [autotools, patch]
 
 metaEnvironment:
-    PKG_VERSION: "2.45"
+    PKG_VERSION: "2.45.1"
     PKG_LICENSE: "FSFAP AND GFDL-1.3 AND GPL-2.0-or-later AND LGPL-2.0-or-later"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/binutils/binutils-${PKG_VERSION}.tar.xz
-    digestSHA1: "09fd8a50a95be4a94412fe3847d16280996679c5"
+    digestSHA1: "db1bb5b24bab487664380f4cbb498c8b2595e5a8"
     stripComponents: 1
 
 checkoutDeterministic: True
