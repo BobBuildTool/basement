@@ -1,129 +1,37 @@
-From 10325d65d1422c53b6eebf842cb5aedd91194c06 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Jan=20Kl=C3=B6tzke?= <jan.kloetzke@kernkonzept.com>
 Date: Mon, 12 May 2025 17:01:30 +0200
 Subject: [PATCH 5/5] Add L4Re support
 
-So far for Arm, AArch64, i386 and x86_64.
----
- gcc/config.gcc                 | 31 ++++++++++++++-
- gcc/config.host                |  5 ++-
- gcc/config/l4re.h              | 69 ++++++++++++++++++++++++++++++++++
- gcc/config/l4re.opt            | 32 ++++++++++++++++
- gcc/configure.ac               |  2 +-
- libgcc/config.host             | 29 ++++++++++++++
- libgcc/config/arm/unwind-arm.h |  2 +-
- libstdc++-v3/configure.host    |  3 ++
- libstdc++-v3/crossconfig.m4    |  9 +++++
- 9 files changed, 176 insertions(+), 6 deletions(-)
- create mode 100644 gcc/config/l4re.h
- create mode 100644 gcc/config/l4re.opt
-
-diff --git a/gcc/config.gcc b/gcc/config.gcc
-index ae332a88768..49c4b96f986 100644
---- a/gcc/config.gcc
-+++ b/gcc/config.gcc
-@@ -843,6 +843,21 @@ case ${target} in
-   rust_target_objs="${rust_target_objs} fuchsia-rust.o"
-   target_has_targetrustm=yes
-   ;;
-+*-*-l4re*)
-+  extra_options="$extra_options l4re.opt"
-+  gas=yes
-+  gnu_ld=yes
-+  default_use_cxa_atexit=yes
-+  tmake_file="t-slibgcc"
-+  case ${enable_threads} in
-+    "" | yes | posix) thread_file='posix' ;;
-+    no) ;;
-+    *)
-+      echo 'Unknown thread configuration for L4Re'
-+      exit 1
-+      ;;
-+  esac
-+  ;;
- *-*-linux* | frv-*-*linux* | *-*-kfreebsd*-gnu | *-*-gnu* | *-*-kopensolaris*-gnu | *-*-uclinuxfdpiceabi)
-   extra_options="$extra_options gnu-user.opt"
-   gas=yes
-@@ -1126,7 +1141,7 @@ case ${target} in
- esac
- 
- case ${target} in
--aarch64*-*-elf | aarch64*-*-fuchsia* | aarch64*-*-rtems*)
-+aarch64*-*-elf | aarch64*-*-fuchsia* | aarch64*-*-rtems* | aarch64*-*-l4re*)
- 	tm_file="${tm_file} elfos.h newlib-stdint.h"
- 	tm_file="${tm_file} aarch64/aarch64-elf.h aarch64/aarch64-errata.h aarch64/aarch64-elf-raw.h"
- 	tmake_file="${tmake_file} aarch64/t-aarch64"
-@@ -1137,6 +1152,9 @@ aarch64*-*-elf | aarch64*-*-fuchsia* | aarch64*-*-rtems*)
-         aarch64-*-fuchsia*)
-                 tm_file="${tm_file} fuchsia.h"
-                 ;;
-+        aarch64-*-l4re*)
-+                tm_file="${tm_file} l4re.h"
-+                ;;
- 	aarch64-*-rtems*)
- 		tm_file="${tm_file} aarch64/rtems.h rtems.h"
- 		tmake_file="${tmake_file} aarch64/t-aarch64-rtems"
-@@ -1399,7 +1417,7 @@ arm*-*-phoenix*)
- 	tmake_file="${tmake_file} arm/t-arm arm/t-bpabi arm/t-phoenix"
- 	target_cpu_cname="arm7tdmi"
- 	;;
--arm*-*-eabi* | arm*-*-symbianelf* | arm*-*-rtems* | arm*-*-fuchsia*)
-+arm*-*-eabi* | arm*-*-symbianelf* | arm*-*-rtems* | arm*-*-fuchsia* | arm*-*-l4re*)
- 	case ${target} in
- 	arm*eb-*-eabi*)
- 	  tm_defines="${tm_defines} TARGET_BIG_ENDIAN_DEFAULT=1"
-@@ -1419,6 +1437,11 @@ arm*-*-eabi* | arm*-*-symbianelf* | arm*-*-rtems* | arm*-*-fuchsia*)
- 	  tmake_file="${tmake_file} arm/t-bpabi arm/t-fuchsia"
- 	  target_cpu_cname="generic-armv7-a"
- 	  ;;
-+	arm*-*-l4re*)
-+	  tm_file="${tm_file} l4re.h glibc-stdint.h"
-+	  tmake_file="${tmake_file} arm/t-bpabi"
-+	  target_cpu_cname="generic-armv7-a"
-+	  ;;
- 	arm*-*-rtems*)
- 	  tm_file="${tm_file} arm/rtems.h rtems.h newlib-stdint.h"
- 	  tmake_file="${tmake_file} arm/t-bpabi arm/t-rtems"
-@@ -2219,6 +2242,10 @@ x86_64-*-fuchsia*)
- 	tmake_file="${tmake_file} i386/t-x86_64-elf"
- 	tm_file="${tm_file} i386/unix.h i386/att.h elfos.h newlib-stdint.h i386/i386elf.h i386/x86-64.h fuchsia.h"
- 	;;
-+x86_64-*-l4re*)
-+	tmake_file="${tmake_file} i386/t-x86_64-elf"
-+	tm_file="${tm_file} i386/unix.h i386/att.h elfos.h newlib-stdint.h i386/i386elf.h i386/x86-64.h l4re.h"
-+	;;
- ia64*-*-elf*)
- 	tm_file="${tm_file} elfos.h newlib-stdint.h ia64/sysv4.h ia64/elf.h"
- 	tmake_file="ia64/t-ia64"
-diff --git a/gcc/config.host b/gcc/config.host
-index 21a988e6376..2ee81a0b9a4 100644
---- a/gcc/config.host
-+++ b/gcc/config.host
-@@ -100,7 +100,7 @@ esac
- 
- case ${host} in
-   aarch64*-*-freebsd* | aarch64*-*-linux* | aarch64*-*-fuchsia* |\
--  aarch64*-*-darwin*)
-+  aarch64*-*-darwin* | aarch64*-*-l4re*)
-     case ${target} in
-       aarch64*-*-*)
- 	host_extra_gcc_objs="driver-aarch64.o"
-@@ -108,7 +108,8 @@ case ${host} in
- 	;;
-     esac
-     ;;
--  arm*-*-freebsd* | arm*-*-netbsd* | arm*-*-linux* | arm*-*-fuchsia*)
-+  arm*-*-freebsd* | arm*-*-netbsd* | arm*-*-linux* | arm*-*-fuchsia* |\
-+  arm*-*-l4re*)
-     case ${target} in
-       arm*-*-*)
- 	host_extra_gcc_objs="driver-arm.o"
-diff --git a/gcc/config/l4re.h b/gcc/config/l4re.h
-new file mode 100644
-index 00000000000..e1dc638a9be
---- /dev/null
-+++ b/gcc/config/l4re.h
-@@ -0,0 +1,69 @@
+diff -Nurp a/gcc/config/i386/l4re64.h b/gcc/config/i386/l4re64.h
+--- a/gcc/config/i386/l4re64.h	1970-01-01 01:00:00.000000000 +0100
++++ b/gcc/config/i386/l4re64.h	2025-12-12 10:56:34.558135410 +0100
+@@ -0,0 +1,22 @@
++#ifdef TARGET_LIBC_PROVIDES_SSP
++/* i386 uclibc provides __stack_chk_guard in %gs:0x14,
++   x86_64 uclibc provides it in %fs:0x28.  */
++#define TARGET_THREAD_SSP_OFFSET \
++  (TARGET_64BIT ? 0x28 : 0x14)
++#endif
++
++// The same as in gcc/config/l4re.h but with emulation overrides...
++#undef  LINK_SPEC
++#define LINK_SPEC "\
++  %{m32:-m elf_i386}%{m64:-m elf_x86_64} \
++  %{shared:-shared} \
++  %{!shared: \
++    %{!static: \
++      %{!static-pie: \
++        %{rdynamic:-export-dynamic} \
++        -dynamic-linker=/rom/libld-l4.so.1}} \
++    %{static:-static} \
++    %{static-pie:-static -pie --no-dynamic-linker -z text}}"
++
++#undef  MULTILIB_DEFAULTS
++#define MULTILIB_DEFAULTS { "m64" }
+diff -Nurp a/gcc/config/l4re.h b/gcc/config/l4re.h
+--- a/gcc/config/l4re.h	1970-01-01 01:00:00.000000000 +0100
++++ b/gcc/config/l4re.h	2025-12-12 10:58:45.131911725 +0100
+@@ -0,0 +1,70 @@
 +/* The GNU C++ standard library requires that these macros be defined.  */
 +#undef CPLUSPLUS_CPP_SPEC
 +#define CPLUSPLUS_CPP_SPEC "-D_GNU_SOURCE %(cpp)"
@@ -155,14 +63,15 @@ index 00000000000..e1dc638a9be
 +#endif
 +
 +#undef  LINK_SPEC
-+#define LINK_SPEC \
-+  "%{static:-Bstatic} "                                     \
-+  "%{shared:-shared} "                                      \
-+  "%{symbolic:-Bsymbolic} "                                 \
-+  "%{!static:%{!static-pie:                                 \
-+    %{rdynamic:-export-dynamic}                             \
-+    %{!shared:-dynamic-linker=/rom/libld-l4.so.1}}} "       \
-+  "%{static-pie:-Bstatic -pie --no-dynamic-linker -z text}"
++#define LINK_SPEC "\
++  %{shared:-shared} \
++  %{!shared: \
++    %{!static: \
++      %{!static-pie: \
++        %{rdynamic:-export-dynamic} \
++        -dynamic-linker=/rom/libld-l4.so.1}} \
++    %{static:-static} \
++    %{static-pie:-static -pie --no-dynamic-linker -z text}}"
 +
 +#define GNU_USER_TARGET_LINK_GCC_C_SEQUENCE_SPEC \
 +  "%{static|static-pie:--start-group} %G %{!nolibc:%L} \
@@ -193,11 +102,9 @@ index 00000000000..e1dc638a9be
 +
 +/* Add .note.GNU-stack special section */
 +#define TARGET_ASM_FILE_END file_end_indicate_exec_stack
-diff --git a/gcc/config/l4re.opt b/gcc/config/l4re.opt
-new file mode 100644
-index 00000000000..efbbeea4e58
---- /dev/null
-+++ b/gcc/config/l4re.opt
+diff -Nurp a/gcc/config/l4re.opt b/gcc/config/l4re.opt
+--- a/gcc/config/l4re.opt	1970-01-01 01:00:00.000000000 +0100
++++ b/gcc/config/l4re.opt	2025-12-10 10:20:21.698610717 +0100
 @@ -0,0 +1,32 @@
 +; Options for systems using l4re.h.
 +
@@ -231,11 +138,113 @@ index 00000000000..efbbeea4e58
 +Driver
 +
 +; This comment is to ensure we retain the blank line above.
-diff --git a/gcc/configure.ac b/gcc/configure.ac
-index 4fd323483d2..22d3f617408 100644
---- a/gcc/configure.ac
-+++ b/gcc/configure.ac
-@@ -6863,7 +6863,7 @@ AC_CACHE_CHECK(__stack_chk_fail in target C library,
+diff -Nurp a/gcc/config/l4re.opt.urls b/gcc/config/l4re.opt.urls
+--- a/gcc/config/l4re.opt.urls	1970-01-01 01:00:00.000000000 +0100
++++ b/gcc/config/l4re.opt.urls	2025-12-10 10:20:21.698610717 +0100
+@@ -0,0 +1 @@
++; TODO
+diff -Nurp a/gcc/config.gcc b/gcc/config.gcc
+--- a/gcc/config.gcc	2025-05-23 13:02:04.272197204 +0200
++++ b/gcc/config.gcc	2025-12-11 15:47:47.242270520 +0100
+@@ -884,6 +884,21 @@ case ${target} in
+   rust_target_objs="${rust_target_objs} fuchsia-rust.o"
+   target_has_targetrustm=yes
+   ;;
++*-*-l4re*)
++  extra_options="$extra_options l4re.opt"
++  gas=yes
++  gnu_ld=yes
++  default_use_cxa_atexit=yes
++  tmake_file="t-slibgcc"
++  case ${enable_threads} in
++    "" | yes | posix) thread_file='posix' ;;
++    no) ;;
++    *)
++      echo 'Unknown thread configuration for L4Re'
++      exit 1
++      ;;
++  esac
++  ;;
+ *-*-linux* | frv-*-*linux* | *-*-kfreebsd*-gnu | *-*-gnu* | *-*-kopensolaris*-gnu | *-*-uclinuxfdpiceabi)
+   extra_options="$extra_options gnu-user.opt"
+   gas=yes
+@@ -1189,7 +1204,7 @@ case ${target} in
+ esac
+ 
+ case ${target} in
+-aarch64*-*-elf | aarch64*-*-fuchsia* | aarch64*-*-rtems*)
++aarch64*-*-elf | aarch64*-*-fuchsia* | aarch64*-*-rtems* | aarch64*-*-l4re*)
+ 	tm_file="${tm_file} elfos.h newlib-stdint.h"
+ 	tm_file="${tm_file} aarch64/aarch64-elf.h aarch64/aarch64-errata.h aarch64/aarch64-elf-raw.h"
+ 	tmake_file="${tmake_file} aarch64/t-aarch64"
+@@ -1200,6 +1215,9 @@ aarch64*-*-elf | aarch64*-*-fuchsia* | a
+         aarch64-*-fuchsia*)
+                 tm_file="${tm_file} fuchsia.h"
+                 ;;
++        aarch64-*-l4re*)
++                tm_file="${tm_file} l4re.h"
++                ;;
+ 	aarch64-*-rtems*)
+ 		tm_file="${tm_file} aarch64/rtems.h rtems.h"
+ 		tmake_file="${tmake_file} aarch64/t-aarch64-rtems"
+@@ -1468,7 +1486,7 @@ arm*-*-phoenix*)
+ 	tmake_file="${tmake_file} arm/t-arm arm/t-bpabi arm/t-phoenix"
+ 	target_cpu_cname="arm7tdmi"
+ 	;;
+-arm*-*-eabi* | arm*-*-symbianelf* | arm*-*-rtems* | arm*-*-fuchsia*)
++arm*-*-eabi* | arm*-*-symbianelf* | arm*-*-rtems* | arm*-*-fuchsia* | arm*-*-l4re*)
+ 	case ${target} in
+ 	arm*eb-*-eabi*)
+ 	  tm_defines="${tm_defines} TARGET_BIG_ENDIAN_DEFAULT=1"
+@@ -1488,6 +1506,11 @@ arm*-*-eabi* | arm*-*-symbianelf* | arm*
+ 	  tmake_file="${tmake_file} arm/t-bpabi arm/t-fuchsia"
+ 	  target_cpu_cname="generic-armv7-a"
+ 	  ;;
++	arm*-*-l4re*)
++	  tm_file="${tm_file} l4re.h glibc-stdint.h"
++	  tmake_file="${tmake_file} arm/t-bpabi"
++	  target_cpu_cname="generic-armv7-a"
++	  ;;
+ 	arm*-*-rtems*)
+ 	  tm_file="${tm_file} arm/rtems.h rtems.h newlib-stdint.h"
+ 	  tmake_file="${tmake_file} arm/t-bpabi arm/t-rtems"
+@@ -2288,6 +2311,10 @@ x86_64-*-fuchsia*)
+ 	tmake_file="${tmake_file} i386/t-x86_64-elf"
+ 	tm_file="${tm_file} i386/unix.h i386/att.h elfos.h newlib-stdint.h i386/i386elf.h i386/x86-64.h fuchsia.h"
+ 	;;
++x86_64-*-l4re*)
++	tmake_file="${tmake_file} i386/t-x86_64-elf"
++	tm_file="${tm_file} i386/unix.h i386/att.h elfos.h newlib-stdint.h i386/i386elf.h i386/x86-64.h l4re.h i386/l4re64.h"
++	;;
+ ia64*-*-elf*)
+ 	tm_file="${tm_file} elfos.h newlib-stdint.h ia64/sysv4.h ia64/elf.h"
+ 	tmake_file="ia64/t-ia64"
+diff -Nurp a/gcc/config.host b/gcc/config.host
+--- a/gcc/config.host	2025-05-23 13:02:04.272197204 +0200
++++ b/gcc/config.host	2025-12-10 10:20:21.698610717 +0100
+@@ -100,7 +100,7 @@ esac
+ 
+ case ${host} in
+   aarch64*-*-freebsd* | aarch64*-*-linux* | aarch64*-*-fuchsia* |\
+-  aarch64*-*-darwin*)
++  aarch64*-*-darwin* | aarch64*-*-l4re*)
+     case ${target} in
+       aarch64*-*-*)
+ 	host_extra_gcc_objs="driver-aarch64.o"
+@@ -108,7 +108,8 @@ case ${host} in
+ 	;;
+     esac
+     ;;
+-  arm*-*-freebsd* | arm*-*-netbsd* | arm*-*-linux* | arm*-*-fuchsia*)
++  arm*-*-freebsd* | arm*-*-netbsd* | arm*-*-linux* | arm*-*-fuchsia* |\
++  arm*-*-l4re*)
+     case ${target} in
+       arm*-*-*)
+ 	host_extra_gcc_objs="driver-arm.o"
+diff -Nurp a/gcc/configure.ac b/gcc/configure.ac
+--- a/gcc/configure.ac	2025-05-23 13:02:04.504200864 +0200
++++ b/gcc/configure.ac	2025-12-10 10:20:21.698610717 +0100
+@@ -7032,7 +7032,7 @@ AC_CACHE_CHECK(__stack_chk_fail in targe
  	 # realistically usable GNU/Hurd configurations.
  	 # All supported versions of musl provide it as well
  	 gcc_cv_libc_provides_ssp=yes;;
@@ -244,11 +253,22 @@ index 4fd323483d2..22d3f617408 100644
  	 AC_CHECK_FUNC(__stack_chk_fail,[gcc_cv_libc_provides_ssp=yes],
             [echo "no __stack_chk_fail on this target"])
          ;;
-diff --git a/libgcc/config.host b/libgcc/config.host
-index 8621de4f638..b776aa5e50b 100644
---- a/libgcc/config.host
-+++ b/libgcc/config.host
-@@ -281,6 +281,10 @@ case ${host} in
+diff -Nurp a/libgcc/config/arm/unwind-arm.h b/libgcc/config/arm/unwind-arm.h
+--- a/libgcc/config/arm/unwind-arm.h	2025-05-23 13:02:08.176258788 +0200
++++ b/libgcc/config/arm/unwind-arm.h	2025-12-10 10:20:21.698610717 +0100
+@@ -74,7 +74,7 @@ static inline _Unwind_Ptr _Unwind_gnu_Fi
+       tmp += _Unwind_gnu_Find_got (ptr);
+       tmp = *(_Unwind_Word *) tmp;
+ #elif (defined(linux) && !defined(__uClinux__)) || defined(__NetBSD__) \
+-    || defined(__FreeBSD__) || defined(__fuchsia__)
++    || defined(__FreeBSD__) || defined(__fuchsia__) || defined(__l4re__)
+       /* Pc-relative indirect.  */
+ #define _GLIBCXX_OVERRIDE_TTYPE_ENCODING (DW_EH_PE_pcrel | DW_EH_PE_indirect)
+       tmp += ptr;
+diff -Nurp a/libgcc/config.host b/libgcc/config.host
+--- a/libgcc/config.host	2025-05-23 13:02:08.168258662 +0200
++++ b/libgcc/config.host	2025-12-10 10:20:21.698610717 +0100
+@@ -310,6 +310,10 @@ case ${host} in
    tmake_file="$tmake_file t-crtstuff-pic t-libgcc-pic t-eh-dw2-dip t-slibgcc t-slibgcc-fuchsia"
    extra_parts="crtbegin.o crtend.o"
    ;;
@@ -259,7 +279,7 @@ index 8621de4f638..b776aa5e50b 100644
  *-*-linux* | frv-*-*linux* | *-*-kfreebsd*-gnu | *-*-gnu* | *-*-kopensolaris*-gnu | *-*-uclinuxfdpiceabi)
    tmake_file="$tmake_file t-crtstuff-pic t-libgcc-pic t-eh-dw2-dip t-slibgcc t-slibgcc-gld t-slibgcc-elf-ver t-linux"
    extra_parts="crtbegin.o crtbeginS.o crtbeginT.o crtend.o crtendS.o"
-@@ -416,6 +420,13 @@ aarch64*-*-fuchsia*)
+@@ -445,6 +449,13 @@ aarch64*-*-fuchsia*)
  	tmake_file="${tmake_file} ${cpu_type}/t-softfp t-softfp"
  	tmake_file="${tmake_file} t-dfprules"
  	;;
@@ -273,7 +293,7 @@ index 8621de4f638..b776aa5e50b 100644
  aarch64*-*-linux*)
  	extra_parts="$extra_parts crtfastmath.o"
  	md_unwind_header=aarch64/linux-unwind.h
-@@ -492,6 +503,12 @@ arm*-*-fuchsia*)
+@@ -531,6 +542,12 @@ arm*-*-fuchsia*)
  	tm_file="${tm_file} arm/bpabi-lib.h"
  	unwind_header=config/arm/unwind-arm.h
  	;;
@@ -286,7 +306,7 @@ index 8621de4f638..b776aa5e50b 100644
  arm*-*-netbsdelf*)
  	tmake_file="$tmake_file arm/t-arm"
  	case ${host} in
-@@ -715,6 +732,12 @@ x86_64-*-elf* | x86_64-*-rtems*)
+@@ -758,6 +775,12 @@ x86_64-*-elf* | x86_64-*-rtems*)
  x86_64-*-fuchsia*)
  	tmake_file="$tmake_file t-libgcc-pic"
  	;;
@@ -299,7 +319,7 @@ index 8621de4f638..b776aa5e50b 100644
  i[34567]86-*-dragonfly*)
  	tmake_file="${tmake_file} i386/t-dragonfly i386/t-crtstuff"
  	md_unwind_header=i386/dragonfly-unwind.h
-@@ -747,6 +770,12 @@ i[34567]86-*-linux*)
+@@ -791,6 +814,12 @@ i[34567]86-*-linux*)
  	md_unwind_header=i386/linux-unwind.h
  	tmake_file="${tmake_file} i386/t-heap-trampoline"
  	;;
@@ -312,23 +332,9 @@ index 8621de4f638..b776aa5e50b 100644
  i[34567]86-*-kfreebsd*-gnu | i[34567]86-*-kopensolaris*-gnu)
  	extra_parts="$extra_parts crtprec32.o crtprec64.o crtprec80.o crtfastmath.o"
  	tmake_file="${tmake_file} i386/t-crtpc t-crtfm i386/t-crtstuff t-dfprules"
-diff --git a/libgcc/config/arm/unwind-arm.h b/libgcc/config/arm/unwind-arm.h
-index b5b27fb85c4..f8c74c8a0e8 100644
---- a/libgcc/config/arm/unwind-arm.h
-+++ b/libgcc/config/arm/unwind-arm.h
-@@ -74,7 +74,7 @@ static inline _Unwind_Ptr _Unwind_gnu_Find_got (_Unwind_Ptr ptr)
-       tmp += _Unwind_gnu_Find_got (ptr);
-       tmp = *(_Unwind_Word *) tmp;
- #elif (defined(linux) && !defined(__uClinux__)) || defined(__NetBSD__) \
--    || defined(__FreeBSD__) || defined(__fuchsia__)
-+    || defined(__FreeBSD__) || defined(__fuchsia__) || defined(__l4re__)
-       /* Pc-relative indirect.  */
- #define _GLIBCXX_OVERRIDE_TTYPE_ENCODING (DW_EH_PE_pcrel | DW_EH_PE_indirect)
-       tmp += ptr;
-diff --git a/libstdc++-v3/configure.host b/libstdc++-v3/configure.host
-index 9e7c7f02dfd..d78b5ce6436 100644
---- a/libstdc++-v3/configure.host
-+++ b/libstdc++-v3/configure.host
+diff -Nurp a/libstdc++-v3/configure.host b/libstdc++-v3/configure.host
+--- a/libstdc++-v3/configure.host	2025-05-23 13:02:08.928270651 +0200
++++ b/libstdc++-v3/configure.host	2025-12-10 10:20:21.698610717 +0100
 @@ -255,6 +255,9 @@ case "${host_os}" in
    freebsd*)
      os_include_dir="os/bsd/freebsd"
@@ -339,10 +345,9 @@ index 9e7c7f02dfd..d78b5ce6436 100644
    linux-musl*)
      os_include_dir="os/generic"
      ;;
-diff --git a/libstdc++-v3/crossconfig.m4 b/libstdc++-v3/crossconfig.m4
-index b3269cb88e0..0be2eee5757 100644
---- a/libstdc++-v3/crossconfig.m4
-+++ b/libstdc++-v3/crossconfig.m4
+diff -Nurp a/libstdc++-v3/crossconfig.m4 b/libstdc++-v3/crossconfig.m4
+--- a/libstdc++-v3/crossconfig.m4	2025-05-23 13:02:08.928270651 +0200
++++ b/libstdc++-v3/crossconfig.m4	2025-12-10 10:20:21.698610717 +0100
 @@ -174,6 +174,15 @@ case "${host}" in
  
      GCC_CHECK_TLS
@@ -359,6 +364,3 @@ index b3269cb88e0..0be2eee5757 100644
    *-linux* | *-uclinux* | *-gnu* | *-kfreebsd*-gnu | *-cygwin* | *-solaris*)
      GLIBCXX_CHECK_COMPILER_FEATURES
      GLIBCXX_CHECK_LINKER_FEATURES
--- 
-2.39.5
-
