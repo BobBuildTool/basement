@@ -1,13 +1,13 @@
 inherit: ["python3::flit"]
 
 metaEnvironment:
-    PKG_VERSION: "24.1"
+    PKG_VERSION: "25.0"
     PKG_LICENSE: "Apache-2.0 OR BSD-2-Clause"
 
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/pypa/packaging/archive/refs/tags/${PKG_VERSION}.tar.gz
-    digestSHA256: 7b31090ae4ddd6c48a5ed10073a880e6e2612ce8ac2f81e34f42aaabefd1b81b
+    digestSHA256: 15b6ba95eb12d8f99dcf215ea37cbea16812ef28358e8ef3d9344acb827acac1
     stripComponents: 1
 
 buildScript: |

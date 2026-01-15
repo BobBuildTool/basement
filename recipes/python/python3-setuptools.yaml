@@ -1,13 +1,13 @@
 inherit: [patch]
 
 metaEnvironment:
-    PKG_VERSION: "75.3.2"
+    PKG_VERSION: "80.9.0"
     PKG_LICENSE: "MIT"
 
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/pypa/setuptools/archive/v${PKG_VERSION}.tar.gz
-    digestSHA256: 22463710a3393a745176726645fd7ec87dc60504f5ed38b6fcaac654384e81dd
+    digestSHA256: 06921ef18c10968ab35116603645c6e64cde851ff3886838d9c448db5329fe35
     stripComponents: 1
 
 checkoutDeterministic: True
