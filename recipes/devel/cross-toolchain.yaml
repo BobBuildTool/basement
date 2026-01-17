@@ -36,8 +36,7 @@ packageScript: |
     # for these scripts...
     pushd usr/bin
 
-    GCC_INSTALL_DIR_REL=$(realpath --relative-to=.\
-                          "$("./${AUTOCONF_TARGET}-gcc" -print-search-dirs | sed -n -e 's/^install: \(.*\)/\1/p')")
+    GCC_INSTALL_DIR_REL=$(find .. -name libgcc.a -printf '%h')
 
     for i in clang clang-cpp clang++ ; do
         cat > "$AUTOCONF_TARGET-$i" << EOF
