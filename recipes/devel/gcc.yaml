@@ -143,7 +143,7 @@ multiPackage:
                 use: [result, tools]
             - name: libs::mingw-w64-headers
               if: "$(eq,${GCC_LIBC},mingw-w64)"
-        buildTools: [host-native-toolchain, binutils]
+        buildTools: [target-toolchain, binutils]
         buildScript: |
             OPTIONS=(
                 --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET}
@@ -220,26 +220,6 @@ multiPackage:
                     LDFLAGS:    "-Wl,-O1"
 
     cross:
-        depends:
-            - name: devel::binutils
-              use: [result, tools]
-            - name: devel::gcc-cross-bare
-              use: [tools]
-              forward: True
-            - tools:
-                  target-toolchain: cross-target-toolchain
-              depends:
-                  - name: libs::glibc
-                    if: "$(eq,${GCC_LIBC},glibc)"
-                  - name: libs::newlib
-                    if: "$(eq,${GCC_LIBC},newlib)"
-                  - name: libs::uclibc-ng
-                    if: "$(eq,${GCC_LIBC},uclibc-ng)"
-                  - name: libs::uclibc-l4re
-                    if: "$(eq,${GCC_LIBC},uclibc-l4re)"
-                  - name: libs::mingw-w64
-                    if: "$(eq,${GCC_LIBC},mingw-w64)"
-
         Config:
             GCC_LIBC:
                 type: choice
@@ -278,13 +258,6 @@ multiPackage:
                     ;;
             esac
 
-            configureGcc \
-                --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET} \
-                --with-build-sysroot=${BOB_DEP_PATHS[libs::${GCC_LIBC}]}     \
-                --enable-linker-build-id                                     \
-                "${OPTIONS[@]}"                                              \
-                --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
-
         packageScript: |
             installStripAll usr/bin usr/libexec
 
@@ -302,14 +275,63 @@ multiPackage:
             # intended to be used directly but to bootstrap the canadian cross
             # compiler below.
             host:
-                buildTools: [host-native-toolchain]
-                buildScript: |
-                    makeParallel -C build
-                    makeSequential -C build install DESTDIR="$PWD/install"
-                provideTools:
-                    # Required by the canadian cross compiler to dump specs.
-                    cross-ambient-toolchain:
-                        path: usr/bin
+                depends:
+                    - name: devel::binutils
+                      use: [result, tools]
+                    - name: devel::gcc-cross-bare
+                      use: [tools]
+                      forward: True
+                    - &libc-builds
+                      tools:
+                          target-toolchain: cross-target-toolchain
+                      depends:
+                          - name: libs::glibc
+                            if: "$(eq,${GCC_LIBC},glibc)"
+                          - name: libs::newlib
+                            if: "$(eq,${GCC_LIBC},newlib)"
+                          - name: libs::uclibc-ng
+                            if: "$(eq,${GCC_LIBC},uclibc-ng)"
+                          - name: libs::uclibc-l4re
+                            if: "$(eq,${GCC_LIBC},uclibc-l4re)"
+                          - name: libs::mingw-w64
+                            if: "$(eq,${GCC_LIBC},mingw-w64)"
+
+                buildTools: [target-toolchain]
+
+                multiPackage:
+                    "":
+                        buildScript: |
+                            buildGcc \
+                                --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET}             \
+                                --with-build-sysroot=${BOB_DEP_PATHS[libs::${GCC_LIBC}]}    \
+                                --enable-linker-build-id                                    \
+                                "${OPTIONS[@]}"                                             \
+                                --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
+
+                    toolchain:
+                        buildScript: |
+                            buildBareGcc \
+                                --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET}             \
+                                --with-build-sysroot=${BOB_DEP_PATHS[libs::${GCC_LIBC}]}    \
+                                --enable-linker-build-id                                    \
+                                "${OPTIONS[@]}"                                             \
+                                --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
+
+                            cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
+                            if [[ ${GCC_LIBC:+true} ]] ; then
+                                mkdir -p install/usr/sysroots/${AUTOCONF_TARGET}
+                                cp -an ${BOB_DEP_PATHS[libs::${GCC_LIBC}]}/* install/usr/sysroots/$AUTOCONF_TARGET/
+                            fi
+
+                        packageScript: |
+                            # Remove all debug symbols. It's just an intermediate helper
+                            # toolchain for the final canadian cross compiler...
+                            find -type d -name .debug | xargs /bin/rm -rf
+
+                        provideTools:
+                            # Required by the canadian cross compiler to dump specs.
+                            cross-ambient-toolchain:
+                                path: usr/bin
 
             # A canadian cross compiler. This uses most of the result of the
             # native cross compiler above. Only the compiler itself is built as
@@ -317,24 +339,28 @@ multiPackage:
             # compiler.
             canadian:
                 depends:
-                    - name: devel::gcc-cross-host
-                      # This is very subtle. The devel::gcc-cross-host package
-                      # is tainted and fingerprinted by the host libc version.
-                      # We do now want to inherit this fingerprint but instead
-                      # explicitly cut it because we replace all fingerprinted
-                      # bineries with the canadian cross build. Hence do *not*
-                      # use "result" but instead reference the first-stage
-                      # through "tools" only.
-                      use: [tools]
+                    - name: devel::binutils
+                      use: []
+                    - tools:
+                          target-toolchain: host-native-toolchain
+                      depends:
+                          - name: devel::binutils
+                            alias: devel::binutils-host-native
+                            use: [tools]
+                          - name: devel::gcc-cross-bare
+                            use: [tools]
+                            forward: True
+                          - *libc-builds
+                          - name: devel::gcc-cross-host-toolchain
+                            use: [tools]
                 buildTools: [host-toolchain, target-toolchain, cross-ambient-toolchain]
                 buildScript: |
-                    cp -a "${BOB_TOOL_PATHS[cross-ambient-toolchain]}/../.."/* install/
-                    if [[ ${GCC_ENABLE_LANGUAGES:-c,c+} == *"ada"* ]]; then
-                        ADDITIONAL_MAKE=(all-gnattools)
-                        ADDITIONAL_INSTALL=(install-gnattools)
-                    fi
-                    makeParallel -C build all-gcc ${ADDITIONAL_MAKE[@]}
-                    makeSequential -C build install-gcc ${ADDITIONAL_INSTALL[@]} DESTDIR="$PWD/install"
+                    buildGcc \
+                        --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET}                 \
+                        --with-build-sysroot=$(${AUTOCONF_TARGET}-gcc -print-sysroot)   \
+                        --enable-linker-build-id                                        \
+                        "${OPTIONS[@]}"                                                 \
+                        --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
 
     native:
         buildTools: [host-toolchain, target-toolchain]
