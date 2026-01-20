@@ -8,7 +8,7 @@ First, you need to add the basement layer to your project. To do so, add a
 :external:ref:`configuration-config-layers` entry to your
 :external:ref:`config.yaml <configuration-config>`::
 
-    bobMinimumVersion: "1.0"
+    bobMinimumVersion: "1.2"
     layers:
         - name: basement
           scm: git
