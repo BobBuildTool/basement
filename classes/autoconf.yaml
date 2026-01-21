@@ -56,6 +56,7 @@ buildSetup: |
 
         if [[ ( ! -e configure ) || ( ! -e .autoreconf.stamp ) ||
               ( configure.ac -nt .autoreconf.stamp ) ]] ; then
+            ${AUTOCONF_BOOTSTRAP_TOOL:-}
             if [[ -n ${AUTOCONF_TOOL:-} ]]; then
                 ${AUTOCONF_TOOL}
             else
