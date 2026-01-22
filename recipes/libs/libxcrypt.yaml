@@ -1,13 +1,13 @@
 inherit: [autoconf, autotools]
 
 metaEnvironment:
-    PKG_VERSION: 4.4.36
+    PKG_VERSION: 4.5.2
     PKG_LICENSE: "LGPL-2.1"
 
 checkoutSCM:
     scm: url
     url: https://github.com/besser82/libxcrypt/releases/download/v${PKG_VERSION}/libxcrypt-${PKG_VERSION}.tar.xz
-    digestSHA256: e5e1f4caee0a01de2aee26e3138807d6d3ca2b8e67287966d1fefd65e1fd8943
+    digestSHA256: 71513a31c01a428bccd5367a32fd95f115d6dac50fb5b60c779d5c7942aec071
     stripComponents: 1
 
 buildScript: |
