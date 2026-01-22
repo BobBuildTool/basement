@@ -1,13 +1,13 @@
 inherit: [autotools, autoconf]
 
 metaEnvironment:
-    PKG_VERSION: "1.23"
+    PKG_VERSION: "1.26"
     PKG_LICENSE: "GPL-3.0-or-later"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gdbm/gdbm-${PKG_VERSION}.tar.gz
-    digestSHA1: "50ba1b1d45ce33fd44e4fdaaf3b55a9d8f3dc418"
+    digestSHA1: "6cee3657de948e691e8df26509157be950cef4d4"
     stripComponents: 1
 
 checkoutDeterministic: True
