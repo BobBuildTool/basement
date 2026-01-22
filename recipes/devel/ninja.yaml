@@ -1,18 +1,14 @@
 inherit: [cpackage, install, patch]
 
 metaEnvironment:
-    PKG_VERSION: "1.11.1.g95dee.kitware.jobserver-1"
+    PKG_VERSION: "1.13.1"
     PKG_LICENSE: "Apache-2.0"
 
 checkoutSCM:
     scm: url
-    url: ${GITHUB_MIRROR}/Kitware/ninja/archive/v${PKG_VERSION}.tar.gz
-    digestSHA256: 7ba84551f5b315b4270dc7c51adef5dff83a2154a3665a6c9744245c122dd0db
+    url: ${GITHUB_MIRROR}/ninja-build/ninja/archive/v1.13.1.tar.gz
+    digestSHA256: f0055ad0369bf2e372955ba55128d000cfcc21777057806015b45e4accbebf23
     stripComponents: 1
-
-checkoutDeterministic: True
-checkoutScript: |
-    patchApplySeries $<@ninja/*.patch@>
 
 buildVars: [AR, CC, CXX, CFLAGS, CXXFLAGS, LDFLAGS]
 buildToolsWeak: [python3]
