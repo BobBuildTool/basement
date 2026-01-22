@@ -1,7 +1,7 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "3.4.3"
+    PKG_VERSION: "3.8.5"
     PKG_LICENSE: "LicenseRef-libarchive"
     PKG_LICENSE_PATH: |
         libarchive:COPYING
@@ -16,7 +16,7 @@ depends:
 checkoutSCM:
     scm: url
     url: https://www.libarchive.de/downloads/libarchive-${PKG_VERSION}.tar.xz
-    digestSHA256: 0bfc3fd40491768a88af8d9b86bf04a9e95b6d41a94f9292dbc0ec342288c05f
+    digestSHA256: d68068e74beee3a0ec0dd04aee9037d5757fcc651591a6dcf1b6d542fb15a703
     stripComponents: 1
 
 buildScript: |
