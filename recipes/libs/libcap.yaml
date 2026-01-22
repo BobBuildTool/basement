@@ -1,4 +1,4 @@
-inherit: [make, install]
+inherit: [make, install, cpackage]
 
 metaEnvironment:
     PKG_VERSION: "2.77"
@@ -15,6 +15,17 @@ buildVars: [AR, CC, OBJCOPY, RANLIB, PKG_VERSION]
 buildScript: |
     tar -xf $1/libcap-${PKG_VERSION}.tar.xz
     mkdir -p install
+
+    DYNAMIC=
+    case $(cpackageLibraryType) in
+        static)
+            DYNAMIC=no
+            ;;
+        shared|both)
+            DYNAMIC=yes
+            ;;
+    esac
+
     makeParallel -C libcap-${PKG_VERSION} \
         prefix=/usr \
         lib=lib \
@@ -25,6 +36,7 @@ buildScript: |
         RANLIB=$RANLIB \
         RAISE_SETFCAP=no \
         DESTDIR="$PWD/install" \
+        DYNAMIC=${DYNAMIC} \
         install
 
 multiPackage:
