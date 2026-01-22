@@ -6,7 +6,7 @@ depends:
 
 metaEnvironment:
     PKG_LICENSE: "GPL-2.0-or-later AND LGPL-2.1-or-later"
-    PKG_VERSION: "2.39"
+    PKG_VERSION: "2.42"
 
 privateEnvironment:
     GLIBC_ENABLE_KERNEL: "${GLIBC_ENABLE_KERNEL:-$KERNEL_LINUX_VERSION}"
@@ -14,7 +14,7 @@ privateEnvironment:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/glibc/glibc-${PKG_VERSION}.tar.xz
-    digestSHA256: "f77bd47cf8170c57365ae7bf86696c118adb3b120d3259c64c502d3dc1e2d926"
+    digestSHA256: "d1775e32e4628e64ef930f435b67bb63af7599acb6be2b335b9f19f16509f17f"
     stripComponents: 1
 
 buildVars: [AS, CC, CXX, LD, AUTOCONF_HOST, GCC_MULTILIB, GLIBC_ENABLE_KERNEL]
