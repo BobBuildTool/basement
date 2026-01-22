@@ -2,7 +2,7 @@ inherit: [autotools]
 
 metaEnvironment:
     PKG_LICENSE: "LGPL-3.0-or-later"
-    PKG_VERSION: "4.2.1"
+    PKG_VERSION: "4.2.2"
 
 depends:
     - libs::gmp-dev
@@ -14,7 +14,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/mpfr/mpfr-${PKG_VERSION}.tar.xz
-    digestSHA1: "31ffb4244cb469e2b4937cce1f50150300971dfb"
+    digestSHA1: "a63a264b273a652e27518443640e69567da498ce"
     stripComponents: 1
 
 buildScript: |
