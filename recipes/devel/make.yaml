@@ -1,13 +1,13 @@
 inherit: [cpackage, libtool, install, "basement::update-config"]
 
 metaEnvironment:
-    PKG_VERSION: "4.4.1"
+    PKG_VERSION: "${DEVEL__MAKE_VERSION:-4.4.1}"
     PKG_LICENSE: "GPL-3.0-only"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/make/make-${PKG_VERSION}.tar.gz
-    digestSHA256: "dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3"
+    digestSHA256: "${DEVEL__MAKE_DIGEST:-dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3}"
     stripComponents: 1
 
 # We do not build make with make. Instead call the manual build script that is
