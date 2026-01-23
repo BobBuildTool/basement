@@ -65,7 +65,8 @@ checkoutScript: |
 
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET, GCC_TARGET_ABI,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU,
-            GCC_MULTILIB, GCC_EXTRA_OPTIONS]
+            GCC_MULTILIB, GCC_EXTRA_OPTIONS, GCC_ENABLE_LIBADA,
+            PKG_VERSION]
 buildToolsWeak: [m4]
 buildScript: |
     GCC_SRC=$(pwd)/src
@@ -82,6 +83,11 @@ buildScript: |
     {
         pushd build
         if [[ $GCC_SRC/configure -nt .configure.stamp ]] ; then
+            ADDITIONAL_OPTIONS=()
+            if [[ ${GCC_ENABLE_LIBADA:-yes} == no ]]; then
+                ADDITIONAL_OPTIONS+=("--disable-libada")
+            fi
+
             $GCC_SRC/configure \
                 --build=${AUTOCONF_BUILD} \
                 --host=${AUTOCONF_HOST:-${AUTOCONF_BUILD}} \
@@ -101,6 +107,7 @@ buildScript: |
                 --disable-documentation \
                 --disable-debug \
                 --disable-nls \
+                ${ADDITIONAL_OPTIONS[@]} \
                 --with-xmlto=no \
                 --with-fop=no \
                 --with-gmp-include=${BOB_DEP_PATHS[libs::gmp-dev]}/usr/include \
@@ -121,6 +128,11 @@ buildScript: |
         configureGcc "$@"
         makeParallel -C build
         makeSequential -C build install DESTDIR="$PWD/install"
+
+        #add libbacktrace
+        cp build/libbacktrace/.libs/libbacktrace.a \
+            install/${GCC_PREFIX:-usr}/lib/gcc/${AUTOCONF_TARGET:-${AUTOCONF_HOST}}/${PKG_VERSION}/
+        cp $GCC_SRC/libbacktrace/backtrace.h install/${GCC_PREFIX:-usr}/include
     }
 
 packageScript: |
@@ -238,7 +250,7 @@ multiPackage:
                     See https://gcc.gnu.org/install/configure.html for more detauls.
 
         buildTools: [binutils]
-        buildVars: [GCC_LIBC, GCC_ENABLE_LANGUAGES]
+        buildVars: [GCC_LIBC, GCC_ENABLE_LANGUAGES, GCC_ENABLE_LIBADA]
         buildScript: |
             if [[ -z "${GCC_MULTILIB:-}" ]] ; then
                 OPTIONS=( --disable-multilib )
@@ -311,6 +323,9 @@ multiPackage:
                         ADDITIONAL_INSTALL=(install-gnattools)
                     fi
                     makeParallel -C build all-gcc ${ADDITIONAL_MAKE[@]}
+                    if [[ ${GCC_ENABLE_LIBADA:-yes} == no ]]; then
+                        makeParallel -C build/gcc cross-gnattools ada.all.cross
+                    fi
                     makeSequential -C build install-gcc ${ADDITIONAL_INSTALL[@]} DESTDIR="$PWD/install"
 
     native:
