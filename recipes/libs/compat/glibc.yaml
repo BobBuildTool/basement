@@ -1,4 +1,7 @@
-inherit: [make, patch, strip]
+# glibc <= 2.31 fails to build with make 4.4
+# see: https://github.com/crosstool-ng/crosstool-ng/issues/1946
+
+inherit: [make, patch, strip, 'compat::make-4.3']
 
 depends:
     - kernel::linux-libc-headers
