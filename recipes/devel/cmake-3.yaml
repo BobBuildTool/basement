@@ -1,0 +1,48 @@
+inherit: [cmake, patch]
+
+metaEnvironment:
+    PKG_VERSION: "3.31.0"
+    PKG_LICENSE: "BSD-3-Clause"
+
+checkoutSCM:
+    scm: url
+    url: ${GITHUB_MIRROR}/Kitware/CMake/releases/download/v${PKG_VERSION}/cmake-${PKG_VERSION}.tar.gz
+    digestSHA256: "300b71db6d69dcc1ab7c5aae61cbc1aa2778a3e00cbd918bc720203e311468c3"
+    stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<@cmake-3/*.patch@>
+
+depends:
+    - libs::expat-dev
+    - libs::jsoncpp-dev
+    - libs::libarchive-dev
+    - libs::libuv-dev
+    - libs::rhash-dev
+    - libs::zlib-dev
+    - net::curl-dev
+    - use: []
+      depends:
+          - libs::expat-tgt
+          - libs::jsoncpp-tgt
+          - libs::libarchive-tgt
+          - libs::libuv-tgt
+          - libs::rhash-tgt
+          - libs::zlib-tgt
+          - net::curl-tgt
+
+buildScript: |
+    cmakeBuild "$1" \
+        -DKWSYS_LFS_WORKS=TRUE \
+        -DKWSYS_CHAR_IS_SIGNED=TRUE \
+        -DCMAKE_USE_SYSTEM_LIBRARIES=1 \
+        -DCTEST_USE_XMLRPC=OFF \
+        -DBUILD_CursesDialog=OFF
+
+packageScript: |
+    cmakePackageTgt
+
+provideDeps: [ "*-tgt" ]
+provideTools:
+    cmake: usr/bin
