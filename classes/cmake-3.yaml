@@ -1,0 +1,7 @@
+inherit: [cmake]
+
+depends:
+    - name: devel::cmake-3
+      use: [tools]
+      tools:
+          target-toolchain: host-compat-toolchain
