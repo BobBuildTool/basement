@@ -114,6 +114,13 @@ buildScript: |
         popd
     }
 
+    buildBareGcc()
+    {
+        configureGcc "$@"
+        makeParallel -C build all-gcc all-target-libgcc
+        makeSequential -C build install-gcc install-target-libgcc DESTDIR="$PWD/install"
+    }
+
     buildGcc()
     {
         configureGcc "$@"
@@ -134,27 +141,39 @@ multiPackage:
             -
                 name: devel::binutils
                 use: [result, tools]
+            - name: libs::mingw-w64-headers
+              if: "$(eq,${GCC_LIBC},mingw-w64)"
         buildTools: [host-native-toolchain, binutils]
         buildScript: |
-            buildGcc \
-                --with-glibc-version=2.11                      \
-                --with-sysroot=/does/not/exist                 \
-                --with-newlib                                  \
-                --without-headers                              \
-                --disable-decimal-float                        \
-                --disable-threads                              \
-                --disable-libatomic                            \
-                --disable-libgomp                              \
-                --disable-libmpx                               \
-                --disable-libquadmath                          \
-                --disable-libssp                               \
-                --disable-libvtv                               \
-                --disable-libstdcxx                            \
-                --disable-shared                               \
-                --disable-bootstrap                            \
-                --enable-languages=c,c++                       \
+            OPTIONS=(
+                --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET}
+                --disable-threads
+                --disable-shared
+                --enable-languages=c,c++
                 ${GCC_MULTILIB:+"--with-multilib-list=$GCC_MULTILIB"}
+            )
+
+            if [[ ${BOB_DEP_PATHS[libs::mingw-w64-headers]+set} ]] ; then
+                # Windows/mingw build
+                OPTIONS+=(
+                    --with-build-sysroot="${BOB_DEP_PATHS[libs::mingw-w64-headers]}"
+                )
+            else
+                # Linux build
+                OPTIONS+=(
+                    --with-glibc-version=2.11
+                    --without-headers
+                    --with-newlib
+                )
+            fi
+
+            buildBareGcc "${OPTIONS[@]}"
+
             cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
+            if [[ ${BOB_DEP_PATHS[libs::mingw-w64-headers]+set} ]] ; then
+                mkdir -p install/usr/sysroots/${AUTOCONF_TARGET}
+                cp -a "${BOB_DEP_PATHS[libs::mingw-w64-headers]}"/* install/usr/sysroots/${AUTOCONF_TARGET}/
+            fi
 
         packageScript: |
             installStripAll usr/bin
@@ -191,6 +210,7 @@ multiPackage:
                     ARCH: "${ARCH}"
                     AUTOCONF_HOST: "${AUTOCONF_TARGET}"
                     CROSS_COMPILE: "${AUTOCONF_TARGET}-"
+                    TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
                     TOOLCHAIN_FLAVOUR: gcc
 
                     # Reset compiler flags
@@ -217,6 +237,8 @@ multiPackage:
                     if: "$(eq,${GCC_LIBC},uclibc-ng)"
                   - name: libs::uclibc-l4re
                     if: "$(eq,${GCC_LIBC},uclibc-l4re)"
+                  - name: libs::mingw-w64
+                    if: "$(eq,${GCC_LIBC},mingw-w64)"
 
         Config:
             GCC_LIBC:
@@ -227,6 +249,7 @@ multiPackage:
                     newlib:
                     uclibc-ng:
                     uclibc-l4re:
+                    mingw-w64:
 
             GCC_ENABLE_LANGUAGES:
                 help: >
@@ -271,6 +294,7 @@ multiPackage:
             - libs::newlib
             - libs::uclibc-ng
             - libs::uclibc-l4re
+            - libs::mingw-w64
 
         multiPackage:
             # Straightforward cross compiler. This is a regular cross compiler
