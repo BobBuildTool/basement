@@ -90,7 +90,6 @@ buildScript: |
                 ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
                 ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
                 ${GCC_TARGET_FLOAT_ABI:+--with-float=$GCC_TARGET_FLOAT_ABI} \
-                --enable-initfini-array \
                 ${GCC_EXTRA_OPTIONS:-} \
                 "${@}" \
                 --disable-gtk-doc \
