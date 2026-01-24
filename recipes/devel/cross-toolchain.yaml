@@ -177,6 +177,13 @@ multiPackage:
                     GCC_LIBC: "glibc"
                     GCC_ENABLE_LANGUAGES: "c,c++,ada"
 
+            x86_64-w64-mingw32:
+                environment:
+                    AUTOCONF_TARGET: "x86_64-w64-mingw32"
+                    ARCH: "x86_64"
+                    GCC_LIBC: "mingw-w64"
+                    GCC_EXTRA_OPTIONS: "--disable-sjlj-exceptions --enable-fully-dynamic-string"
+
             # ARMv7 Linux CortexA toolchain with hard floating point
             arm-linux-gnueabihf:
                 environment:
