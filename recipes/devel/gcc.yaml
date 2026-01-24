@@ -86,6 +86,7 @@ buildScript: |
                 --host=${AUTOCONF_HOST:-${AUTOCONF_BUILD}} \
                 --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST:-${AUTOCONF_BUILD}}} \
                 --prefix=/usr \
+                --with-bugurl=https://github.com/BobBuildTool/basement/issues \
                 ${GCC_TARGET_ABI:+--with-abi=$GCC_TARGET_ABI} \
                 ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
                 ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
