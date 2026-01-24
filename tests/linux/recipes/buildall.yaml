@@ -12,6 +12,8 @@ depends:
     - devel::cross-toolchain-aarch64-linux-gnu
     - devel::cross-toolchain-aarch64-none-elf
     - devel::cross-toolchain-riscv64-linux-gnu
+    - devel::cross-toolchain-x86_64-w64-mingw32
+
     - devel::ocaml
 
     - devel::llvm-libs-dev
