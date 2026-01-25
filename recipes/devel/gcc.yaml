@@ -260,6 +260,19 @@ multiPackage:
                     ;;
             esac
 
+            # Provide absolute path to target binutils. The gcc configure would
+            # otherwise search them first at the installation prefix which is
+            # wrong for us.
+            export AR_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-ar)"
+            export AS_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-as)"
+            export LD_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-ld)"
+            export NM_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-nm)"
+            export OBJCOPY_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-objcopy)"
+            export OBJDUMP_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-objdump)"
+            export RANLIB_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-ranlib)"
+            export READELF_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-readelf)"
+            export STRIP_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-strip)"
+
         packageScript: |
             installStripAll usr/bin usr/libexec
 
