@@ -1,13 +1,13 @@
 inherit: [autotools, autoconf]
 
 metaEnvironment:
-    PKG_VERSION: "1.38.0"
+    PKG_VERSION: "1.51.0"
     PKG_LICENSE: "MIT"
 
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/libuv/libuv/archive/v${PKG_VERSION}.tar.gz
-    digestSHA256: 2cd9a757fe6c512440933e2bdcab21143d4aa6249b2541399908ce038b756c9d
+    digestSHA256: 27e55cf7083913bfb6826ca78cde9de7647cded648d35f24163f2d31bb9f51cd
     stripComponents: 1
 
 checkoutDeterministic: True

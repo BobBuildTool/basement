@@ -1,7 +1,7 @@
 inherit: [ "python3::build" ]
 
 metaEnvironment:
-    PKG_VERSION: "25.0.1"
+    PKG_VERSION: "25.3"
     PKG_LICENSE: "MIT"
 
 depends:
@@ -10,7 +10,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/pypa/pip/archive/${PKG_VERSION}.tar.gz
-    digestSHA256: 334371888f0c679c04e819ddc234562feaea81331658a76842b62dc9dc83a832
+    digestSHA256: 6f4d5c31324f7f998ec7c626c3a1543b5db5fb82c941c2b2952eeee183340d8f
     stripComponents: 1
 
 buildScript: |

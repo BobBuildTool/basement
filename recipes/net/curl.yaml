@@ -1,7 +1,7 @@
 inherit: [autotools, patch]
 
 metaEnvironment:
-    PKG_VERSION: "8.7.1"
+    PKG_VERSION: "8.18.0"
     PKG_LICENSE: "curl"
 
 depends:
@@ -14,7 +14,7 @@ depends:
 checkoutSCM:
     scm: url
     url: https://curl.haxx.se/download/curl-${PKG_VERSION}.tar.xz
-    digestSHA1: "a70963cba12224b44b8d754944b8ff618a6a3b57"
+    digestSHA1: "9398135fa7574617789cf2e50cf459b4418cb296"
     stripComponents: 1
 
 # ./configure will delete curlbuild.h
@@ -32,7 +32,8 @@ buildScript: |
     autotoolsBuild $1 \
        --enable-threaded-resolver \
        --with-ssl \
-       --with-ca-path=/etc/ssl/certs
+       --with-ca-path=/etc/ssl/certs \
+       --without-libpsl
     echo "Requires: openssl" >> install/usr/lib/pkgconfig/libcurl.pc
 
 multiPackage:
