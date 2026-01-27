@@ -6,10 +6,16 @@ metaEnvironment:
 
 depends:
     - libs::zlib-dev
-
     - use: []
       depends:
           - libs::zlib-tgt
+
+    - if: "${OPENSSL_zstd:-False}"
+      depends:
+          - libs::zstd-dev
+          - use: []
+            depends:
+                - libs::zstd-tgt
 
 checkoutSCM:
     scm: url
@@ -344,6 +350,10 @@ Config:
         type: bool
         default: False
         help: Build support for SSL/TLS ciphers that are considered "weak"
+    OPENSSL_zstd:
+        type: bool
+        default: False
+        help: Build with support for Zstd compression/decompression.
     OPENSSL_no_ssl:
         type: bool
         default: False
