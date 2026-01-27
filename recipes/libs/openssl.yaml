@@ -646,8 +646,24 @@ multiPackage:
               use: []
         packageScript: installPackageBin "$1/install/"
         provideDeps: [ "*-tgt" ]
+
+    tool:
+        # special host-tool package. Using openssl with plugins requires shared linkage.
+        # This package gathers all dependencies to ease the usage of the tool.
+        depends:
+            - libs::openssl-tgt
+        packageDepends: True
+        packageScript: |
+            installPackageBin "$1/install/"
+            for d in "${!BOB_DEP_PATHS[@]}"; do
+                if [[ $d == *-tgt ]]; then
+                    cp -ar ${BOB_DEP_PATHS[$d]}/* .
+                fi
+            done
         provideTools:
-            openssl: "usr/bin"
+            openssl:
+                path: "usr/bin"
+                libs: ["usr/lib", "usr/lib/engines"]
 
     dev:
         # Static library builds need to explicitly link with libz but the
