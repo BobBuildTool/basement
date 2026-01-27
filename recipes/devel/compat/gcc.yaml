@@ -150,10 +150,10 @@ multiPackage:
                     TOOLCHAIN_FLAVOUR: gcc
 
                     # Reset compiler flags
-                    CPPFLAGS:   "-Wdate-time"
-                    CFLAGS:     "-Os -pipe"
-                    CXXFLAGS:   "-Os -pipe"
-                    LDFLAGS:    "-Wl,-O1"
+                    CPPFLAGS:   ""
+                    CFLAGS:     "-O2 -pipe"
+                    CXXFLAGS:   "-O2 -pipe"
+                    LDFLAGS:    ""
 
     cross:
         depends:
