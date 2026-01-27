@@ -21,9 +21,540 @@ checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<@openssl/*.patch@>
 
+Config:
+    # openssl feature configuration
+    # See: https://github.com/openssl/openssl/blob/openssl-3.5.4/INSTALL.md#enable-and-disable-features
+    OPENSSL_no_afalgeng:
+        type: bool
+        default: False
+        help: Don't build the AFALG engine.
+    OPENSSL_enable_ktls:
+        type: bool
+        default: False
+        help: Build with Kernel TLS support.
+    OPENSSL_enable_asan:
+        type: bool
+        default: False
+        help: Build with the Address sanitiser.
+    OPENSSL_enable_acvp_tests:
+        type: bool
+        default: False
+        help: <-
+            Build support for Automated Cryptographic Validation Protocol (ACVP)
+            tests.
+    OPENSSL_no_apps:
+        type: bool
+        default: False
+        help: <-
+            Do not build apps, e.g. the openssl program. This is handy for minimization.
+            This option also disables tests.
+    OPENSSL_no_async:
+        type: bool
+        default: False
+        help: Do not build support for async operations.
+    OPENSSL_no_atexit:
+        type: bool
+        default: False
+        help: Do not use `atexit()` in libcrypto builds.
+    OPENSSL_no_autoalginit:
+        type: bool
+        default: False
+        help: Don't automatically load all supported ciphers and digests.
+    OPENSSL_no_autoerrinit:
+        type: bool
+        default: False
+        help: Don't automatically load all libcrypto/libssl error strings.
+    OPENSSL_enable_brotli:
+        type: bool
+        default: False
+        help: Build with support for brotli compression/decompression.
+    OPENSSL_enable_brotli_dynamic:
+        type: bool
+        default: False
+        help: <-
+            Like the enable_brotli option, but has OpenSSL load the brotli library
+            dynamically when needed.
+    OPENSSL_no_autoload_config:
+        type: bool
+        default: False
+        help: Don't automatically load the default `openssl.cnf` file.
+    OPENSSL_enable_buildtest_cpp:
+        type: bool
+        default: False
+        help: <-
+            While testing, generate C++ buildtest files that simply check that the public
+            OpenSSL header files are usable standalone with C++.
+    OPENSSL_no_capieng:
+        type: bool
+        default: False
+        help: Don't build the CAPI engine.
+    OPENSSL_no_cmp:
+        type: bool
+        default: False
+        help: <-
+            Don't build support for Certificate Management Protocol (CMP)
+            and Certificate Request Message Format (CRMF).
+    OPENSSL_no_cms:
+        type: bool
+        default: False
+        help: <-
+            Don't build support for Cryptographic Message Syntax (CMS).
+    OPENSSL_no_comp:
+        type: bool
+        default: False
+        help: Don't build support for SSL/TLS compression.
+    OPENSSL_no_ct:
+        type: bool
+        default: False
+        help: Don't build support for Certificate Transparency (CT).
+    OPENSSL_no_deprecated:
+        type: bool
+        default: False
+        help: <-
+            Don't build with support for deprecated APIs up until and including the version
+            given with `__api` (or the current version, if `__api` wasn't specified).
+    OPENSSL_no_dgram:
+        type: bool
+        default: False
+        help: Don't build support for datagram based BIOs.
+    OPENSSL_no_docs:
+        type: bool
+        default: False
+        help: Don't build and install documentation, i.e. manual pages in various forms.
+    OPENSSL_no_dso:
+        type: bool
+        default: False
+        help: Don't build support for loading Dynamic Shared Objects (DSO)
+    OPENSSL_enable_devcryptoeng:
+        type: bool
+        default: False
+        help: Build the `/dev/crypto` engine.
+    OPENSSL_no_dynamic_engine:
+        type: bool
+        default: False
+        help: Don't build the dynamically loaded engines.
+    OPENSSL_no_ec:
+        type: bool
+        default: False
+        help: Don't build support for Elliptic Curves.
+    OPENSSL_no_ec2m:
+        type: bool
+        default: False
+        help: Don't build support for binary Elliptic Curves
+    OPENSSL_no_tls_deprecated_ec:
+        type: bool
+        default: False
+        help: Disable legacy TLS EC groups that were deprecated in RFC8422.
+    OPENSSL_enable_ec_nistp_64_gcc_128:
+        type: bool
+        default: False
+        help: <-
+            Enable support for optimised implementations of some commonly used NIST
+            elliptic curves.
+    OPENSSL_enable_egd:
+        type: bool
+        default: False
+        help: Build support for gathering entropy from the Entropy Gathering Daemon (EGD).
+    OPENSSL_no_engine:
+        type: bool
+        default: False
+        help: Don't build support for loading engines.
+    OPENSSL_no_err:
+        type: bool
+        default: False
+        help: Don't compile in any error strings.
+    OPENSSL_no_filenames:
+        type: bool
+        default: False
+        help: <-
+            Don't compile in filename and line number information (e.g.  for errors and
+            memory allocation).
+    OPENSSL_enable_fips:
+        type: bool
+        default: False
+        help: Build (and install) the FIPS provider
+    OPENSSL_no_fips_securitychecks:
+        type: bool
+        default: False
+        help: <-
+            Don't perform FIPS module run_time checks related to enforcement of security
+            parameters such as minimum security strength of keys.
+    OPENSSL_enable_fips_jitter:
+        type: bool
+        default: False
+        help: Use the CPU Jitter library as a FIPS validated entropy source.
+    OPENSSL_no_gost:
+        type: bool
+        default: False
+        help: Don't build support for GOST based ciphersuites. # codespell:ignore
+    OPENSSL_no_http:
+        type: bool
+        default: False
+        help: Disable HTTP support.
+    OPENSSL_no_legacy:
+        type: bool
+        default: False
+        help: Don't build the legacy provider.
+    OPENSSL_no_ml_dsa:
+        type: bool
+        default: False
+        help: <-
+            Disable Module_Lattice_Based Digital Signature Standard (ML_DSA) support.
+            ML_DSA is based on CRYSTALS_DILITHIUM. See [FIPS 204].
+    OPENSSL_no_ml_kem:
+        type: bool
+        default: False
+        help: <-
+            Disable Module_Lattice_Based Key_Encapsulation Mechanism Standard (ML_KEM)
+            support.  ML_KEM is based on CRYSTALS_KYBER. See [FIPS 203].
+    OPENSSL_no_module:
+        type: bool
+        default: False
+        help: Don't build any dynamically loadable engines.
+    OPENSSL_no_multiblock:
+        type: bool
+        default: False
+        help: Don't build support for writing multiple records in one go in libssl
+    OPENSSL_no_nextprotoneg:
+        type: bool
+        default: False
+        help: Don't build support for the Next Protocol Negotiation (NPN) TLS extension.
+    OPENSSL_no_ocsp:
+        type: bool
+        default: False
+        help: Don't build support for Online Certificate Status Protocol (OCSP).
+    OPENSSL_no_padlockeng:
+        type: bool
+        default: False
+        help: Don't build the padlock engine.
+    OPENSSL_no_pic:
+        type: bool
+        default: False
+        help: Don't build with support for Position Independent Code.
+    OPENSSL_enable_pie:
+        type: bool
+        default: False
+        help: Build with support for Position Independent Execution.
+    OPENSSL_no_posix_io:
+        type: bool
+        default: False
+        help: Don't use POSIX IO capabilities.
+    OPENSSL_no_psk:
+        type: bool
+        default: False
+        help: Don't build support for Pre_Shared Key based ciphersuites.
+    OPENSSL_no_rdrand:
+        type: bool
+        default: False
+        help: Don't use hardware RDRAND capabilities.
+    OPENSSL_no_rfc3779:
+        type: bool
+        default: False
+        help: <-
+            Don't build support for RFC3779, "X.509 Extensions for IP Addresses and
+            AS Identifiers".
+    OPENSSL_sctp:
+        type: bool
+        default: False
+        help: Build support for Stream Control Transmission Protocol (SCTP).
+    OPENSSL_no_slh_dsa:
+        type: bool
+        default: False
+        help: <-
+            Disable Stateless Hash Based Digital Signature Standard support.
+            (SLH_DSA is based on SPHINCS+. See [FIPS 205])
+    OPENSSL_no_sm2_precomp:
+        type: bool
+        default: False
+        help: <-
+            Disable using the SM2 precomputed table on aarch64 to make the library smaller.
+    OPENSSL_no_sock:
+        type: bool
+        default: False
+        help: Don't build support for socket BIOs.
+    OPENSSL_no_srp:
+        type: bool
+        default: False
+        help: <-
+            Don't build support for Secure Remote Password (SRP) protocol or
+            SRP based ciphersuites.
+    OPENSSL_no_srtp:
+        type: bool
+        default: False
+        help: Don't build Secure Real_Time Transport Protocol (SRTP) support.
+    OPENSSL_no_sse2:
+        type: bool
+        default: False
+        help: Exclude SSE2 code paths from 32_bit x86 assembly modules.
+    OPENSSL_no_ssl_trace:
+        type: bool
+        default: False
+        help: Don't build with SSL Trace capabilities.
+    OPENSSL_no_static_engine:
+        type: bool
+        default: False
+        help: Don't build the statically linked engines.
+    OPENSSL_no_tests:
+        type: bool
+        default: False
+        help: Don't build test programs or run any tests.
+    OPENSSL_enable_tfo:
+        type: bool
+        default: False
+        help: <-
+            Build with support for TCP Fast Open (RFC7413). Supported on Linux,
+            macOS and FreeBSD.
+    OPENSSL_no_quic:
+        type: bool
+        default: False
+        help: Don't build with QUIC support.
+    OPENSSL_no_threads:
+        type: bool
+        default: False
+        help: Don't build with support for multi_threaded applications.
+    OPENSSL_threads:
+        type: bool
+        default: False
+        help: Build with support for multi_threaded applications.
+    OPENSSL_no_thread_pool:
+        type: bool
+        default: False
+        help: Don't build with support for thread pool functionality.
+    OPENSSL_enable_trace:
+        type: bool
+        default: False
+        help: Build with support for the integrated tracing api.
+    OPENSSL_no_ts:
+        type: bool
+        default: False
+        help: Don't build Time Stamping (TS) Authority support.
+    OPENSSL_no_ui_console:
+        type: bool
+        default: False
+        help: Don't build with the User Interface (UI) console method
+    OPENSSL_enable_unit_test:
+        type: bool
+        default: False
+        help: Enable additional unit test APIs.
+    OPENSSL_no_uplink:
+        type: bool
+        default: False
+        help: Don't build support for UPLINK interface.
+    OPENSSL_enable_weak_ssl_ciphers:
+        type: bool
+        default: False
+        help: Build support for SSL/TLS ciphers that are considered "weak"
+    OPENSSL_no_ssl:
+        type: bool
+        default: False
+        help: Don't build support for negotiating the specified SSL/TLS protocol.
+    OPENSSL_no_ssl3:
+        type: bool
+        default: False
+        help: Don't build support for negotiating the specified SSL/TLS protocol.
+    OPENSSL_no_tls:
+        type: bool
+        default: False
+        help: Don't build support for negotiating the specified SSL/TLS protocol.
+    OPENSSL_no_tls1:
+        type: bool
+        default: False
+        help: Don't build support for negotiating the specified SSL/TLS protocol.
+    OPENSSL_no_tls1_1:
+        type: bool
+        default: False
+        help: Don't build support for negotiating the specified SSL/TLS protocol.
+    OPENSSL_no_tls1_2:
+        type: bool
+        default: False
+        help: Don't build support for negotiating the specified SSL/TLS protocol.
+    OPENSSL_no_tls1_3:
+        type: bool
+        default: False
+        help: Don't build support for negotiating the specified SSL/TLS protocol.
+    OPENSSL_no_dtls:
+        type: bool
+        default: False
+        help: Don't build support for negotiating the specified SSL/TLS protocol.
+    OPENSSL_no_dtls1:
+        type: bool
+        default: False
+        help: Don't build support for negotiating the specified SSL/TLS protocol.
+    OPENSSL_no_dtls1_2:
+        type: bool
+        default: False
+        help: Don't build support for negotiating the specified SSL/TLS protocol.
+    OPENSSL_no_integrity_only_ciphers:
+        type: bool
+        default: False
+        help: Don't build support for integrity only ciphers in tls.
+    OPENSSL_enable_md2:
+        type: bool
+        default: False
+        help: enable_md2
+    OPENSSL_enable_rc5:
+        type: bool
+        default: False
+        help: enable_rc5
+    OPENSSL_no_aria:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_bf:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_blake2:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_camellia:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_cast:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_chacha:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_des:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_dh:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_dsa:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_ecdh:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_ecdsa:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_idea:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_md4:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_mdc2:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_ocb:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_poly1305:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_rc2:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_rc4:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_rmd160:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_scrypt:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_seed:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_siphash:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_siv:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_sm2:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_sm3:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_sm4:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+    OPENSSL_no_whirlpool:
+        type: bool
+        default: False
+        help: Build without support for the specified algorithm.
+
 buildTools: [target-toolchain]
 buildToolsWeak: [perl]
-buildVars: [CC, AR, RANLIB, ARCH, AUTOCONF_HOST]
+buildVars: [CC, AR, RANLIB, ARCH, AUTOCONF_HOST,
+            OPENSSL_no_afalgeng, OPENSSL_enable_ktls, OPENSSL_enable_asan,
+            OPENSSL_enable_acvp_tests, OPENSSL_no_apps, OPENSSL_no_async,
+            OPENSSL_no_atexit, OPENSSL_no_autoalginit, OPENSSL_no_autoerrinit,
+            OPENSSL_enable_brotli, OPENSSL_enable_brotli_dynamic,
+            OPENSSL_no_autoload_config, OPENSSL_enable_buildtest_cpp,
+            OPENSSL_no_capieng, OPENSSL_no_cmp, OPENSSL_no_cms, OPENSSL_no_comp,
+            OPENSSL_no_ct, OPENSSL_no_deprecated, OPENSSL_no_dgram, OPENSSL_no_docs,
+            OPENSSL_no_dso, OPENSSL_enable_devcryptoeng, OPENSSL_no_dynamic_engine,
+            OPENSSL_no_ec, OPENSSL_no_ec2m, OPENSSL_no_tls_deprecated_ec,
+            OPENSSL_enable_ec_nistp_64_gcc_128, OPENSSL_enable_egd, OPENSSL_no_engine,
+            OPENSSL_no_err, OPENSSL_no_filenames, OPENSSL_enable_fips,
+            OPENSSL_no_fips_securitychecks, OPENSSL_enable_fips_jitter,
+            OPENSSL_no_gost, OPENSSL_no_http, OPENSSL_no_legacy, OPENSSL_no_ml_dsa,
+            OPENSSL_no_ml_kem, OPENSSL_no_module, OPENSSL_no_multiblock,
+            OPENSSL_no_nextprotoneg, OPENSSL_no_ocsp, OPENSSL_no_padlockeng,
+            OPENSSL_no_pic, OPENSSL_enable_pie, OPENSSL_no_posix_io, OPENSSL_no_psk,
+            OPENSSL_no_rdrand, OPENSSL_no_rfc3779, OPENSSL_sctp, OPENSSL_no_slh_dsa,
+            OPENSSL_no_sm2_precomp, OPENSSL_no_sock, OPENSSL_no_srp, OPENSSL_no_srtp,
+            OPENSSL_no_sse2, OPENSSL_no_ssl_trace, OPENSSL_no_static_engine,
+            OPENSSL_no_tests, OPENSSL_enable_tfo, OPENSSL_no_quic, OPENSSL_no_threads,
+            OPENSSL_threads, OPENSSL_no_thread_pool, OPENSSL_enable_trace,
+            OPENSSL_no_ts, OPENSSL_no_ui_console, OPENSSL_enable_unit_test,
+            OPENSSL_no_uplink, OPENSSL_enable_weak_ssl_ciphers, OPENSSL_no_ssl,
+            OPENSSL_no_ssl3, OPENSSL_no_tls, OPENSSL_no_tls1, OPENSSL_no_tls1_1,
+            OPENSSL_no_tls1_2, OPENSSL_no_tls1_3, OPENSSL_no_dtls, OPENSSL_no_dtls1,
+            OPENSSL_no_dtls1_2, OPENSSL_no_integrity_only_ciphers, OPENSSL_enable_md2,
+            OPENSSL_enable_rc5, OPENSSL_no_aria, OPENSSL_no_bf, OPENSSL_no_blake2,
+            OPENSSL_no_camellia, OPENSSL_no_cast, OPENSSL_no_chacha, OPENSSL_no_des,
+            OPENSSL_no_dh, OPENSSL_no_dsa, OPENSSL_no_ecdh, OPENSSL_no_ecdsa,
+            OPENSSL_no_idea, OPENSSL_no_md4, OPENSSL_no_mdc2, OPENSSL_no_ocb,
+            OPENSSL_no_poly1305, OPENSSL_no_rc2, OPENSSL_no_rc4, OPENSSL_no_rmd160,
+            OPENSSL_no_scrypt, OPENSSL_no_seed, OPENSSL_no_siphash, OPENSSL_no_siv,
+            OPENSSL_no_sm2, OPENSSL_no_sm3, OPENSSL_no_sm4, OPENSSL_no_whirlpool]
+buildSetup: |
+    collect_options () {
+      local prefix="$1"
+      local result=""
+
+      while IFS='=' read -r name value; do
+        if [[ "$name" == ${prefix}* && "${value}" == "1" ]];
+        then
+          result+="${name#${prefix}} "
+        fi
+      done < <(env)
+
+      echo "${result%" "}"
+    }
 buildScript: |
     mkdir -p install build
     pushd build
@@ -80,6 +611,8 @@ buildScript: |
         --libdir=lib \
         "${SHARED_STATIC[@]}" \
         "threads" \
+        $(collect_options "OPENSSL_no") \
+        $(collect_options "OPENSSL_enable") \
         "-I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include" \
         "-Wl,-L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib" \
         "-Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib" \
