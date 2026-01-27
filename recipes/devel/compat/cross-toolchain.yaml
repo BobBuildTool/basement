@@ -49,6 +49,6 @@ provideTools:
 provideVars:
     # Set some more constrained compiler flags
     CPPFLAGS:   ""
-    CFLAGS:     "-Os -pipe"
-    CXXFLAGS:   "-Os -pipe"
-    LDFLAGS:    "-Wl,-O1"
+    CFLAGS:     "-O2 -pipe"
+    CXXFLAGS:   "-O2 -pipe"
+    LDFLAGS:    ""

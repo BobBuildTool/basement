@@ -29,10 +29,10 @@ environment:
     #
     # Attention: keep in sync with devel::host-compat-toolchain! These flags
     # should be reset by the compat-toolchain exactly to their default values.
-    CPPFLAGS:   "-Wdate-time"
-    CFLAGS:     "-Os -pipe -fPIC"
-    CXXFLAGS:   "-Os -pipe -fPIC"
-    LDFLAGS:    "-Wl,-O1 -Wl,--hash-style=gnu"
+    CPPFLAGS:   ""
+    CFLAGS:     "-O2 -pipe -fPIC"
+    CXXFLAGS:   "-O2 -pipe -fPIC"
+    LDFLAGS:    ""
 
 archiveAppend:
     backend: http
