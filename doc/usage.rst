@@ -103,8 +103,8 @@ supposed to be widely supported. To tweak the standard compile flags, the
 following variables may be optionally set when pulling in the toolchain.
 
 ``BASEMENT_OPTIMIZE``
-    Compiler optimization level (``-O``). Defaults to ``s`` to optimize for
-    small binaries.
+    Compiler optimization level (``-O``). Defaults to ``2`` to optimize for
+    speed.
 
 ``BASEMENT_DEBUG``
     May be ``0`` or ``1`` and controls the generation of debugging information.

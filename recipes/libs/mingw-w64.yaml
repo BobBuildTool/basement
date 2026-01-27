@@ -1,0 +1,34 @@
+inherit: [autotools]
+
+metaEnvironment:
+    PKG_VERSION: "13.0.0"
+    PKG_LICENSE: "LicenseRef-mingw-w64"
+    PKG_LICENSE_PATH: |
+        mingw-w64:COPYING.MinGW-w64-runtime/COPYING.MinGW-w64-runtime.txt
+
+checkoutSCM:
+    scm: url
+    url: $SOURCEFORGE_MIRROR/mingw-w64/mingw-w64/mingw-w64-release/mingw-w64-v${PKG_VERSION}.tar.bz2
+    digestSHA256: 5afe822af5c4edbf67daaf45eec61d538f49eef6b19524de64897c6b95828caf
+    stripComponents: 1
+
+multiPackage:
+    "":
+        buildVars: [TOOLCHAIN_SYSROOT]
+        buildScript: |
+            autotoolsBuild "$1" \
+                --prefix=/mingw \
+                --disable-lib32 \
+                --enable-lib64  \
+                --with-sysroot="${BOB_TOOL_PATHS[target-toolchain]}/$TOOLCHAIN_SYSROOT"
+
+        packageScript: |
+            rsync -aH "$1/install/" .
+
+    headers:
+        buildScript: |
+            autotoolsBuild "$1/mingw-w64-headers" \
+                --prefix=/mingw
+
+        packageScript: |
+            rsync -aH "$1/install/" .

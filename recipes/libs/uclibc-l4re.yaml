@@ -1,20 +1,20 @@
-inherit: [make, strip, patch]
+inherit: [make, strip]
+
+metaEnvironment:
+    PKG_VERSION: "r-2025-W50"
+    PKG_LICENSE: "MIT AND GPL-3.0-only with GCC-exception-3.1 AND GPL-3.0-or-later AND GPL-2.0-only"
 
 checkoutSCM:
     - scm: url
       dir: .
-      url: https://github.com/kernkonzept/mk/archive/bd33b157a8b160967340f56c37f548b07c983417.tar.gz
-      digestSHA1: 4e329a85cb50511df2360cb041421dcf0229ff55
+      url: $GITHUB_MIRROR/L4Re/mk/archive/refs/tags/${PKG_VERSION}.tar.gz
+      digestSHA1: 63828669ccdbe441c567965894938237c64ebb20
       stripComponents: 1
     - scm: url
       dir: pkg/l4re-core
-      url: https://github.com/kernkonzept/l4re-core/archive/3e8d8f8c9a527d8680b463d58ea016954348774d.tar.gz
-      digestSHA1: 81e908bc24b90bd481fe48309d34cbb36a43197d
+      url: $GITHUB_MIRROR/L4Re/l4re-core/archive/refs/tags/${PKG_VERSION}.tar.gz
+      digestSHA1: 05265684049f9ba9c62a0d4a1fe06ff79494a8d5
       stripComponents: 1
-
-checkoutDeterministic: True
-checkoutScript: |
-    patchApplySeries $<@uclibc-l4re/*.patch@>
 
 buildTools: [host-toolchain, target-toolchain, flex, bison]
 buildToolsWeak: [m4, perl]

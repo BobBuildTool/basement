@@ -89,7 +89,7 @@ buildSetup: |
 
     autoconfSync () {
         mkdir -p $2
-        rsync -aH --delete --exclude=".autoreconf.stamp" $1/ $2/
+        rsync -aHu --exclude=".autoreconf.stamp" $1/ $2/
     }
 
     # Moves the sources of $1 to $2 and calls autoconfReconfigure

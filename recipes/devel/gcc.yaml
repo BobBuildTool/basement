@@ -1,7 +1,7 @@
 inherit: [autoconf, make, patch, install, "basement::update-config"]
 
 metaEnvironment:
-    PKG_VERSION: "13.4.0"
+    PKG_VERSION: "14.3.0"
     PKG_LICENSE: "GPL-3.0-with-GCC-exception"
 
 depends:
@@ -55,8 +55,7 @@ Config:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gcc/gcc-${PKG_VERSION}/gcc-${PKG_VERSION}.tar.xz
-    digestSHA512: "9b4b83ecf51ef355b868608b8d257b2fa435c06d2719cb86657a7c2c2a0828f\
-                   f4ce04e9bac1055bbcad8ed5b4da524cafaef654785e23a50233d95d89201e35f"
+    digestSHA256: "e0dc77297625631ac8e50fa92fffefe899a4eb702592da5c32ef04e2293aca3a"
     stripComponents: 1
 
 checkoutDeterministic: True
@@ -65,7 +64,8 @@ checkoutScript: |
 
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET, GCC_TARGET_ABI,
             GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU,
-            GCC_MULTILIB, GCC_EXTRA_OPTIONS]
+            GCC_MULTILIB, GCC_EXTRA_OPTIONS,
+            CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS]
 buildToolsWeak: [m4]
 buildScript: |
     GCC_SRC=$(pwd)/src
@@ -87,11 +87,12 @@ buildScript: |
                 --host=${AUTOCONF_HOST:-${AUTOCONF_BUILD}} \
                 --target=${AUTOCONF_TARGET:-${AUTOCONF_HOST:-${AUTOCONF_BUILD}}} \
                 --prefix=/usr \
+                --with-bugurl=https://github.com/BobBuildTool/basement/issues \
+                --enable-checking=release \
                 ${GCC_TARGET_ABI:+--with-abi=$GCC_TARGET_ABI} \
                 ${GCC_TARGET_ARCH:+--with-arch=$GCC_TARGET_ARCH} \
                 ${GCC_TARGET_FPU:+--with-fpu=$GCC_TARGET_FPU} \
                 ${GCC_TARGET_FLOAT_ABI:+--with-float=$GCC_TARGET_FLOAT_ABI} \
-                --enable-initfini-array \
                 ${GCC_EXTRA_OPTIONS:-} \
                 "${@}" \
                 --disable-gtk-doc \
@@ -116,6 +117,13 @@ buildScript: |
         popd
     }
 
+    buildBareGcc()
+    {
+        configureGcc "$@"
+        makeParallel -C build all-gcc all-target-libgcc
+        makeSequential -C build install-gcc install-target-libgcc DESTDIR="$PWD/install"
+    }
+
     buildGcc()
     {
         configureGcc "$@"
@@ -136,26 +144,39 @@ multiPackage:
             -
                 name: devel::binutils
                 use: [result, tools]
-        buildTools: [host-native-toolchain, binutils]
+            - name: libs::mingw-w64-headers
+              if: "$(eq,${GCC_LIBC},mingw-w64)"
+        buildTools: [target-toolchain, binutils]
         buildScript: |
-            buildGcc \
-                --with-glibc-version=2.11                      \
-                --with-sysroot=/does/not/exist                 \
-                --with-newlib                                  \
-                --without-headers                              \
-                --disable-decimal-float                        \
-                --disable-threads                              \
-                --disable-libatomic                            \
-                --disable-libgomp                              \
-                --disable-libmpx                               \
-                --disable-libquadmath                          \
-                --disable-libssp                               \
-                --disable-libvtv                               \
-                --disable-libstdcxx                            \
-                --disable-shared                               \
-                --disable-bootstrap                            \
+            OPTIONS=(
+                --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET}
+                --disable-threads
+                --disable-shared
                 --enable-languages=c,c++
+                ${GCC_MULTILIB:+"--with-multilib-list=$GCC_MULTILIB"}
+            )
+
+            if [[ ${BOB_DEP_PATHS[libs::mingw-w64-headers]+set} ]] ; then
+                # Windows/mingw build
+                OPTIONS+=(
+                    --with-build-sysroot="${BOB_DEP_PATHS[libs::mingw-w64-headers]}"
+                )
+            else
+                # Linux build
+                OPTIONS+=(
+                    --with-glibc-version=2.11
+                    --without-headers
+                    --with-newlib
+                )
+            fi
+
+            buildBareGcc "${OPTIONS[@]}"
+
             cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
+            if [[ ${BOB_DEP_PATHS[libs::mingw-w64-headers]+set} ]] ; then
+                mkdir -p install/usr/sysroots/${AUTOCONF_TARGET}
+                cp -a "${BOB_DEP_PATHS[libs::mingw-w64-headers]}"/* install/usr/sysroots/${AUTOCONF_TARGET}/
+            fi
 
         packageScript: |
             installStripAll usr/bin
@@ -192,33 +213,16 @@ multiPackage:
                     ARCH: "${ARCH}"
                     AUTOCONF_HOST: "${AUTOCONF_TARGET}"
                     CROSS_COMPILE: "${AUTOCONF_TARGET}-"
+                    TOOLCHAIN_SYSROOT: "../sysroots/${AUTOCONF_TARGET}"
                     TOOLCHAIN_FLAVOUR: gcc
 
                     # Reset compiler flags
-                    CPPFLAGS:   "-Wdate-time"
-                    CFLAGS:     "-Os -pipe"
-                    CXXFLAGS:   "-Os -pipe"
-                    LDFLAGS:    "-Wl,-O1"
+                    CPPFLAGS:   ""
+                    CFLAGS:     "-O2 -pipe"
+                    CXXFLAGS:   "-O2 -pipe"
+                    LDFLAGS:    ""
 
     cross:
-        depends:
-            - name: devel::binutils
-              use: [result, tools]
-            - name: devel::gcc-cross-bare
-              use: [tools]
-              forward: True
-            - tools:
-                  target-toolchain: cross-target-toolchain
-              depends:
-                  - name: libs::glibc
-                    if: "$(eq,${GCC_LIBC},glibc)"
-                  - name: libs::newlib
-                    if: "$(eq,${GCC_LIBC},newlib)"
-                  - name: libs::uclibc-ng
-                    if: "$(eq,${GCC_LIBC},uclibc-ng)"
-                  - name: libs::uclibc-l4re
-                    if: "$(eq,${GCC_LIBC},uclibc-l4re)"
-
         Config:
             GCC_LIBC:
                 type: choice
@@ -228,6 +232,7 @@ multiPackage:
                     newlib:
                     uclibc-ng:
                     uclibc-l4re:
+                    mingw-w64:
 
             GCC_ENABLE_LANGUAGES:
                 help: >
@@ -256,12 +261,18 @@ multiPackage:
                     ;;
             esac
 
-            configureGcc \
-                --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET} \
-                --with-build-sysroot=${BOB_DEP_PATHS[libs::${GCC_LIBC}]}     \
-                --enable-linker-build-id                                     \
-                "${OPTIONS[@]}"                                              \
-                --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
+            # Provide absolute path to target binutils. The gcc configure would
+            # otherwise search them first at the installation prefix which is
+            # wrong for us.
+            export AR_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-ar)"
+            export AS_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-as)"
+            export LD_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-ld)"
+            export NM_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-nm)"
+            export OBJCOPY_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-objcopy)"
+            export OBJDUMP_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-objdump)"
+            export RANLIB_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-ranlib)"
+            export READELF_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-readelf)"
+            export STRIP_FOR_TARGET="$(type -p ${AUTOCONF_TARGET}-strip)"
 
         packageScript: |
             installStripAll usr/bin usr/libexec
@@ -272,6 +283,7 @@ multiPackage:
             - libs::newlib
             - libs::uclibc-ng
             - libs::uclibc-l4re
+            - libs::mingw-w64
 
         multiPackage:
             # Straightforward cross compiler. This is a regular cross compiler
@@ -279,14 +291,63 @@ multiPackage:
             # intended to be used directly but to bootstrap the canadian cross
             # compiler below.
             host:
-                buildTools: [host-native-toolchain]
-                buildScript: |
-                    makeParallel -C build
-                    makeSequential -C build install DESTDIR="$PWD/install"
-                provideTools:
-                    # Required by the canadian cross compiler to dump specs.
-                    cross-ambient-toolchain:
-                        path: usr/bin
+                depends:
+                    - name: devel::binutils
+                      use: [result, tools]
+                    - name: devel::gcc-cross-bare
+                      use: [tools]
+                      forward: True
+                    - &libc-builds
+                      tools:
+                          target-toolchain: cross-target-toolchain
+                      depends:
+                          - name: libs::glibc
+                            if: "$(eq,${GCC_LIBC},glibc)"
+                          - name: libs::newlib
+                            if: "$(eq,${GCC_LIBC},newlib)"
+                          - name: libs::uclibc-ng
+                            if: "$(eq,${GCC_LIBC},uclibc-ng)"
+                          - name: libs::uclibc-l4re
+                            if: "$(eq,${GCC_LIBC},uclibc-l4re)"
+                          - name: libs::mingw-w64
+                            if: "$(eq,${GCC_LIBC},mingw-w64)"
+
+                buildTools: [target-toolchain]
+
+                multiPackage:
+                    "":
+                        buildScript: |
+                            buildGcc \
+                                --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET}             \
+                                --with-build-sysroot=${BOB_DEP_PATHS[libs::${GCC_LIBC}]}    \
+                                --enable-linker-build-id                                    \
+                                "${OPTIONS[@]}"                                             \
+                                --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
+
+                    toolchain:
+                        buildScript: |
+                            buildBareGcc \
+                                --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET}             \
+                                --with-build-sysroot=${BOB_DEP_PATHS[libs::${GCC_LIBC}]}    \
+                                --enable-linker-build-id                                    \
+                                "${OPTIONS[@]}"                                             \
+                                --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
+
+                            cp -a ${BOB_DEP_PATHS[devel::binutils]}/* install/
+                            if [[ ${GCC_LIBC:+true} ]] ; then
+                                mkdir -p install/usr/sysroots/${AUTOCONF_TARGET}
+                                cp -an ${BOB_DEP_PATHS[libs::${GCC_LIBC}]}/* install/usr/sysroots/$AUTOCONF_TARGET/
+                            fi
+
+                        packageScript: |
+                            # Remove all debug symbols. It's just an intermediate helper
+                            # toolchain for the final canadian cross compiler...
+                            find -type d -name .debug | xargs /bin/rm -rf
+
+                        provideTools:
+                            # Required by the canadian cross compiler to dump specs.
+                            cross-ambient-toolchain:
+                                path: usr/bin
 
             # A canadian cross compiler. This uses most of the result of the
             # native cross compiler above. Only the compiler itself is built as
@@ -294,24 +355,28 @@ multiPackage:
             # compiler.
             canadian:
                 depends:
-                    - name: devel::gcc-cross-host
-                      # This is very subtle. The devel::gcc-cross-host package
-                      # is tainted and fingerprinted by the host libc version.
-                      # We do now want to inherit this fingerprint but instead
-                      # explicitly cut it because we replace all fingerprinted
-                      # bineries with the canadian cross build. Hence do *not*
-                      # use "result" but instead reference the first-stage
-                      # through "tools" only.
-                      use: [tools]
+                    - name: devel::binutils
+                      use: []
+                    - tools:
+                          target-toolchain: host-native-toolchain
+                      depends:
+                          - name: devel::binutils
+                            alias: devel::binutils-host-native
+                            use: [tools]
+                          - name: devel::gcc-cross-bare
+                            use: [tools]
+                            forward: True
+                          - *libc-builds
+                          - name: devel::gcc-cross-host-toolchain
+                            use: [tools]
                 buildTools: [host-toolchain, target-toolchain, cross-ambient-toolchain]
                 buildScript: |
-                    cp -a "${BOB_TOOL_PATHS[cross-ambient-toolchain]}/../.."/* install/
-                    if [[ ${GCC_ENABLE_LANGUAGES:-c,c+} == *"ada"* ]]; then
-                        ADDITIONAL_MAKE=(all-gnattools)
-                        ADDITIONAL_INSTALL=(install-gnattools)
-                    fi
-                    makeParallel -C build all-gcc ${ADDITIONAL_MAKE[@]}
-                    makeSequential -C build install-gcc ${ADDITIONAL_INSTALL[@]} DESTDIR="$PWD/install"
+                    buildGcc \
+                        --with-sysroot=/usr/sysroots/${AUTOCONF_TARGET}                 \
+                        --with-build-sysroot=$(${AUTOCONF_TARGET}-gcc -print-sysroot)   \
+                        --enable-linker-build-id                                        \
+                        "${OPTIONS[@]}"                                                 \
+                        --enable-languages="${GCC_ENABLE_LANGUAGES:-c,c++}"
 
     native:
         buildTools: [host-toolchain, target-toolchain]
