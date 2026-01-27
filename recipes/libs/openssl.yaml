@@ -573,6 +573,7 @@ buildScript: |
     case $(cpackageLibraryType) in
         static)
             SHARED_STATIC=( "-static" "zlib" )
+            OPENSSL_no_dso="1"
             ;;
         shared)
             SHARED_STATIC=( "shared" "zlib" )
