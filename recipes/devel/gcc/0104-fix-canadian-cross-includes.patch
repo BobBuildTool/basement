@@ -1,0 +1,25 @@
+Fix libstdc++ include paths for candian cross builds
+
+In a true canadian cross build, libstdc++ is built with the "target" compiler.
+This is a cross compiler and it is therefore harmful to use the build machine
+standard include paths. Instead, we can rely on the fact that the C and libc
+header files are found naturally by the cross-compiler in its sysroot.
+
+Upstream bug report: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=71212
+
+Signed-off-by: Jan Klötzke <jan@kloetzke.net>
+
+--- a/libstdc++-v3/acinclude.m4	2018-08-13 21:16:02.093382000 +0200
++++ b/libstdc++-v3/acinclude.m4	2024-01-05 22:03:47.161321488 +0100
+@@ -673,11 +673,6 @@
+ -I$glibcxx_builddir/include \
+ -I$glibcxx_srcdir/libsupc++"
+ 
+-  # For Canadian crosses, pick this up too.
+-  if test $CANADIAN = yes; then
+-    GLIBCXX_INCLUDES="$GLIBCXX_INCLUDES -I\${includedir}"
+-  fi
+-
+   # Stuff in the actual top level.  Currently only used by libsupc++ to
+   # get unwind* headers from the libgcc dir.
+   #TOPLEVEL_INCLUDES='-I$(toplevel_srcdir)/libgcc -I$(toplevel_srcdir)/include'

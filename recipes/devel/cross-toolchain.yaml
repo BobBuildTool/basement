@@ -13,22 +13,20 @@ depends:
       if: !expr |
         "$AUTOCONF_BUILD" != get-tool-env("target-toolchain", "AUTOCONF_HOST", "$AUTOCONF_BUILD")
 
-buildVars: [AUTOCONF_TARGET, GCC_LIBC]
-buildScript: |
-    rm -rf *
+packageDepends: True
+packageVars: [AUTOCONF_TARGET, GCC_LIBC]
+packageScript: |
     cp -an $2/* .
     cp -an ${BOB_DEP_PATHS[devel::binutils]}/* .
     mkdir -p usr/sysroots/$AUTOCONF_TARGET/usr/lib
     if [[ ${GCC_LIBC:+true} ]] ; then
-       cp -an ${BOB_DEP_PATHS[libs::${GCC_LIBC}]}/* usr/sysroots/$AUTOCONF_TARGET
-       rsync -aHSK usr/$AUTOCONF_TARGET/lib/ \
-         usr/sysroots/$AUTOCONF_TARGET/usr/lib/ \
-         --include '*.so.*' \
-         --exclude '*'
+        cp -an ${BOB_DEP_PATHS[libs::${GCC_LIBC}]}/* usr/sysroots/$AUTOCONF_TARGET
+        # Hard link shared libs to sysroot to save space.
+        if compgen -G "usr/$AUTOCONF_TARGET/lib/"*.so.* >/dev/null ; then
+            cp -dl "usr/$AUTOCONF_TARGET/lib/"*.so.* usr/sysroots/$AUTOCONF_TARGET/usr/lib/
+        fi
     fi
 
-packageScript: |
-    cp -a $1/* .
     # Remove debug symbols of host executables. We don't care if the toolchain
     # crashes. The target architecture symbols need to be retained, though...
     find usr/bin usr/libexec -type d -name .debug | xargs /bin/rm -rf
@@ -38,8 +36,7 @@ packageScript: |
     # for these scripts...
     pushd usr/bin
 
-    GCC_INSTALL_DIR_REL=$(realpath --relative-to=.\
-                          "$("./${AUTOCONF_TARGET}-gcc" -print-search-dirs | sed -n -e 's/^install: \(.*\)/\1/p')")
+    GCC_INSTALL_DIR_REL=$(find .. -name libgcc.a -printf '%h')
 
     for i in clang clang-cpp clang++ ; do
         cat > "$AUTOCONF_TARGET-$i" << EOF
@@ -179,6 +176,13 @@ multiPackage:
                     GCC_LIBC: "glibc"
                     GCC_ENABLE_LANGUAGES: "c,c++,ada"
 
+            x86_64-w64-mingw32:
+                environment:
+                    AUTOCONF_TARGET: "x86_64-w64-mingw32"
+                    ARCH: "x86_64"
+                    GCC_LIBC: "mingw-w64"
+                    GCC_EXTRA_OPTIONS: "--disable-sjlj-exceptions --enable-fully-dynamic-string"
+
             # ARMv7 Linux CortexA toolchain with hard floating point
             arm-linux-gnueabihf:
                 environment:
@@ -195,6 +199,7 @@ multiPackage:
                     ARCH: "arm"
                     GCC_ENABLE_LANGUAGES: "c"
                     GCC_LIBC: "newlib"
+                    GCC_MULTILIB: "aprofile,rmprofile"
 
             aarch64-l4re:
                 environment:

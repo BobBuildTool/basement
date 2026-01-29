@@ -1,0 +1,30 @@
+From: Jan Kloetzke <jan@kloetzke.net>
+Subject: Fix build sysroot includes
+
+If a build sysroot was passed to configure (--with-build-sysroot=), we must not
+pick up libraries or headers from the installation destination. These locations
+will potentially contain incompatible files. Instead, the build sysroot is
+already passed to the compiler and will find the correct libs/headers there.
+
+diff -Nurp a/configure b/configure
+--- a/configure	2026-01-23 22:28:17.414392851 +0100
++++ b/configure	2026-01-25 20:43:06.932742199 +0100
+@@ -10264,7 +10264,9 @@ case "$target" in
+   x86_64-*mingw* | *-w64-mingw*)
+   # MinGW-w64 does not use newlib, nor does it use winsup. It may,
+   # however, use a symlink named 'mingw' in ${prefix} .
++    if test -z "$SYSROOT_CFLAGS_FOR_TARGET"; then
+     FLAGS_FOR_TARGET=$FLAGS_FOR_TARGET' -L${prefix}/${target}/lib -L${prefix}/mingw/lib -isystem ${prefix}/${target}/include -isystem ${prefix}/mingw/include'
++    fi
+     ;;
+   *-mingw*)
+   # MinGW can't be handled as Cygwin above since it does not use newlib.
+@@ -10285,7 +10287,7 @@ fi
+ # the previously-installed cross compiler, so don't bother to add
+ # flags for directories within the install tree of the compiler
+ # being built; programs in there won't even run.
+-if test "${build}" = "${host}" && test -d ${srcdir}/gcc; then
++if test "${build}" = "${host}" && test -d ${srcdir}/gcc && test -z "$SYSROOT_CFLAGS_FOR_TARGET"; then
+   # Search for pre-installed headers if nothing else fits.
+   FLAGS_FOR_TARGET=$FLAGS_FOR_TARGET' -B$(build_tooldir)/bin/ -B$(build_tooldir)/lib/ -isystem $(build_tooldir)/include -isystem $(build_tooldir)/sys-include'
+ fi

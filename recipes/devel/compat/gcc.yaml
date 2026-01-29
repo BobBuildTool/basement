@@ -29,7 +29,8 @@ checkoutScript: |
 buildTools: [host-toolchain, target-toolchain]
 buildToolsWeak: [m4]
 buildVars: [AUTOCONF_BUILD, AUTOCONF_HOST, AUTOCONF_TARGET,
-            GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU]
+            GCC_TARGET_ARCH, GCC_TARGET_FLOAT_ABI, GCC_TARGET_FPU,
+            CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS]
 buildScript: |
     GCC_SRC=$1
 
@@ -150,10 +151,10 @@ multiPackage:
                     TOOLCHAIN_FLAVOUR: gcc
 
                     # Reset compiler flags
-                    CPPFLAGS:   "-Wdate-time"
-                    CFLAGS:     "-Os -pipe"
-                    CXXFLAGS:   "-Os -pipe"
-                    LDFLAGS:    "-Wl,-O1"
+                    CPPFLAGS:   ""
+                    CFLAGS:     "-O2 -pipe"
+                    CXXFLAGS:   "-O2 -pipe"
+                    LDFLAGS:    ""
 
     cross:
         depends:
