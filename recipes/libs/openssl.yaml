@@ -553,13 +553,13 @@ buildVars: [CC, AR, RANLIB, ARCH, AUTOCONF_HOST,
             OPENSSL_no_sm2, OPENSSL_no_sm3, OPENSSL_no_sm4, OPENSSL_no_whirlpool]
 buildSetup: |
     collect_options () {
-      local prefix="$1"
+      local prefix="OPENSSL_$1"
       local result=""
 
       while IFS='=' read -r name value; do
-        if [[ "$name" == ${prefix}* && "${value}" == "1" ]];
+        if [[ "$name" == OPENSSL_${prefix}* && "${value}" == "1" ]];
         then
-          result+="${name#${prefix}} "
+          result+="$1-${name#$prefix} "
         fi
       done < <(env)
 
@@ -622,8 +622,8 @@ buildScript: |
         --libdir=lib \
         "${SHARED_STATIC[@]}" \
         "threads" \
-        $(collect_options "OPENSSL_no") \
-        $(collect_options "OPENSSL_enable") \
+        $(collect_options "no") \
+        $(collect_options "enable") \
         "-I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include" \
         "-Wl,-L${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib" \
         "-Wl,-rpath-link=${BOB_DEP_PATHS[libs::zlib-dev]}/usr/lib" \
