@@ -318,10 +318,6 @@ Config:
         type: bool
         default: False
         help: Don't build with support for multi_threaded applications.
-    OPENSSL_threads:
-        type: bool
-        default: False
-        help: Build with support for multi_threaded applications.
     OPENSSL_no_thread_pool:
         type: bool
         default: False
@@ -538,7 +534,7 @@ buildVars: [CC, AR, RANLIB, ARCH, AUTOCONF_HOST,
             OPENSSL_no_sm2_precomp, OPENSSL_no_sock, OPENSSL_no_srp, OPENSSL_no_srtp,
             OPENSSL_no_sse2, OPENSSL_no_ssl_trace, OPENSSL_no_static_engine,
             OPENSSL_no_tests, OPENSSL_enable_tfo, OPENSSL_no_quic, OPENSSL_no_threads,
-            OPENSSL_threads, OPENSSL_no_thread_pool, OPENSSL_enable_trace,
+            OPENSSL_no_thread_pool, OPENSSL_enable_trace,
             OPENSSL_no_ts, OPENSSL_no_ui_console, OPENSSL_enable_unit_test,
             OPENSSL_no_uplink, OPENSSL_enable_weak_ssl_ciphers, OPENSSL_enable_zstd, OPENSSL_no_ssl,
             OPENSSL_no_ssl3, OPENSSL_no_tls, OPENSSL_no_tls1, OPENSSL_no_tls1_1,
