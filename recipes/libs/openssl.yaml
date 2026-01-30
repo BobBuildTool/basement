@@ -38,16 +38,6 @@ Config:
         type: bool
         default: False
         help: Build with Kernel TLS support.
-    OPENSSL_enable_asan:
-        type: bool
-        default: False
-        help: Build with the Address sanitiser.
-    OPENSSL_enable_acvp_tests:
-        type: bool
-        default: False
-        help: <-
-            Build support for Automated Cryptographic Validation Protocol (ACVP)
-            tests.
     OPENSSL_no_apps:
         type: bool
         default: False
@@ -84,12 +74,6 @@ Config:
         type: bool
         default: False
         help: Don't automatically load the default `openssl.cnf` file.
-    OPENSSL_enable_buildtest_cpp:
-        type: bool
-        default: False
-        help: <-
-            While testing, generate C++ buildtest files that simply check that the public
-            OpenSSL header files are usable standalone with C++.
     OPENSSL_no_capieng:
         type: bool
         default: False
@@ -123,10 +107,6 @@ Config:
         type: bool
         default: False
         help: Don't build support for datagram based BIOs.
-    OPENSSL_no_docs:
-        type: bool
-        default: False
-        help: Don't build and install documentation, i.e. manual pages in various forms.
     OPENSSL_no_dso:
         type: bool
         default: False
@@ -300,10 +280,6 @@ Config:
         type: bool
         default: False
         help: Don't build the statically linked engines.
-    OPENSSL_no_tests:
-        type: bool
-        default: False
-        help: Don't build test programs or run any tests.
     OPENSSL_enable_tfo:
         type: bool
         default: False
@@ -334,10 +310,6 @@ Config:
         type: bool
         default: False
         help: Don't build with the User Interface (UI) console method
-    OPENSSL_enable_unit_test:
-        type: bool
-        default: False
-        help: Enable additional unit test APIs.
     OPENSSL_no_uplink:
         type: bool
         default: False
@@ -515,10 +487,10 @@ buildTools: [target-toolchain]
 buildToolsWeak: [perl]
 buildVars: [CC, AR, RANLIB, ARCH, AUTOCONF_HOST,
             OPENSSL_no_afalgeng, OPENSSL_enable_ktls, OPENSSL_enable_asan,
-            OPENSSL_enable_acvp_tests, OPENSSL_no_apps, OPENSSL_no_async,
+            OPENSSL_no_apps, OPENSSL_no_async,
             OPENSSL_no_atexit, OPENSSL_no_autoalginit, OPENSSL_no_autoerrinit,
             OPENSSL_enable_brotli, OPENSSL_enable_brotli_dynamic,
-            OPENSSL_no_autoload_config, OPENSSL_enable_buildtest_cpp,
+            OPENSSL_no_autoload_config,
             OPENSSL_no_capieng, OPENSSL_no_cmp, OPENSSL_no_cms, OPENSSL_no_comp,
             OPENSSL_no_ct, OPENSSL_no_deprecated, OPENSSL_no_dgram, OPENSSL_no_docs,
             OPENSSL_no_dso, OPENSSL_enable_devcryptoeng, OPENSSL_no_dynamic_engine,
@@ -533,9 +505,9 @@ buildVars: [CC, AR, RANLIB, ARCH, AUTOCONF_HOST,
             OPENSSL_no_rdrand, OPENSSL_no_rfc3779, OPENSSL_sctp, OPENSSL_no_slh_dsa,
             OPENSSL_no_sm2_precomp, OPENSSL_no_sock, OPENSSL_no_srp, OPENSSL_no_srtp,
             OPENSSL_no_sse2, OPENSSL_no_ssl_trace, OPENSSL_no_static_engine,
-            OPENSSL_no_tests, OPENSSL_enable_tfo, OPENSSL_no_quic, OPENSSL_no_threads,
+            OPENSSL_enable_tfo, OPENSSL_no_quic, OPENSSL_no_threads,
             OPENSSL_no_thread_pool, OPENSSL_enable_trace,
-            OPENSSL_no_ts, OPENSSL_no_ui_console, OPENSSL_enable_unit_test,
+            OPENSSL_no_ts, OPENSSL_no_ui_console,
             OPENSSL_no_uplink, OPENSSL_enable_weak_ssl_ciphers, OPENSSL_enable_zstd, OPENSSL_no_ssl,
             OPENSSL_no_ssl3, OPENSSL_no_tls, OPENSSL_no_tls1, OPENSSL_no_tls1_1,
             OPENSSL_no_tls1_2, OPENSSL_no_tls1_3, OPENSSL_no_dtls, OPENSSL_no_dtls1,
@@ -549,7 +521,6 @@ buildVars: [CC, AR, RANLIB, ARCH, AUTOCONF_HOST,
             OPENSSL_no_sm2, OPENSSL_no_sm3, OPENSSL_no_sm4, OPENSSL_no_whirlpool]
 buildSetup: |
     declare -A SPECIAL_OPTIONS=(
-        ["enable_buildtest_cpp"]="enable-buildtest-c++"
         ["enable_ec_nistp_64_gcc_128"]="enable-ec_nistp_64_gcc_128"
         ["no_tls1_1"]="no-tls1_1"
         ["no_tls1_2"]="no-tls1_2"
@@ -633,6 +604,7 @@ buildScript: |
         --libdir=lib \
         "${SHARED_STATIC[@]}" \
         "threads" \
+        no-tests no-docs \
         $(collect_options "no") \
         $(collect_options "enable") \
         "-I${BOB_DEP_PATHS[libs::zlib-dev]}/usr/include" \
