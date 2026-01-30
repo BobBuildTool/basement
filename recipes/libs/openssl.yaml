@@ -552,19 +552,34 @@ buildVars: [CC, AR, RANLIB, ARCH, AUTOCONF_HOST,
             OPENSSL_no_scrypt, OPENSSL_no_seed, OPENSSL_no_siphash, OPENSSL_no_siv,
             OPENSSL_no_sm2, OPENSSL_no_sm3, OPENSSL_no_sm4, OPENSSL_no_whirlpool]
 buildSetup: |
-    collect_options () {
-      local prefix="OPENSSL_$1"
-      local result=""
+    declare -A SPECIAL_OPTIONS=(
+        ["enable_buildtest_cpp"]="enable-buildtest-c++"
+        ["enable_ec_nistp_64_gcc_128"]="enable-ec_nistp_64_gcc_128"
+        ["no_tls1_1"]="no-tls1_1"
+        ["no_tls1_2"]="no-tls1_2"
+        ["no_tls1_3"]="no-tls1_3"
+        ["no_dtls1_2"]="no-dtls1_2"
+    )
 
-      while IFS='=' read -r name value; do
-        if [[ "$name" == OPENSSL_${prefix}* && "${value}" == "1" ]];
-        then
-          result+="$1-${name#$prefix} "
-        fi
-      done < <(env)
+    collect_options()
+    {
+        declare -a result=()
 
-      echo "${result%" "}"
+        for name in $(compgen -e "OPENSSL_$1") ; do
+            if [[ "${!name}" == "1" ]]; then
+                name="${name#OPENSSL_}"
+                if [[ ${SPECIAL_OPTIONS[$name]+set} ]] ; then
+                    name="${SPECIAL_OPTIONS[$name]}"
+                else
+                    name="${name//_/-}"
+                fi
+                result+=( "$name" )
+            fi
+        done
+
+        IFS=" " echo "${result[*]}"
     }
+
 buildScript: |
     mkdir -p install build
     pushd build
