@@ -176,6 +176,14 @@ multiPackage:
                     GCC_LIBC: "glibc"
                     GCC_ENABLE_LANGUAGES: "c,c++,ada"
 
+            x86_64-unknown-elf-ada:
+                environment:
+                    AUTOCONF_TARGET: "x86_64-unknown-elf"
+                    ARCH: "x86_64"
+                    GCC_LIBC: "newlib"
+                    GCC_ENABLE_LANGUAGES: "c,c++,ada"
+                    GCC_EXTRA_OPTIONS: "--disable-libada"
+
             x86_64-w64-mingw32:
                 environment:
                     AUTOCONF_TARGET: "x86_64-w64-mingw32"
