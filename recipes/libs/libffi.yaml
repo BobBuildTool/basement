@@ -1,13 +1,13 @@
 inherit: [autotools, autoconf, patch]
 
 metaEnvironment:
-    PKG_VERSION: "3.2.1"
+    PKG_VERSION: "3.5.2"
     PKG_LICENSE: "MIT"
 
 checkoutSCM:
     scm: url
-    url: ${SOURCEWARE_MIRROR}/libffi/libffi-${PKG_VERSION}.tar.gz
-    digestSHA1: "280c265b789e041c02e5c97815793dfc283fb1e6"
+    url: ${GITHUB_MIRROR}/libffi/libffi/releases/download/v${PKG_VERSION}/libffi-${PKG_VERSION}.tar.gz
+    digestSHA1: "2bd35b135b0eeb5c631e02422c9dbe786ddb626a"
     stripComponents: 1
 
 checkoutDeterministic: True

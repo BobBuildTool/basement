@@ -1,0 +1,30 @@
+inherit: [cmake]
+
+metaEnvironment:
+    PKG_VERSION: "10.47"
+    PKG_LICENSE: "BSD-3-Clause WITH PCRE2-exception"
+
+checkoutSCM:
+    scm: url
+    url: ${GITHUB_MIRROR}/PCRE2Project/pcre2/releases/download/pcre2-${PKG_VERSION}/pcre2-${PKG_VERSION}.tar.bz2
+    digestSHA256: 47fe8c99461250d42f89e6e8fdaeba9da057855d06eb7fc08d9ca03fd08d7bc7
+    stripComponents: 1
+
+buildScript: |
+    # CFLAGS="${CFLAGS:-} -fPIC" \
+    # disabled tests and grep as they are not installed within the dev package
+    # making cmake unhappy when used:
+    #
+    # The imported target "pcre2::pcre2test" references the file
+    #  <dist of pcre2-dev>/usr/bin/pcre2test
+    #
+    cmakeBuild $1 -DCMAKE_INSTALL_LIBDIR="lib" \
+        -DPCRE2_SUPPORT_JIT=ON \
+        -DPCRE2_BUILD_PCRE2GREP=OFF \
+        -DPCRE2_BUILD_TESTS=OFF
+
+multiPackage:
+    dev:
+        packageScript: cmakePackageDev
+    tgt:
+        packageScript: cmakePackageTgt

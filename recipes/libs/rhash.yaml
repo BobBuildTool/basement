@@ -2,12 +2,12 @@ inherit: [make, cpackage, install]
 
 metaEnvironment:
     PKG_LICENSE: "0BSD"
-    PKG_VERSION: "1.3.5"
+    PKG_VERSION: "1.4.6"
 
 checkoutSCM:
     scm: url
     url: ${SOURCEFORGE_MIRROR}/rhash/rhash-${PKG_VERSION}-src.tar.gz
-    digestSHA256: 98e0688acae29e68c298ffbcdbb0f838864105f9b2bd8857980664435b1f1f2e
+    digestSHA256: 9f6019cfeeae8ace7067ad22da4e4f857bb2cfa6c2deaa2258f55b2227ec937a
     stripComponents: 1
 
 buildTools: [target-toolchain]
@@ -16,22 +16,27 @@ buildScript: |
     case "$(cpackageLibraryType)" in
         static)
             BUILD_TARGETS=( lib-static )
-            INSTALL_TARGETS=( install-lib-static )
+            INSTALL_TARGETS=( install-lib-static install-lib-headers )
             ;;
         shared)
             BUILD_TARGETS=( lib-shared )
-            INSTALL_TARGETS=( install-lib-shared install-so-link install-headers )
+            INSTALL_TARGETS=( install-lib-shared install-so-link install-lib-headers )
             ;;
         both)
             BUILD_TARGETS=( lib-static lib-shared )
-            INSTALL_TARGETS=( install-lib-static install-lib-shared install-so-link install-headers )
+            INSTALL_TARGETS=( install-lib-static install-lib-shared install-so-link install-lib-headers )
             ;;
     esac
 
     mkdir -p build install
     pushd build
     rsync -aH "$1/" .
-    make PREFIX="/usr" "${BUILD_TARGETS[@]}"
+    ./configure \
+        ${AUTOCONF_TARGET:+--target=${AUTOCONF_TARGET}} \
+        --prefix="/usr" \
+        --sysconfdir="/etc"
+
+    make AR=${AR} PREFIX="/usr" "${BUILD_TARGETS[@]}"
     make -C librhash PREFIX="/usr" DESTDIR="$PWD/../install" "${INSTALL_TARGETS[@]}"
     popd
 

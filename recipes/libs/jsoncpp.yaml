@@ -2,14 +2,14 @@ inherit: [meson]
 
 metaEnvironment:
     PKG_LICENSE: "LicenseRef-jsoncpp"
-    PKG_VERSION: "1.9.3"
+    PKG_VERSION: "1.9.6"
     PKG_LICENSE_PATH: |
         jsoncpp:LICENSE
 
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/open-source-parsers/jsoncpp/archive/${PKG_VERSION}.tar.gz
-    digestSHA256: 8593c1d69e703563d94d8c12244e2e18893eeb9a8a9f8aa3d09a327aa45c8f7d
+    digestSHA256: f93b6dd7ce796b13d02c108bc9f79812245a82e577581c4c9aabe57075c90ea2
     stripComponents: 1
 
 buildScript: |

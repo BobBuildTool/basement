@@ -1,13 +1,13 @@
-inherit: [make, install]
+inherit: [make, install, cpackage]
 
 metaEnvironment:
-    PKG_VERSION: "2.70"
+    PKG_VERSION: "2.77"
     PKG_LICENSE: "BSD-3-Clause or GPL-2.0-only"
 
 checkoutSCM:
     scm: url
     url: ${KERNEL_MIRROR}/linux/libs/security/linux-privs/libcap2/libcap-${PKG_VERSION}.tar.xz
-    digestSHA256: "23a6ef8aadaf1e3e875f633bb2d116cfef8952dba7bc7c569b13458e1952b30f"
+    digestSHA256: "897bc18b44afc26c70e78cead3dbb31e154acc24bee085a5a09079a88dbf6f52"
     extract: False
 
 buildTools: [host-toolchain, target-toolchain]
@@ -15,6 +15,17 @@ buildVars: [AR, CC, OBJCOPY, RANLIB, PKG_VERSION]
 buildScript: |
     tar -xf $1/libcap-${PKG_VERSION}.tar.xz
     mkdir -p install
+
+    DYNAMIC=
+    case $(cpackageLibraryType) in
+        static)
+            DYNAMIC=no
+            ;;
+        shared|both)
+            DYNAMIC=yes
+            ;;
+    esac
+
     makeParallel -C libcap-${PKG_VERSION} \
         prefix=/usr \
         lib=lib \
@@ -25,6 +36,7 @@ buildScript: |
         RANLIB=$RANLIB \
         RAISE_SETFCAP=no \
         DESTDIR="$PWD/install" \
+        DYNAMIC=${DYNAMIC} \
         install
 
 multiPackage:
