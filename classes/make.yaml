@@ -1,4 +1,4 @@
-jobServer: "fifo-or-pipe"
+jobServer: "fifo"
 buildToolsWeak: [make]
 buildVarsWeak: [MAKE_JOBS]
 buildSetup: |

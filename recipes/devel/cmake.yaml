@@ -1,13 +1,13 @@
 inherit: [patch]
 
 metaEnvironment:
-    PKG_VERSION: "3.25.1"
+    PKG_VERSION: "4.2.1"
     PKG_LICENSE: "BSD-3-Clause"
 
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/Kitware/CMake/releases/download/v${PKG_VERSION}/cmake-${PKG_VERSION}.tar.gz
-    digestSHA256: 1c511d09516af493694ed9baf13c55947a36389674d657a2d5e0ccedc6b291d8
+    digestSHA256: "414aacfac54ba0e78e64a018720b64ed6bfca14b587047b8b3489f407a14a070"
     stripComponents: 1
 
 checkoutDeterministic: True
@@ -37,11 +37,9 @@ multiPackage:
 
         buildScript: |
             cmakeBuild "$1" \
-                -DKWSYS_LFS_WORKS=TRUE \
-                -DKWSYS_CHAR_IS_SIGNED=TRUE \
                 -DCMAKE_USE_SYSTEM_LIBRARIES=1 \
-                -DCTEST_USE_XMLRPC=OFF \
-                -DBUILD_CursesDialog=OFF
+                -DBUILD_CursesDialog=OFF \
+                -DCMake_ENABLE_DEBUGGER=OFF
 
         packageScript: |
             cmakePackageTgt

@@ -17,6 +17,11 @@ depends:
     - devel::llvm-libs-dev
     - devel::llvm-libs-tgt
 
+    # Just build cmake-3 but do not use its tool. It is already provided by
+    # devel::cmake, included by basement::rootrecipe above.
+    - name: devel::cmake-3
+      use: [result]
+
 buildScript: |
     true
 
