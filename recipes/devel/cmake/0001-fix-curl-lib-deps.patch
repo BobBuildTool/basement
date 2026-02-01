@@ -4,26 +4,28 @@ The current implementation does not account for transitive dependencies of
 cURL. Add what is strictly necessary to get it compiled in our environment.
 
 diff -Nurp a/Modules/FindCURL.cmake b/Modules/FindCURL.cmake
---- a/Modules/FindCURL.cmake	2022-11-30 14:57:03.000000000 +0100
-+++ b/Modules/FindCURL.cmake	2022-12-05 21:25:34.000000000 +0100
-@@ -185,13 +185,19 @@ find_package_handle_standard_args(CURL
+--- a/Modules/FindCURL.cmake	2025-12-08 19:33:58.000000000 +0100
++++ b/Modules/FindCURL.cmake	2026-01-21 14:42:55.650870435 +0100
+@@ -291,7 +291,7 @@ find_package_handle_standard_args(CURL
                                    HANDLE_COMPONENTS)
- 
+
  if(CURL_FOUND)
 -  set(CURL_LIBRARIES ${CURL_LIBRARY})
 +  set(CURL_LIBRARIES ${CURL_LIBRARY} ${PC_CURL_LIBRARIES})
    set(CURL_INCLUDE_DIRS ${CURL_INCLUDE_DIR})
- 
+
    if(NOT TARGET CURL::libcurl)
-     add_library(CURL::libcurl UNKNOWN IMPORTED)
+@@ -299,6 +299,13 @@ if(CURL_FOUND)
      set_target_properties(CURL::libcurl PROPERTIES
        INTERFACE_INCLUDE_DIRECTORIES "${CURL_INCLUDE_DIRS}")
+
 +    if(PC_CURL_FOUND)
 +      set(CURL_DEPENDENCY_LIBRARIES "${PC_CURL_LIBRARIES}")
 +      list(REMOVE_ITEM CURL_DEPENDENCY_LIBRARIES curl)
 +      set_target_properties(CURL::libcurl PROPERTIES
 +        INTERFACE_LINK_LIBRARIES "${CURL_DEPENDENCY_LIBRARIES}")
 +    endif()
- 
-     if(EXISTS "${CURL_LIBRARY}")
-       set_target_properties(CURL::libcurl PROPERTIES
++
+     if(CURL_USE_STATIC_LIBS)
+       set_property(TARGET CURL::libcurl APPEND PROPERTY
+                    INTERFACE_COMPILE_DEFINITIONS "CURL_STATICLIB")
