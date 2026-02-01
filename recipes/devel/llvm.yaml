@@ -1,14 +1,15 @@
 inherit: [cmake, python3, patch]
 
 metaEnvironment:
-    PKG_VERSION: "20.1.2"
+    PKG_VERSION: "21.1.8"
     PKG_DESCRIPTION: "A collection of modular and reusable compiler and toolchain technologies"
     PKG_LICENSE: "Apache-2.0 WITH LLVM-exception"
 
 checkoutSCM:
     scm: url
-    url: ${GITHUB_MIRROR}/llvm/llvm-project/archive/refs/tags/llvmorg-${PKG_VERSION}.tar.gz
-    digestSHA256: 9ee597456405ddf4809bcf66a4765137a68a85361347ca2a4bb13d9176e932ab
+    url: "${GITHUB_MIRROR}/llvm/llvm-project/releases/download/\
+          llvmorg-${PKG_VERSION}/llvm-project-${PKG_VERSION}.src.tar.xz"
+    digestSHA256: 4633a23617fa31a3ea51242586ea7fb1da7140e426bd62fc164261fe036aa142
     stripComponents: 1
 
 checkoutDeterministic: True
