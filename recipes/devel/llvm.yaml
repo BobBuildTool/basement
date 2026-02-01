@@ -104,7 +104,7 @@ multiPackage:
                 help: "Semicolon-separated list of target architectures to build."
             LLVM_OCAML_BINDINGS:
                 type: bool
-                default: True
+                default: False
                 help: "Build OCaml llvm bindings. Disable for cross-builds!"
 
         depends:
