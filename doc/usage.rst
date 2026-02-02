@@ -517,7 +517,6 @@ The following tools can be used by naming them in
 * ninja
 * pkg-config
 * python3
-* texinfo
 * util-linux
 
 They are provided by default by the ``basement::rootrecipe`` class. Usually,
