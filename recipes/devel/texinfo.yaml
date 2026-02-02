@@ -7,7 +7,7 @@ metaEnvironment:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/texinfo/texinfo-${PKG_VERSION}.tar.xz
-    digestSHA1: "ce3776715e655400485381b8ae94e34c5632e729"
+    digestSHA1: "5919468ec9ca3bed5ad030a201cd5804b4f16edc"
     stripComponents: 1
 
 buildTools: [host-toolchain]
