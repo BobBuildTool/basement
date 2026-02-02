@@ -31,6 +31,7 @@ packageTools:
     - cmake
     - flex
     - gettext
+    - texinfo
     - make
     - meson
     - ninja
