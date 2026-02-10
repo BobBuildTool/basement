@@ -15,7 +15,9 @@ checkoutScript: |
     patchApplySeries $<@libffi/*.diff@>
 
 buildScript: |
-   autotoolsBuild -s -Sa $1
+   autotoolsBuild -s -Sa $1 \
+        --enable-portable-binary \
+        --disable-multi-os-directory
 
 multiPackage:
     dev:
