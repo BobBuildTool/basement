@@ -640,7 +640,7 @@ multiPackage:
             installPackageBin "$1/install/"
             for d in "${!BOB_DEP_PATHS[@]}"; do
                 if [[ $d == *-tgt ]]; then
-                    cp -ar ${BOB_DEP_PATHS[$d]}/* .
+                    cp -ar ${BOB_DEP_PATHS[$d]}/. .
                 fi
             done
         provideTools:
