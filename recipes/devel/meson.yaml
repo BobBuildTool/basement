@@ -1,13 +1,13 @@
 inherit: ["python3::setuptools"]
 
 metaEnvironment:
-    PKG_VERSION: "1.5.1"
+    PKG_VERSION: "1.10.1"
     PKG_LICENSE: "Apache-2.0"
 
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/mesonbuild/meson/releases/download/${PKG_VERSION}/meson-${PKG_VERSION}.tar.gz
-    digestSHA256: 567e533adf255de73a2de35049b99923caf872a455af9ce03e01077e0d384bed
+    digestSHA256: c42296f12db316a4515b9375a5df330f2e751ccdd4f608430d41d7d6210e4317
     stripComponents: 1
 
 buildScript: |
