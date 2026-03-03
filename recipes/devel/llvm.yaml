@@ -210,9 +210,10 @@ multiPackage:
 
                 multiPackage:
                     "":
+                        packageVars: [PKG_VERSION]
                         packageScript: |
                             cmakePackageBin "$1" \
-                                /usr/ /usr/bin/ !/usr/bin/clang{,-20,++,-cl,-cpp} \
+                                /usr/ /usr/bin/ !/usr/bin/clang{,-${PKG_VERSION%%.*},++,-cl,-cpp} \
                                 !/usr/bin/{ld.lld,lld,lld-link,wasm-ld} \
                                 !/usr/bin/clangd \
                                 !/usr/bin/{,git-}clang-format \
@@ -223,9 +224,10 @@ multiPackage:
                             llvm: "usr/bin"
 
                     clang:
+                        packageVars: [PKG_VERSION]
                         packageScript: |
                             installCopy "$1/install/" \
-                                /usr/ /usr/bin/ /usr/bin/clang{,-20,++,-cl,-cpp} \
+                                /usr/ /usr/bin/ /usr/bin/clang{,-${PKG_VERSION%%.*},++,-cl,-cpp} \
                                 /usr/bin/{ld.lld,lld,lld-link,wasm-ld} \
                                 /usr/lib/ "/usr/lib/clang/***" \
                                 "!*"
