@@ -7,7 +7,7 @@ buildSetup: |
     {
         local MAKE_TARGET=
         local MAKE_OPTIONS=( )
-        local INSTALL_TAGET=install
+        local INSTALL_TARGET=install
         local INSTALL_OPTIONS=( )
         local SHARED_STATIC=( )
         local AUTOCONF_OPTS=()
@@ -38,7 +38,7 @@ buildSetup: |
         while getopts "i:m:o:O:sS:" opt ; do
             case "$opt" in
                 i)
-                    INSTALL_TAGET="$OPTARG"
+                    INSTALL_TARGET="$OPTARG"
                     ;;
                 m)
                     MAKE_TARGET="$OPTARG"
@@ -87,7 +87,7 @@ buildSetup: |
             touch .configure.stamp
         fi
         makeParallel $MAKE_TARGET ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"}
-        make $INSTALL_TAGET DESTDIR=${PWD}/../install ${INSTALL_OPTIONS:+"${INSTALL_OPTIONS[@]}"}
+        make $INSTALL_TARGET DESTDIR=${PWD}/../install ${INSTALL_OPTIONS:+"${INSTALL_OPTIONS[@]}"}
         popd
     }
 
