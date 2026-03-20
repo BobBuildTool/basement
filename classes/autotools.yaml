@@ -87,7 +87,9 @@ buildSetup: |
             touch .configure.stamp
         fi
         makeParallel $MAKE_TARGET ${MAKE_OPTIONS:+"${MAKE_OPTIONS[@]}"}
-        make $INSTALL_TARGET DESTDIR=${PWD}/../install ${INSTALL_OPTIONS:+"${INSTALL_OPTIONS[@]}"}
+        if [[ $INSTALL_TARGET:+true} ]]; then
+            make $INSTALL_TARGET DESTDIR=${PWD}/../install ${INSTALL_OPTIONS:+"${INSTALL_OPTIONS[@]}"}
+        fi
         popd
     }
 
