@@ -45,6 +45,10 @@ fallbackMirrorAppend:
     - scm: url
       url: "https://www.openssl.org/source/openssl-([0-9]+\\.[0-9]+)(.+)"
       mirror: "https://www.openssl.org/source/old/\\1/openssl-\\1\\2"
+    # Most sources are mirrored on ci.bobbuildtool.dev too...
+    - scm: url
+      url: "https?://(.*)"
+      mirror: "https://ci.bobbuildtool.dev/mirror/\\1"
 
 include:
     - user
