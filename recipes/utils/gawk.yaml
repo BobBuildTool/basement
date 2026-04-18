@@ -2,7 +2,7 @@ inherit: [autotools]
 
 metaEnvironment:
     PKG_LICENSE: "GPL-3.0-or-later"
-    PKG_VERSION: "5.3.0"
+    PKG_VERSION: "5.4.0"
 
 depends:
     - libs::mpfr-dev
@@ -13,7 +13,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/gawk/gawk-${PKG_VERSION}.tar.xz
-    digestSHA1: "98c37c82d0d7370354e4e789406d6060c75c402a"
+    digestSHA1: "f13452fb3260f4959dcdb62d78b6236506ec8d14"
     stripComponents: 1
 
 buildScript: |
