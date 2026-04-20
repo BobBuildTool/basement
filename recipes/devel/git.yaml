@@ -1,7 +1,7 @@
 inherit: [cpackage, install, make, pkg-config]
 
 metaEnvironment:
-    PKG_VERSION: "2.47.1"
+    PKG_VERSION: "2.53.0"
     PKG_LICENSE: "GPL-2.0-only"
 
 depends:
@@ -19,7 +19,7 @@ depends:
 checkoutSCM:
     scm: url
     url: ${KERNEL_MIRROR}/software/scm/git/git-${PKG_VERSION}.tar.xz
-    digestSHA256: "f3d8f9bb23ae392374e91cd9d395970dabc5b9c5ee72f39884613cd84a6ed310"
+    digestSHA256: "5818bd7d80b061bbbdfec8a433d609dc8818a05991f731ffc4a561e2ca18c653"
     extract: False
 
 buildTools: [target-toolchain, curl, host-toolchain, gettext]
