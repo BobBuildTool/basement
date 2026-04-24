@@ -24,7 +24,7 @@ packageSetup: |
             chmod u+w "$1"
 
             # shared libraries need to be treated with care
-            if [[ $1 == *.so* && $type == ELF*shared ]] ; then
+            if [[ $1 == *.so* && $type == ELF*shared* ]] ; then
                 $STRIP --remove-section=.comment --remove-section=.note \
                     --strip-unneeded "$1"
             else
