@@ -5,7 +5,7 @@ Subject: [PATCH 5/5] Add L4Re support
 diff -Nurp a/gcc/config/i386/l4re64.h b/gcc/config/i386/l4re64.h
 --- a/gcc/config/i386/l4re64.h	1970-01-01 01:00:00.000000000 +0100
 +++ b/gcc/config/i386/l4re64.h	2025-12-12 10:56:34.558135410 +0100
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,23 @@
 +#ifdef TARGET_LIBC_PROVIDES_SSP
 +/* i386 uclibc provides __stack_chk_guard in %gs:0x14,
 +   x86_64 uclibc provides it in %fs:0x28.  */
@@ -22,6 +22,7 @@ diff -Nurp a/gcc/config/i386/l4re64.h b/gcc/config/i386/l4re64.h
 +    %{!static: \
 +      %{!static-pie: \
 +        %{rdynamic:-export-dynamic} \
++        --allow-shlib-undefined \
 +        -dynamic-linker=/rom/libld-l4.so.1}} \
 +    %{static:-static} \
 +    %{static-pie:-static -pie --no-dynamic-linker -z text}}"
@@ -31,7 +32,7 @@ diff -Nurp a/gcc/config/i386/l4re64.h b/gcc/config/i386/l4re64.h
 diff -Nurp a/gcc/config/l4re.h b/gcc/config/l4re.h
 --- a/gcc/config/l4re.h	1970-01-01 01:00:00.000000000 +0100
 +++ b/gcc/config/l4re.h	2025-12-12 10:58:45.131911725 +0100
-@@ -0,0 +1,70 @@
+@@ -0,0 +1,71 @@
 +/* The GNU C++ standard library requires that these macros be defined.  */
 +#undef CPLUSPLUS_CPP_SPEC
 +#define CPLUSPLUS_CPP_SPEC "-D_GNU_SOURCE %(cpp)"
@@ -69,6 +70,7 @@ diff -Nurp a/gcc/config/l4re.h b/gcc/config/l4re.h
 +    %{!static: \
 +      %{!static-pie: \
 +        %{rdynamic:-export-dynamic} \
++        --allow-shlib-undefined \
 +        -dynamic-linker=/rom/libld-l4.so.1}} \
 +    %{static:-static} \
 +    %{static-pie:-static -pie --no-dynamic-linker -z text}}"
