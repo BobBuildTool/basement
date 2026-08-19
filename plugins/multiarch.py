@@ -894,6 +894,8 @@ def crossToolchainCpuFeature(args, env, **options):
         if defaultArch is None and selectedArch is None:
             if coarseArch == "x86_64":
                 defaultArch = "x86-64"
+            elif coarseArch == "arm64":
+                defaultArch = "armv8-a"
             elif coarseArch == "arm":
                 defaultArch = "armv4t"
             else:
