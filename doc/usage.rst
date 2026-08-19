@@ -433,7 +433,7 @@ executable are:
 
 * ``AUTOCONF_HOST``: Set for cross-compiler to the *host* system target triplet.
 * ``CROSS_COMPILE``: Cross compile prefix for standard tool of a
-  cross-compiling toolchain, e.g., ``riscv64-linux-gnu-`` for a RISC-V Linux
+  cross-compiling toolchain, e.g., ``riscv64-cross-linux-gnu-`` for a RISC-V Linux
   cross toolchain. Some build systems use this method to find the right tools
   instead of the individual variables above (``AR``, ...).
 * ``TOOLCHAIN_FLAVOUR``: Basically the compiler vendor. Can be ``gcc`` which is
