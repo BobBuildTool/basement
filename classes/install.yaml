@@ -1,4 +1,4 @@
-inherit: [strip, "basement::bits::libs"]
+inherit: [strip, "basement::bits::libs", sbom]
 
 # The install class provides the common methods to
 #  * copy the relevant parts for the different packages,

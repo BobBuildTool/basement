@@ -1,0 +1,118 @@
+inherit: [sbom]
+
+buildSetup: &sbom_deploy_setup |
+    _sbomDeployAddSingle () {
+      local SOURCE_PATH=$1
+      local FILE=$2
+      local added=$3
+      if [ -f $SOURCE_PATH/$file ]; then
+          if [[ $added == false ]]; then
+            # if the file has entries already add we need to add the `,`
+            # separator first
+            if [[ $(tail -n 1 .bob/_sbom_deploy.json) == *"}" ]]; then
+              echo -n "," >> .bob/_sbom_deploy.json
+            fi
+            echo "," >> .bob/_sbom_deploy.json
+            echo "   \"files\": ["      >> .bob/_sbom_deploy.json
+            added=true
+          else
+            echo "," >> .bob/_sbom_deploy.json
+          fi
+          echo -n "    \"$file\"" >> .bob/_sbom_deploy.json
+      fi
+      echo "$added"
+    }
+
+    # Add a component to the list of deployed components
+    # Usage:
+    #   sbomDeploy [-f FILES_TXT] [-n FILE_NAME] sourcePath
+    #
+    # arguments:
+    #   sourcePath - workspace of the dependency to add files from
+    #
+    # options:
+    #   -f FILES_TXT - use files from FILES_TXT
+    #   -n FILE_NAME - add FILE_NAME
+    sbomDeploy() {
+        local FILES_FILES=()
+        local FILES=()
+        # parse arguments
+        OPTIND=1
+        local opt
+        while getopts "f:n:" opt ; do
+            case "$opt" in
+                f)
+                    FILES_FILES+=( "$OPTARG" )
+                    ;;
+                n)
+                    FILES+=( "$OPTARG" )
+                    ;;
+                \?)
+                    echo "sbomDeploy: Invalid option: -$OPTARG" >&2
+                    exit 1
+                    ;;
+            esac
+        done
+        shift $(( OPTIND -1 ))
+
+        local SOURCE_PATH=$1
+
+        if [[ ! -s $SOURCE_PATH/.bob/sbom-manifest.json ]]; then
+          echo "Dependency ${SOURCE_PATH} doesn't contain a sbom-manifest. \"sbom\" class missing?" 1>&2
+          exit 1
+          # TODO: should we fail here?
+        fi
+
+        mkdir -p .bob
+        if [ ! -e .bob/_sbom_deploy.json ]; then
+          echo " {" > .bob/_sbom_deploy.json
+        else
+          echo ", {" >> .bob/_sbom_deploy.json
+        fi
+
+        local added=false
+        local MANIFEST_ID=$(grep "bob:sbom-manifest-id" $1/.bob/sbom-manifest.json)
+        MANIFEST_ID=${MANIFEST_ID##*:}
+        MANIFEST_ID=${MANIFEST_ID/,/}
+
+        echo -n "   \"bob:sbom-manifest-id\": ${MANIFEST_ID}" >> .bob/_sbom_deploy.json
+
+        for files_file in ${FILES_FILES[@]}; do
+            while read -r file; do
+                added=$(_sbomDeployAddSingle $SOURCE_PATH $file $added)
+            done < $files_file
+        done
+
+        for file in ${FILES[@]}; do
+            added=$(_sbomDeployAddSingle $SOURCE_PATH $file $added)
+        done
+
+        if [[ $added == true ]]; then
+          echo "" >> .bob/_sbom_deploy.json
+          echo "   ]" >> .bob/_sbom_deploy.json
+        fi
+        echo -n " }" >> .bob/_sbom_deploy.json
+    }
+
+packageSetup: *sbom_deploy_setup
+
+packageVars: [SBOM_ENABLED]
+packageFinalize: |
+    if [[ ${SBOM_ENABLED} ]]; then
+        mkdir -p .bob
+
+        echo "[" > .bob/sbom_deploy.json
+        if [[ -f .bob/_sbom_deploy.json ]]; then
+          cat .bob/_sbom_deploy.json >> .bob/sbom_deploy.json
+          rm .bob/_sbom_deploy.json
+        elif [[ -f $1/.bob/_sbom_deploy.json ]]; then
+          cat $1/.bob/_sbom_deploy.json >> .bob/sbom_deploy.json
+        fi
+        echo "" >> .bob/sbom_deploy.json
+        echo "]" >> .bob/sbom_deploy.json
+    fi
+
+packageAuditFiles:
+    sbom_deploy:
+      filename: ".bob/sbom_deploy.json"
+      if: "${SBOM_ENABLED:-1}"
