@@ -12,9 +12,25 @@ checkoutSCM:
         digestSHA1: b7be1905a9ca11c0c42d0270ce54132f354244b3
         dir: nss
 
+depends:
+    - tools:
+          target-toolchain: host-compat-toolchain
+      depends:
+          - name: libs::openssl-tool
+            use: [tools]
+
 buildScript: |
     cp $1/make-ca/make-ca .
     cp $1/nss/certdata.txt .
 
+    # Use 'openssl rehash' instead of 'c_rehash', cherry-pick of commit (v0.8):
+    # https://github.com/djlucas/make-ca/commit/486284c5ad9a9d0018473eb8f4baacb43a397cfe
+    grep -q '^/usr/bin/c_rehash ' make-ca
+    sed -i -e 's|^/usr/bin/c_rehash |"${OPENSSL}" rehash |' make-ca
+
+packageTools: [openssl]
 packageScript: |
-    bash $1/make-ca -C $1/certdata.txt -D "$PWD"
+    # make-ca has no auto detection but defaults to /usr/bin/openssl. Point it
+    # at libs::openssl-tool so that the result does not depend on the host.
+    OPENSSL_BIN="${BOB_TOOL_PATHS[openssl]}/openssl"
+    bash $1/make-ca -C $1/certdata.txt -D "$PWD" -s "$OPENSSL_BIN"
