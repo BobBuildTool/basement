@@ -1,13 +1,13 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "2.34"
+    PKG_VERSION: "2.38"
     PKG_LICENSE: "FSFAP AND GFDL-1.3 AND GPL-2.0-or-later AND LGPL-2.0-or-later"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/binutils/binutils-${PKG_VERSION}.tar.xz
-    digestSHA256: "f00b0e8803dc9bab1e2165bd568528135be734df3fabf8d0161828cd56028952"
+    digestSHA256: "e316477a914f567eccc34d5d29785b8b0f5a10208d36bbacedcc39048ecfe024"
     stripComponents: 1
 
 # Some parts are compiled for the host during compilation. Hence we need the
