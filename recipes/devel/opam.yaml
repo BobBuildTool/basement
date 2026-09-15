@@ -1,13 +1,13 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "2.3.0"
+    PKG_VERSION: "2.5.2"
     PKG_LICENSE: "LGPL-2.1-only"
 
 checkoutSCM:
     scm: url
-    url: ${GITHUB_MIRROR}/ocaml/opam/archive/refs/tags/${PKG_VERSION}.tar.gz
-    digestSHA256: 7787c50c6caf1568b8a1e1fa79fd2c8107f633316f29ba94797cba831c75c4b4
+    url: ${GITHUB_MIRROR}/ocaml/opam/releases/download/${PKG_VERSION}/opam-full-${PKG_VERSION}.tar.gz
+    digestSHA256: b3623809567f19ed6b5d679b8c7bbc0bdec9418bff4a875ff0799d446d8555c3
     stripComponents: 1
 
 buildTools: [ocaml]
@@ -15,7 +15,7 @@ buildScript: |
     # Note: the configure script is broken - it generates the makefiles in the
     # directory of configure not in cwd. But the autotools-class expects the makefiles
     # to be in build. rsync the sources into 'build' dir as workaround
-    mkdir build
+    mkdir -p build
     rsync -a $1/ build/
     autotoolsBuild $(pwd)/build \
         --without-mccs \
