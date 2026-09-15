@@ -18,12 +18,12 @@ jobServer: "pipe"
 
 metaEnvironment:
     PKG_LICENSE: "GPL-2.0-or-later AND LGPL-2.1-or-later"
-    PKG_VERSION: "2.31"
+    PKG_VERSION: "2.35"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/glibc/glibc-${PKG_VERSION}.tar.xz
-    digestSHA256: "9246fe44f68feeec8c666bb87973d590ce0137cca145df014c72ec95be9ffd17"
+    digestSHA256: "5123732f6b67ccd319305efd399971d58592122bcc2a6518a1bd2510dd0cf52e"
     stripComponents: 1
 
 checkoutDeterministic: True
