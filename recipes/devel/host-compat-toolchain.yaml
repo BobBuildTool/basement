@@ -109,9 +109,13 @@ fingerprintScript: &check-host |
         echo "These recipes assume that your host is using libstdc++!" >&2
         exit 1
     fi
-    if [[ $STAMP -lt 20220313 ]] ; then
-        echo "Your host libstdc++ version is too old!" >&2
-        exit 1
+
+    # Check that the host libstdc++ exports the versioned C++ runtime symbol
+    # required by the compatibility toolchain.
+    HOST_LIBSTDCXX="$(g++ -print-file-name=libstdc++.so.6)"
+    if ! strings "$HOST_LIBSTDCXX" | grep '^GLIBCXX_3.4.30$' > /dev/null ; then
+      echo "Your host libstdc++ version is too old!" >&2
+      exit 1
     fi
 
 provideTools:
