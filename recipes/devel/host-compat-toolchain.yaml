@@ -98,7 +98,7 @@ fingerprintScript: &check-host |
         echo "These recipes assume that your host is using glibc!" >&2
         exit 1
     fi
-    if [[ $MAJOR -ne 2 || $MINOR -lt 31 ]] ; then
+    if [[ $MAJOR -ne 2 || $MINOR -lt 35 ]] ; then
         echo "Your host glibc version is too old!" >&2
         exit 1
     fi
