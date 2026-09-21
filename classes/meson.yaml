@@ -9,7 +9,7 @@ buildSetup: |
     export LANG=C.UTF-8
 
     function meson_join_space { local IFS=" "; echo "$*"; }
-    function meson_join_list { echo -n "'$1" ; shift ; printf "%s" "${@/#/\', \'}"; echo "'" ; }
+    function meson_join_list { (( $# )) || return 0; echo -n "'$1" ; shift ; printf "%s" "${@/#/\', \'}"; echo "'" ; }
 
     # Parse flags into clean arrays. Meson does not honor CPPFLAGS so merge
     # then with C(XX)FLAGS. The variables are explicitly not quoted to split
