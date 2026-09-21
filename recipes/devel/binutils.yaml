@@ -29,7 +29,16 @@ multiPackage:
                 type: bool
                 help: "Compress debug sections by default in linker"
                 default: False
-
+            BINUTILS_TARGETS_BFD:
+                type: str
+                help: "Additional targets the BFD library should support. To include
+                       support for all known targets, use all."
+            BINUTILS_ENABLE_64BIT_BFD:
+                type: bool
+                default: false
+                help: "Include support for 64 bit targets. This is automatically
+                       turned on if you explicitly request a 64 bit target, but not
+                       for --enable-targets=all."
         depends:
             - if: $BINUTILS_ZSTD
               depends:
@@ -38,7 +47,8 @@ multiPackage:
                     use: []
 
         buildVars: [AUTOCONF_HOST, AUTOCONF_TARGET, BINUTILS_PREFIX,
-                    BINUTILS_ZSTD, BINUTILS_COMPRESS_DEBUG]
+                    BINUTILS_ZSTD, BINUTILS_COMPRESS_DEBUG,
+                    BINUTILS_TARGETS_BFD, BINUTILS_ENABLE_64BIT_BFD]
         buildScript: |
             export MAKEINFO=true
             autotoolsBuild -o MAKEINFO=true -O MAKEINFO=true $1 \
@@ -50,6 +60,8 @@ multiPackage:
                 --disable-werror \
                 --enable-plugins \
                 --enable-lto \
+                ${BINUTILS_TARGETS_BFD:+--enable-targets=${BINUTILS_TARGETS_BFD}} \
+                $( (( $BINUTILS_ENABLE_64BIT_BFD )) && echo "--enable-64-bit-bfd" ) \
                 --enable-compressed-debug-sections=$([[ $BINUTILS_COMPRESS_DEBUG == 1 ]] && echo ld || echo none) \
                 --enable-default-compressed-debug-sections-algorithm=$(\
                     [[ $BINUTILS_ZSTD == 1 ]] && echo zstd || echo zlib)
