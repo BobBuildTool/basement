@@ -182,7 +182,7 @@ multiPackage:
                     -DLLVM_HOST_TRIPLE="$AUTOCONF_HOST"
                     -DLLVM_TABLEGEN="${BOB_TOOL_PATHS[clang-host]}/llvm-tblgen"
                     # Build and link libLLVM dynamically
-                    -DLLVM_BUILD_LLVM_DYLIB==ON
+                    -DLLVM_BUILD_LLVM_DYLIB=ON
                     -DLLVM_LINK_LLVM_DYLIB=ON
                 )
             else
