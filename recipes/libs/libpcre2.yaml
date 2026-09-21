@@ -21,10 +21,23 @@ buildScript: |
     cmakeBuild $1 -DCMAKE_INSTALL_LIBDIR="lib" \
         -DPCRE2_SUPPORT_JIT=ON \
         -DPCRE2_BUILD_PCRE2GREP=OFF \
-        -DPCRE2_BUILD_TESTS=OFF
+        -DPCRE2_BUILD_TESTS=OFF \
+        -DPCRE2_BUILD_PCRE2_8=ON \
+        -DPCRE2_BUILD_PCRE2_16=ON
 
 multiPackage:
+    "":
+        depends:
+            - name: libs::libpcre2-tgt
+              use: []
+        packageScript: cmakePackageBin
+        provideDeps: [ "*-tgt" ]
     dev:
-        packageScript: cmakePackageDev
+        packageScript: |
+            cmakePackageDev
+            # install pcre2-config and fix it for bob usage
+            mkdir -p usr/bin
+            sed 's,prefix=/usr,prefix=$(dirname $0)/..,' $1/install/usr/bin/pcre2-config > usr/bin/pcre2-config
+            chmod a+x usr/bin/pcre2-config
     tgt:
         packageScript: cmakePackageTgt
