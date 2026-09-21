@@ -128,7 +128,14 @@ buildScript: |
     {
         configureGcc "$@"
         makeParallel -C build
+        if [[ ${GCC_ENABLE_LANGUAGES:-} == *"ada"* ]]; then
+            makeParallel -C build/gcc cross-gnattools
+            makeParallel -C build all-gnattools
+        fi
         makeSequential -C build install DESTDIR="$PWD/install"
+        if [[ ${GCC_ENABLE_LANGUAGES:-} == *"ada"* ]]; then
+            makeSequential -C build install-gnattools DESTDIR="$PWD/install"
+        fi
     }
 
 packageScript: |
