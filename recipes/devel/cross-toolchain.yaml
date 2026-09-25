@@ -216,18 +216,19 @@ multiPackage:
                     GCC_LIBC: "uclibc-l4re"
                     GCC_TARGET_ARCH: "armv8-a"
 
-            # ARMv8-A AArch64 Linux toolchain
+            # ARMv8-A AArch64 "cross" compiling toolchain. Ships its own glibc.
             aarch64-linux-gnu:
                 environment:
-                    AUTOCONF_TARGET: "aarch64-linux-gnu"
+                    AUTOCONF_TARGET: "aarch64-cross-linux-gnu"
                     ARCH: "arm64"
                     GCC_TARGET_ARCH: "armv8-a"
                     GCC_LIBC: "glibc"
 
-            # ARMv8-A AArch64 Linux toolchain with ada
+            # ARMv8-A AArch64 "cross" compiling toolchain with ada. Ships its
+            # own glibc.
             aarch64-linux-gnu-ada:
                 environment:
-                    AUTOCONF_TARGET: "aarch64-linux-gnu"
+                    AUTOCONF_TARGET: "aarch64-cross-linux-gnu"
                     ARCH: "arm64"
                     GCC_TARGET_ARCH: "armv8-a"
                     GCC_LIBC: "glibc"
@@ -241,10 +242,11 @@ multiPackage:
                     GCC_TARGET_ARCH: "armv8-a"
                     GCC_LIBC: "newlib"
 
-            # RISC-V 64 bit, standard, general-purpose ISA
+            # RISC-V 64 bit, standard, general-purpose ISA. "Cross" compiling
+            # toolchain that ships its own glibc.
             riscv64-linux-gnu:
                 environment:
-                    AUTOCONF_TARGET: "riscv64-linux-gnu"
+                    AUTOCONF_TARGET: "riscv64-cross-linux-gnu"
                     ARCH: "riscv"
                     GCC_TARGET_ARCH: "rv64gc"
                     GCC_TARGET_ABI: "lp64d"

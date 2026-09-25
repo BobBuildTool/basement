@@ -73,7 +73,7 @@ provideTools:
             GNU_LD: "ld"
 
             # meta information
-            ARCH: "${ARCH}"
+            ARCH: "${SANDBOX_ARCH:-$ARCH}"
             TOOLCHAIN_FLAVOUR: gcc
         fingerprintIf: True
         fingerprintScript: &fingerprint-script |
@@ -106,7 +106,7 @@ provideTools:
             GNU_LD: "ld"
 
             # meta information
-            ARCH: "${ARCH}"
+            ARCH: "${SANDBOX_ARCH:-$ARCH}"
             TOOLCHAIN_FLAVOUR: gcc
 
             # Override compiler flags to mask active settings.
@@ -127,3 +127,7 @@ provideVars:
     # environment so that our toolchain is used and nothing is mixed with the
     # host compiler.
     AUTOCONF_BUILD: "${SANDBOX_AUTOCONF_BUILD}"
+
+    # The kernel architecture of the sandbox. Only differs from the host if
+    # the sandbox was built for a foreign architecture.
+    ARCH: "${SANDBOX_ARCH:-$ARCH}"

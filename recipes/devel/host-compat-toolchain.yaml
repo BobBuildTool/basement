@@ -6,7 +6,7 @@
 shared: True
 
 environment:
-    AUTOCONF_TARGET: "$(gen-autoconf,bob_compat)"
+    AUTOCONF_TARGET: "${SANDBOX_AUTOCONF_TARGET:-$(gen-autoconf,bob_compat)}"
 
 depends:
     # The following tools are needed by the cross-toolchain build process.
@@ -51,12 +51,13 @@ depends:
           # just used for building glibc and won't be needed otherwise.
           target-toolchain: host-native-toolchain
 
-    # Cross toolchain for the current architecture -> ARCH is left as is.
+    # Cross toolchain for the current architecture -> ARCH is left as is. The
+    # isolation triplet must therefore use the same machine as AUTOCONF_TARGET.
     - name: devel::compat::cross-toolchain
       use: [environment, tools]
       forward: True
       environment:
-          AUTOCONF_TARGET: "$(gen-autoconf,bob_isolation)"
+          AUTOCONF_TARGET: "$(gen-autoconf,bob_isolation,${AUTOCONF_TARGET})"
 
     # Canadian cross toolchain. Built with above cross toolchain for the real
     # $AUTOCONF_TARGET as set in environment above.
