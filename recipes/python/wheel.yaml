@@ -1,13 +1,13 @@
 inherit: ["python3::flit"]
 
 metaEnvironment:
-    PKG_VERSION: "0.46.2"
+    PKG_VERSION: "0.48.0"
     PKG_LICENSE: "MIT"
 
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/pypa/wheel/archive/${PKG_VERSION}.tar.gz
-    digestSHA256: 730f6f91280b385acbeab9f0034a6e5f8874e37614fb5fbf4d95ea9a9dd54214
+    digestSHA256: c3beae7abe07db04c2303502e4483122cc6b3686a7dfb0d8ca050dd034d5bdfe
     stripComponents: 1
 
 buildScript: |
