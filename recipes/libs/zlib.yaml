@@ -1,4 +1,4 @@
-inherit: [cpackage, make, install]
+inherit: [cpackage, make, install, licenses]
 
 metaEnvironment:
     PKG_VERSION: "1.3.1"
