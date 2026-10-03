@@ -1,4 +1,4 @@
-inherit: [strip]
+inherit: [strip, sbom]
 
 buildTools: [target-toolchain]
 buildVars: [TOOLCHAIN_SYSROOT]
