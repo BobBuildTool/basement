@@ -217,7 +217,7 @@ def handleNum(var, val, base, prefix):
         if intVal < rng[0]:
             raise InvalidCfg(f"'{val}' is below allowed range [{rng[0]} - {rng[1]}]")
         if intVal > rng[1]:
-            return InvalidCfg(f"'{val}' is above allowed range [{rng[0]} - {rng[1]}]")
+            raise InvalidCfg(f"'{val}' is above allowed range [{rng[0]} - {rng[1]}]")
 
     return val
 
