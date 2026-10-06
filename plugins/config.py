@@ -149,7 +149,7 @@ class ConfigProperty(PluginProperty):
                                     if name not in self.value })
         else:
             self.present = cls.present
-            self.value = cls.value
+            self.value = cls.value.copy() if cls.present else None
 
 
 def handleChoice(var, val):
