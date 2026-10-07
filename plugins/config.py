@@ -149,7 +149,7 @@ class ConfigProperty(PluginProperty):
                                     if name not in self.value })
         else:
             self.present = cls.present
-            self.value = cls.value
+            self.value = cls.value.copy() if cls.present else None
 
 
 def handleChoice(var, val):
@@ -217,7 +217,7 @@ def handleNum(var, val, base, prefix):
         if intVal < rng[0]:
             raise InvalidCfg(f"'{val}' is below allowed range [{rng[0]} - {rng[1]}]")
         if intVal > rng[1]:
-            return InvalidCfg(f"'{val}' is above allowed range [{rng[0]} - {rng[1]}]")
+            raise InvalidCfg(f"'{val}' is above allowed range [{rng[0]} - {rng[1]}]")
 
     return val
 

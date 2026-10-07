@@ -1,0 +1,11 @@
+root: True
+
+Config:
+    RANGE:
+        type: decimal
+        range: [1, 10]
+        default: 11
+
+buildVars: [RANGE]
+buildScript: "true"
+packageScript: "true"

@@ -1,0 +1,10 @@
+multiPackage:
+    merge:
+        inherit: [left, right]
+
+    observe:
+        root: True
+        inherit: [right]
+        buildVars: [LEFT_ONLY, RIGHT_ONLY]
+        buildScript: "true"
+        packageScript: "true"
