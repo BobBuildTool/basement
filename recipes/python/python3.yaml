@@ -91,6 +91,12 @@ multiPackage:
                     autotoolsPackageDev
                     autotoolsPackageTgt
                     ln -sf python3 usr/bin/python
+                    # Build C extensions with the headers of this python, not
+                    # with the ones of the python of the host
+                    sed -i -E \
+                        -e '1i prefix = "/".join(__file__.split("/")[:-3])' \
+                        -e "s|^( *'(CONF)?INCLUDEPY': )'/usr|\\1prefix + '|" \
+                        usr/lib/python${PKG_VERSION%\.*}/_sysconfigdata_*.py
                 provideTools:
                     python3: usr/bin
 
