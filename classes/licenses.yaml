@@ -1,7 +1,8 @@
 buildScript: |
     ln -snf $1 .bob-license-src
 
-packageVars: [PKG_LICENSE, PKG_LICENSE_PATH, BASEMENT_ADD_LICENSE]
+packageVars: [PKG_LICENSE, PKG_LICENSE_PATH, BASEMENT_ADD_LICENSE,
+              BOB_RECIPE_NAME, COPYRIGHT, PKG_DESCRIPTION]
 packageSetup: |
     __LICENSES_SRC=$1/.bob-license-src
     # check if the supplied ref is has a valid idString SPDX-Spec v2.3 Annex D.1
@@ -20,6 +21,9 @@ packageSetup: |
         fi
         mkdir -p .bob
         echo "${PKG_LICENSE}" > .bob/license
+        echo "${COPYRIGHT:-}" > .bob/copyright
+        echo "${PKG_DESCRIPTION:-}" > .bob/description
+        echo "${BOB_RECIPE_NAME}" > .bob/recipe
 
         declare -A LICENSE_REFS
         while IFS=: read -r id file ; do
