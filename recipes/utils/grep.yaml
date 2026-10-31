@@ -16,9 +16,14 @@ checkoutSCM:
     digestSHA1: "955146a0a4887eca33606e391481bbef37055b86"
     stripComponents: 1
 
+buildVars: [AUTOCONF_HOST]
 buildScript: |
-    autotoolsBuild $1 \
-        --without-included-regex
+    # Only glibc provides the GNU regex API (re_search etc.)
+    case "${AUTOCONF_HOST:-}" in
+        *-gnu*) REGEX=--without-included-regex ;;
+        *)      REGEX=--with-included-regex ;;
+    esac
+    autotoolsBuild $1 $REGEX
 
 packageScript: |
     autotoolsPackageTgt
