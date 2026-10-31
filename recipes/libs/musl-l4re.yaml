@@ -1,7 +1,7 @@
 inherit: [make, strip]
 
 metaEnvironment:
-    PKG_VERSION: "r-2025-W50"
+    PKG_VERSION: "r-2026-W43"
     PKG_LICENSE: "MIT AND GPL-3.0-only with GCC-exception-3.1 AND GPL-3.0-or-later AND GPL-2.0-only"
 
 checkoutSCM:
@@ -18,22 +18,23 @@ checkoutSCM:
 
 buildTools: [host-toolchain, target-toolchain, flex, bison]
 buildToolsWeak: [m4, perl]
-buildVars: [ARCH, CROSS_COMPILE]
+buildVars: [AUTOCONF_HOST, CROSS_COMPILE]
 buildScript: |
-    case $ARCH in
-        arm64)
+    case ${AUTOCONF_HOST%%-*} in
+        aarch64)
             DEFCONFIG=config.arm64-virt-v8a
             ;;
         x86_64)
             DEFCONFIG=config.amd64
             ;;
         *)
-            echo "Unsupported: $ARCH" >&2
+            echo "Unsupported: $AUTOCONF_HOST" >&2
             exit 1
     esac
 
     if [[ ! -e build/.bob-init-done ]] ; then
         cp "$1/mk/defconfig/$DEFCONFIG" defconfig
+        echo "CONFIG_L4_LIBC_MUSL=y" >> defconfig
         echo "CONFIG_COMPILER_RT_USE_TOOLCHAIN_LIBGCC=n" >> defconfig
         echo "CONFIG_BID_STRIP_BINARIES=n" >> defconfig
         rm -rf build
