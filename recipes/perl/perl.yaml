@@ -6,7 +6,7 @@ metaEnvironment:
 
 privateEnvironment:
     APPLY_UPDATE_CONFIG: "no"
-    PERL_CROSS_VERSION: "1.6.2"
+    PERL_CROSS_VERSION: "1.6.5"
     PERL_ARCH: "$(if-then-else,$(eq,${ARCH},arm64),aarch64-linux,${ARCH}-linux)"
 
 checkoutSCM:
@@ -18,8 +18,8 @@ checkoutSCM:
         stripComponents: 1
     -
         scm: url
-        url: "https://github.com/arsv/perl-cross/raw/releases/perl-cross-${PERL_CROSS_VERSION}.tar.gz"
-        digestSHA256: "131f7496152ee32067dbac2bc9b44b2f582fc778140e545701b3b2faee782f1d"
+        url: "https://github.com/arsv/perl-cross/releases/download/${PERL_CROSS_VERSION}/perl-cross-${PERL_CROSS_VERSION}.tar.gz"
+        digestSHA256: "81130cd4b8c6d9eb2a1959f37d44391a46ad6a6794fc41fed5441f74e85e3dd0"
         extract: False
         dir: perl-cross
         fileName: perl-cross.tar.gz
@@ -38,6 +38,12 @@ buildTools: [host-toolchain, target-toolchain]
 buildVars: [AUTOCONF_HOST, CROSS_COMPILE, TOOLCHAIN_SYSROOT,
             CPPFLAGS, CFLAGS, LDFLAGS]
 buildScript: |
+    # perl-cross symlinks the sources into the build directory only if there
+    # is no MANIFEST yet. Start over if configure did not complete before,
+    # e.g. because a previous run was interrupted while symlinking.
+    if [ -d build ] && [ ! -e build/.bob-configured ]; then
+        rm -rf build
+    fi
     mkdir -p build install
     cd build
 
@@ -59,6 +65,8 @@ buildScript: |
         -Dosvers=4.1.0 \
         -Dperladmin=root \
         -Duserelocatableinc \
+
+    touch .bob-configured
 
     makeParallel all
     make DESTDIR=$PWD/../install install.perl
