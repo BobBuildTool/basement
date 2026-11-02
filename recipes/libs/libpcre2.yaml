@@ -1,13 +1,13 @@
 inherit: [autotools]
 
 metaEnvironment:
-    PKG_VERSION: "10.47"
+    PKG_VERSION: "10.49"
     PKG_LICENSE: "BSD-3-Clause WITH PCRE2-exception"
 
 checkoutSCM:
     scm: url
     url: ${GITHUB_MIRROR}/PCRE2Project/pcre2/releases/download/pcre2-${PKG_VERSION}/pcre2-${PKG_VERSION}.tar.bz2
-    digestSHA256: 47fe8c99461250d42f89e6e8fdaeba9da057855d06eb7fc08d9ca03fd08d7bc7
+    digestSHA256: 53c156e1ba416a20da8e65395daa132da0d80e76910424caca3fcdae7831d384
     stripComponents: 1
 
 buildScript: |
