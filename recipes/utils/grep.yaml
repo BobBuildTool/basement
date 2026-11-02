@@ -7,13 +7,13 @@ depends:
           - libs::pcre-lib-1-tgt
 
 metaEnvironment:
-    PKG_VERSION: "3.11"
+    PKG_VERSION: "3.12"
     PKG_LICENSE: "GPL-3.0-or-later"
 
 checkoutSCM:
     scm: url
     url: ${GNU_MIRROR}/grep/grep-${PKG_VERSION}.tar.xz
-    digestSHA1: "955146a0a4887eca33606e391481bbef37055b86"
+    digestSHA256: "2649b27c0e90e632eadcd757be06c6e9a4f48d941de51e7c0f83ff76408a07b9"
     stripComponents: 1
 
 buildScript: |
