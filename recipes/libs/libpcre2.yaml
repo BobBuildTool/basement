@@ -1,4 +1,4 @@
-inherit: [cmake]
+inherit: [autotools]
 
 metaEnvironment:
     PKG_VERSION: "10.47"
@@ -11,33 +11,28 @@ checkoutSCM:
     stripComponents: 1
 
 buildScript: |
-    # CFLAGS="${CFLAGS:-} -fPIC" \
-    # disabled tests and grep as they are not installed within the dev package
-    # making cmake unhappy when used:
-    #
-    # The imported target "pcre2::pcre2test" references the file
-    #  <dist of pcre2-dev>/usr/bin/pcre2test
-    #
-    cmakeBuild $1 -DCMAKE_INSTALL_LIBDIR="lib" \
-        -DPCRE2_SUPPORT_JIT=ON \
-        -DPCRE2_BUILD_PCRE2GREP=OFF \
-        -DPCRE2_BUILD_TESTS=OFF \
-        -DPCRE2_BUILD_PCRE2_8=ON \
-        -DPCRE2_BUILD_PCRE2_16=ON
+    autotoolsBuild $1 \
+        --enable-jit \
+        --enable-pcre2-8 \
+        --enable-pcre2-16 \
+        --disable-pcre2grep-libz \
+        --disable-pcre2grep-libbz2 \
+        --disable-pcre2test-libedit \
+        --disable-pcre2test-libreadline
 
 multiPackage:
     "":
         depends:
             - name: libs::libpcre2-tgt
               use: []
-        packageScript: cmakePackageBin
+        packageScript: autotoolsPackageBin
         provideDeps: [ "*-tgt" ]
     dev:
         packageScript: |
-            cmakePackageDev
+            autotoolsPackageDev
             # install pcre2-config and fix it for bob usage
             mkdir -p usr/bin
             sed 's,prefix=/usr,prefix=$(dirname $0)/..,' $1/install/usr/bin/pcre2-config > usr/bin/pcre2-config
             chmod a+x usr/bin/pcre2-config
     tgt:
-        packageScript: cmakePackageTgt
+        packageScript: autotoolsPackageTgt
