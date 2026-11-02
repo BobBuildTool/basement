@@ -1,10 +1,10 @@
 inherit: [autotools]
 
 depends:
-    - libs::pcre-lib-1-dev
+    - libs::libpcre2-dev
     - use: []
       depends:
-          - libs::pcre-lib-1-tgt
+          - libs::libpcre2-tgt
 
 metaEnvironment:
     PKG_VERSION: "3.12"
@@ -17,8 +17,11 @@ checkoutSCM:
     stripComponents: 1
 
 buildScript: |
-    autotoolsBuild $1 \
-        --without-included-regex
+    # Skip tests and gnulib-tests. They are not installed, and gnulib's test
+    # helpers do not build on every platform.
+    SUBDIRS_OPT="SUBDIRS=po lib doc src"
+    autotoolsBuild -o "$SUBDIRS_OPT" -O "$SUBDIRS_OPT" $1 \
+        --enable-perl-regexp
 
 packageScript: |
     autotoolsPackageTgt
