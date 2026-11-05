@@ -1,0 +1,65 @@
+From: Adam Lackorzynski <adam@l4re.de>
+Subject: [PATCH] configure: detect musl's setlocale(LC_ALL) format
+
+perl-cross hardcodes the glibc format of the string that
+setlocale(LC_ALL, NULL) returns for mixed locales, i.e. name=value pairs
+like "LC_CTYPE=C.UTF-8;LC_NUMERIC=C;...". musl instead returns the
+category names positionally, separated by ';', in the order of the LC_*
+constants: "C.UTF-8;C;C;C;C;C". Perl's native Configure detects this by
+running a probe, which is not possible when cross compiling.
+
+With the wrong setting, perl panics on musl as soon as the locale
+categories differ, which is the default there (LC_CTYPE is C.UTF-8):
+
+    locale.c: 1484: panic: 'C.UTF-8;C;C;C;C;C' needs an '=' to split name=value
+    ; errno=0
+    Called by locale.c: 4101
+
+musl has no identifying macro, so check at compile time for a libc that
+is neither glibc nor uclibc and has musl's category layout, and configure
+the positional format for it.
+
+---
+ cnf/configure_misc.sh | 31 ++++++++++++++++++++++++++-----
+ 1 file changed, 26 insertions(+), 5 deletions(-)
+
+--- a/cnf/configure_misc.sh
++++ b/cnf/configure_misc.sh
+@@ -240,11 +240,32 @@
+ define stdio_stream_array
+ define d_lc_monetary_2008 'undef'
+ 
+-define d_perl_lc_all_uses_name_value_pairs 'define'
+-define d_perl_lc_all_category_positions_init 'undef'
+-define d_perl_lc_all_separator 'undef'
+-define perl_lc_all_separator ''
+-define perl_lc_all_category_positions_init ''
++# The format of setlocale(LC_ALL, NULL) for mixed locales cannot be probed
++# by running code when cross compiling. glibc returns name=value pairs,
++# musl the six category names positionally, separated by ';', in the order
++# of the LC_* constants. musl has no identifying macro, so check for a
++# non-glibc libc with musl's category layout.
++mstart "Checking setlocale(LC_ALL) format"
++try_start
++try_includes locale.h
++try_add '#if defined(__GLIBC__) || defined(__UCLIBC__) || LC_ALL != 6 || LC_MESSAGES != 5'
++try_add '#error not musl'
++try_add '#endif'
++if try_compile; then
++	result 'positional (musl)'
++	define d_perl_lc_all_uses_name_value_pairs 'undef'
++	define d_perl_lc_all_category_positions_init 'define'
++	define d_perl_lc_all_separator 'define'
++	define perl_lc_all_separator '";"'
++	define perl_lc_all_category_positions_init '{ 0, 1, 2, 3, 4, 5 }'
++else
++	result 'name=value pairs'
++	define d_perl_lc_all_uses_name_value_pairs 'define'
++	define d_perl_lc_all_category_positions_init 'undef'
++	define d_perl_lc_all_separator 'undef'
++	define perl_lc_all_separator ''
++	define perl_lc_all_category_positions_init ''
++fi
+ 
+ define sharpbang '#!'
+ define startperl "$sharpbang$perlpath"
