@@ -18,7 +18,7 @@
 +        cflags           => threads("-pthread"),
 +        cxxflags         => combine("-std=c++11", threads("-pthread")),
 +        lib_cppflags     => "-DOPENSSL_USE_NODELETE -D__UCLIBC_HAS_CONTEXT_FUNCS__", # or change in uclibc?
-+        ex_libs          => add("-ldl", threads("-pthread")),
++        ex_libs          => add(threads("-pthread")),
 +        #bn_ops           => "BN_LLONG RC4_CHAR", #32bit
 +        bn_ops           => "SIXTY_FOUR_BIT_LONG RC4_CHAR",
 +        thread_scheme    => "pthreads",
