@@ -1,3 +1,6 @@
+metaEnvironment:
+    DBVER: "d628feb8b2bc8d663be8de28f0214de6452e32b8"
+
 checkoutSCM:
     -
         scm: url
@@ -6,10 +9,10 @@ checkoutSCM:
         dir: make-ca
         stripComponents: 1
     -
-        # security/nss/lib/ckfw/builtins/certdata.txt@100e006a2730
+        # security/nss/lib/ckfw/builtins/certdata.txt
         scm: url
-        url: https://hg.mozilla.org/mozilla-central/raw-file/100e006a2730/security/nss/lib/ckfw/builtins/certdata.txt
-        digestSHA1: b7be1905a9ca11c0c42d0270ce54132f354244b3
+        url: https://hg-edge.mozilla.org/mozilla-central/raw-file/${DBVER}/security/nss/lib/ckfw/builtins/certdata.txt
+        digestSHA256: 358dd0dbd2f9cd734e429f92501ce6562a5811ab77d1f9a17635bcdc1db239c6
         dir: nss
 
 depends:
