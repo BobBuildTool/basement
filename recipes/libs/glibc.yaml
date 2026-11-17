@@ -1,4 +1,4 @@
-inherit: [make, strip]
+inherit: [make, strip, licenses]
 
 depends:
     - name: kernel::linux-libc-headers
