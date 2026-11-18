@@ -3,8 +3,8 @@ Date: Mon, 19 May 2025 16:42:07 +0200
 Subject: [PATCH] Add L4Re as a target
 
 diff -Nurp a/bfd/config.bfd b/bfd/config.bfd
---- a/bfd/config.bfd	2026-04-14 08:42:29.142350168 +0200
-+++ b/bfd/config.bfd	2026-04-14 08:44:24.743876516 +0200
+--- a/bfd/config.bfd
++++ b/bfd/config.bfd
 @@ -270,6 +270,11 @@ case "${targ}" in
      targ_selvecs="aarch64_elf64_be_vec arm_elf32_le_vec arm_elf32_be_vec"
      want64=true
@@ -51,9 +51,32 @@ diff -Nurp a/bfd/config.bfd b/bfd/config.bfd
      targ_selvecs="${targ_selvecs} x86_64_pe_vec x86_64_pei_vec"
      esac
      want64=true
+@@ -958,6 +967,22 @@ case "${targ}" in
+     targ_defvec=mips_elf32_be_vec
+     targ_selvecs="mips_elf32_le_vec mips_elf64_be_vec mips_elf64_le_vec mips_ecoff_be_vec mips_ecoff_le_vec"
+     ;;
++  mips64*el-*-l4re* | mipsisa64*el-*-l4re*)
++    targ_defvec=mips_elf64_trad_le_vec
++    targ_selvecs="mips_elf64_trad_be_vec mips_elf32_ntrad_le_vec mips_elf32_ntrad_be_vec mips_elf32_trad_le_vec mips_elf32_trad_be_vec"
++    ;;
++  mips64*-*-l4re* | mipsisa64*-*-l4re*)
++    targ_defvec=mips_elf64_trad_be_vec
++    targ_selvecs="mips_elf64_trad_le_vec mips_elf32_ntrad_be_vec mips_elf32_ntrad_le_vec mips_elf32_trad_be_vec mips_elf32_trad_le_vec"
++    ;;
++  mips*el-*-l4re*)
++    targ_defvec=mips_elf32_trad_le_vec
++    targ_selvecs="mips_elf32_trad_be_vec mips_elf32_ntrad_le_vec mips_elf32_ntrad_be_vec mips_elf64_trad_le_vec mips_elf64_trad_be_vec"
++    ;;
++  mips*-*-l4re*)
++    targ_defvec=mips_elf32_trad_be_vec
++    targ_selvecs="mips_elf32_trad_le_vec mips_elf32_ntrad_be_vec mips_elf32_ntrad_le_vec mips_elf64_trad_be_vec mips_elf64_trad_le_vec"
++    ;;
+   mips64*el-*-linux*-gnuabi64)
+     targ_defvec=mips_elf64_trad_le_vec
+     targ_selvecs="mips_elf64_trad_be_vec mips_elf32_ntrad_le_vec mips_elf32_ntrad_be_vec mips_elf32_trad_le_vec mips_elf32_trad_be_vec"
 diff -Nurp a/gas/config/tc-i386.c b/gas/config/tc-i386.c
---- a/gas/config/tc-i386.c	2026-04-14 08:42:29.325490263 +0200
-+++ b/gas/config/tc-i386.c	2026-04-14 08:43:05.448330751 +0200
+--- a/gas/config/tc-i386.c
++++ b/gas/config/tc-i386.c
 @@ -574,7 +574,8 @@ const char extra_symbol_chars[] = "*%-([
       && !defined (TE_Haiku)				\
       && !defined (TE_FreeBSD)				\
@@ -65,8 +88,8 @@ diff -Nurp a/gas/config/tc-i386.c b/gas/config/tc-i386.c
     pre-processor is disabled, these aren't very useful.  The option
     --divide will remove '/' from this list.  */
 diff -Nurp a/gas/config/te-arml4reeabi.h b/gas/config/te-arml4reeabi.h
---- a/gas/config/te-arml4reeabi.h	1970-01-01 01:00:00.000000000 +0100
-+++ b/gas/config/te-arml4reeabi.h	2026-04-14 08:43:05.449628334 +0200
+--- a/gas/config/te-arml4reeabi.h
++++ b/gas/config/te-arml4reeabi.h
 @@ -0,0 +1,25 @@
 +/* Copyright (C) 2004-2025 Free Software Foundation, Inc.
 +
@@ -94,8 +117,8 @@ diff -Nurp a/gas/config/te-arml4reeabi.h b/gas/config/te-arml4reeabi.h
 +#define EABI_DEFAULT EF_ARM_EABI_VER5
 +
 diff -Nurp a/gas/config/te-l4re.h b/gas/config/te-l4re.h
---- a/gas/config/te-l4re.h	1970-01-01 01:00:00.000000000 +0100
-+++ b/gas/config/te-l4re.h	2026-04-14 08:43:05.449686223 +0200
+--- a/gas/config/te-l4re.h
++++ b/gas/config/te-l4re.h
 @@ -0,0 +1,31 @@
 +/* te-l4re.h -- L4Re target environment declarations.
 +   Copyright (C) 2000-2025 Free Software Foundation, Inc.
@@ -128,9 +151,35 @@ diff -Nurp a/gas/config/te-l4re.h b/gas/config/te-l4re.h
 +
 +#include "obj-format.h"
 +
+diff -Nurp a/gas/configure b/gas/configure
+--- a/gas/configure
++++ b/gas/configure
+@@ -12646,7 +12646,8 @@ _ACEOF
+ 	esac
+ 	# Decide which ABI to target by default.
+ 	case ${target} in
+-	  mips64*-openbsd* | mips64*-linux-gnuabi64)
++	  mips64*-openbsd* | mips64*-linux-gnuabi64 \
++	  | mips64*-*-l4re* | mipsisa64*-*-l4re*)
+ 	    mips_default_abi=N64_ABI
+ 	    ;;
+ 	  mips64*-linux* | mips-sgi-irix6* | mips64*-freebsd* \
+diff -Nurp a/gas/configure.ac b/gas/configure.ac
+--- a/gas/configure.ac
++++ b/gas/configure.ac
+@@ -391,7 +391,8 @@ changequote([,])dnl
+ 	esac
+ 	# Decide which ABI to target by default.
+ 	case ${target} in
+-	  mips64*-openbsd* | mips64*-linux-gnuabi64)
++	  mips64*-openbsd* | mips64*-linux-gnuabi64 \
++	  | mips64*-*-l4re* | mipsisa64*-*-l4re*)
+ 	    mips_default_abi=N64_ABI
+ 	    ;;
+ 	  mips64*-linux* | mips-sgi-irix6* | mips64*-freebsd* \
 diff -Nurp a/gas/configure.tgt b/gas/configure.tgt
---- a/gas/configure.tgt	2026-04-14 08:42:29.328635985 +0200
-+++ b/gas/configure.tgt	2026-04-14 08:43:05.449746727 +0200
+--- a/gas/configure.tgt
++++ b/gas/configure.tgt
 @@ -130,6 +130,7 @@ case ${generic_target} in
    aarch64*-*-fuchsia*)			fmt=elf;;
    aarch64*-*-haiku*)			fmt=elf em=haiku ;;
@@ -155,9 +204,17 @@ diff -Nurp a/gas/configure.tgt b/gas/configure.tgt
    i386-*-bsd*)				fmt=aout em=386bsd ;;
    i386-*-netbsd*-gnu* | \
    i386-*-knetbsd*-gnu | \
+@@ -316,6 +319,7 @@ case ${generic_target} in
+   mips-*-irix6*)			fmt=elf em=irix ;;
+   mips-*-irix5*)			fmt=elf em=irix ;;
+   mips*-*-linux*)			fmt=elf em=tmips ;;
++  mips*-*-l4re*)			fmt=elf em=tmips ;;
+   mips*-*-freebsd* | mips*-*-kfreebsd*-gnu)
+ 					fmt=elf em=freebsd ;;
+   mips-*-sysv4* | mips-*-gnu*)		fmt=elf em=tmips ;;
 diff -Nurp a/ld/configure.tgt b/ld/configure.tgt
---- a/ld/configure.tgt	2026-04-14 08:42:29.182666614 +0200
-+++ b/ld/configure.tgt	2026-04-14 08:43:05.449914102 +0200
+--- a/ld/configure.tgt
++++ b/ld/configure.tgt
 @@ -95,6 +95,9 @@ aarch64-*-freebsd*)	targ_emul=aarch64fbs
  aarch64-*-fuchsia*)	targ_emul=aarch64elf
  			targ_extra_emuls="aarch64elfb armelf armelfb"
@@ -187,7 +244,30 @@ diff -Nurp a/ld/configure.tgt b/ld/configure.tgt
  			targ_emul=elf_i386
  			targ_extra_emuls=elf_iamcu
  			;;
-@@ -978,7 +984,7 @@ x86_64-*-netbsd* | x86_64-*-openbsd*)
+@@ -570,6 +576,22 @@ mips*-*-vxworks*)	targ_emul=elf32ebmipvx
+ 			;;
+ mips*-*-windiss)	targ_emul=elf32mipswindiss
+ 			;;
++mips64*el-*-l4re* | mipsisa64*el-*-l4re*)
++			targ_emul=elf64ltsmip_l4re
++			targ_extra_emuls="elf64btsmip_l4re"
++			targ_extra_libpath="elf64ltsmip elf64btsmip elf32ltsmipn32 elf32btsmipn32 elf32ltsmip elf32btsmip"
++			;;
++mips64*-*-l4re* | mipsisa64*-*-l4re*)
++			targ_emul=elf64btsmip_l4re
++			targ_extra_emuls="elf64ltsmip_l4re"
++			targ_extra_libpath="elf64btsmip elf64ltsmip elf32btsmipn32 elf32ltsmipn32 elf32btsmip elf32ltsmip"
++			;;
++mips*el-*-l4re*)	targ_emul=elf32ltsmip
++			targ_extra_libpath="elf32btsmip elf32ltsmipn32 elf64ltsmip_l4re elf32btsmipn32 elf64btsmip_l4re"
++			;;
++mips*-*-l4re*)		targ_emul=elf32btsmip
++			targ_extra_libpath="elf32ltsmip elf32btsmipn32 elf64btsmip_l4re elf32ltsmipn32 elf64ltsmip_l4re"
++			;;
+ mips64*el-*-linux-gnuabi64)
+ 			targ_emul=elf64ltsmip
+ 			targ_extra_libpath="elf64btsmip elf32ltsmipn32 elf32btsmipn32 elf32ltsmip elf32btsmip"
+@@ -978,7 +1000,7 @@ x86_64-*-netbsd* | x86_64-*-openbsd*)
  			tdir_elf_i386=`echo ${targ_alias} | \
  			    sed -e 's/x86_64/i386/' -e 's/aout//'`
  			;;
@@ -197,15 +277,31 @@ diff -Nurp a/ld/configure.tgt b/ld/configure.tgt
  			targ_extra_libpath="elf_i386 elf_iamcu elf32_x86_64"
  			tdir_elf_i386=`echo ${targ_alias} | sed -e 's/x86_64/i386/'`
 diff -Nurp a/ld/emulparams/armelf_l4re.sh b/ld/emulparams/armelf_l4re.sh
---- a/ld/emulparams/armelf_l4re.sh	1970-01-01 01:00:00.000000000 +0100
-+++ b/ld/emulparams/armelf_l4re.sh	2026-04-14 08:43:05.450041794 +0200
+--- a/ld/emulparams/armelf_l4re.sh
++++ b/ld/emulparams/armelf_l4re.sh
 @@ -0,0 +1,3 @@
 +source_sh ${srcdir}/emulparams/armelf_linux_eabi.sh
 +
 +TEXT_START_ADDR=0x01000000
+diff -Nurp a/ld/emulparams/elf64btsmip_l4re.sh b/ld/emulparams/elf64btsmip_l4re.sh
+--- a/ld/emulparams/elf64btsmip_l4re.sh
++++ b/ld/emulparams/elf64btsmip_l4re.sh
+@@ -0,0 +1,4 @@
++source_sh ${srcdir}/emulparams/elf64btsmip.sh
++
++# L4Re has a 32-bit user address space on MIPS64.
++TEXT_START_ADDR=0x400000
+diff -Nurp a/ld/emulparams/elf64ltsmip_l4re.sh b/ld/emulparams/elf64ltsmip_l4re.sh
+--- a/ld/emulparams/elf64ltsmip_l4re.sh
++++ b/ld/emulparams/elf64ltsmip_l4re.sh
+@@ -0,0 +1,4 @@
++source_sh ${srcdir}/emulparams/elf64ltsmip.sh
++
++# L4Re has a 32-bit user address space on MIPS64.
++TEXT_START_ADDR=0x400000
 diff -Nurp a/ld/Makefile.am b/ld/Makefile.am
---- a/ld/Makefile.am	2026-04-14 08:42:29.182334512 +0200
-+++ b/ld/Makefile.am	2026-04-14 08:43:05.450099038 +0200
+--- a/ld/Makefile.am
++++ b/ld/Makefile.am
 @@ -169,6 +169,7 @@ ALL_EMULATION_SOURCES = \
  	earmelf_fbsd.c \
  	earmelf_fuchsia.c \
@@ -214,9 +310,25 @@ diff -Nurp a/ld/Makefile.am b/ld/Makefile.am
  	earmelf_linux.c \
  	earmelf_linux_eabi.c \
  	earmelf_linux_fdpiceabi.c \
+@@ -436,6 +437,7 @@ ALL_64_EMULATION_SOURCES = \
+ 	eelf64briscv_lp64f.c \
+ 	eelf64btsmip.c \
+ 	eelf64btsmip_fbsd.c \
++	eelf64btsmip_l4re.c \
+ 	eelf64hppa.c \
+ 	eelf64kvx.c \
+ 	eelf64kvx_linux.c \
+@@ -447,6 +449,7 @@ ALL_64_EMULATION_SOURCES = \
+ 	eelf64lriscv_lp64f.c \
+ 	eelf64ltsmip.c \
+ 	eelf64ltsmip_fbsd.c \
++	eelf64ltsmip_l4re.c \
+ 	eelf64mmix.c \
+ 	eelf64ppc.c \
+ 	eelf64ppc_fbsd.c \
 diff -Nurp a/ld/Makefile.in b/ld/Makefile.in
---- a/ld/Makefile.in	2026-04-14 08:42:29.182351623 +0200
-+++ b/ld/Makefile.in	2026-04-14 08:43:05.450281272 +0200
+--- a/ld/Makefile.in
++++ b/ld/Makefile.in
 @@ -684,6 +684,7 @@ ALL_EMULATION_SOURCES = \
  	earmelf_fbsd.c \
  	earmelf_fuchsia.c \
@@ -225,7 +337,23 @@ diff -Nurp a/ld/Makefile.in b/ld/Makefile.in
  	earmelf_linux.c \
  	earmelf_linux_eabi.c \
  	earmelf_linux_fdpiceabi.c \
-@@ -1298,6 +1299,7 @@ distclean-compile:
+@@ -950,6 +951,7 @@ ALL_64_EMULATION_SOURCES = \
+ 	eelf64briscv_lp64f.c \
+ 	eelf64btsmip.c \
+ 	eelf64btsmip_fbsd.c \
++	eelf64btsmip_l4re.c \
+ 	eelf64hppa.c \
+ 	eelf64kvx.c \
+ 	eelf64kvx_linux.c \
+@@ -961,6 +963,7 @@ ALL_64_EMULATION_SOURCES = \
+ 	eelf64lriscv_lp64f.c \
+ 	eelf64ltsmip.c \
+ 	eelf64ltsmip_fbsd.c \
++	eelf64ltsmip_l4re.c \
+ 	eelf64mmix.c \
+ 	eelf64ppc.c \
+ 	eelf64ppc_fbsd.c \
+@@ -1298,6 +1301,7 @@ distclean-compile:
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/earmelf_fbsd.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/earmelf_fuchsia.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/earmelf_haiku.Po@am__quote@
@@ -233,3 +361,19 @@ diff -Nurp a/ld/Makefile.in b/ld/Makefile.in
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/earmelf_linux.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/earmelf_linux_eabi.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/earmelf_linux_fdpiceabi.Po@am__quote@
+@@ -1453,6 +1457,7 @@ distclean-compile:
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64briscv_lp64f.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64btsmip.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64btsmip_fbsd.Po@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64btsmip_l4re.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64hppa.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64kvx.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64kvx_linux.Po@am__quote@
+@@ -1464,6 +1469,7 @@ distclean-compile:
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64lriscv_lp64f.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64ltsmip.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64ltsmip_fbsd.Po@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64ltsmip_l4re.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64mmix.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64ppc.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf64ppc_fbsd.Po@am__quote@
