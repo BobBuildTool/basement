@@ -1,0 +1,36 @@
+inherit: [ "basement::rootrecipe" ]
+
+depends:
+    - name: devel::cross-toolchain-${L4RE_TOOLCHAIN}
+      use: [tools]
+      forward: True
+    - l4re::image
+
+buildScript: |
+    cp -a "${BOB_DEP_PATHS[l4re::image]}/." .
+
+packageScript: |
+    cp -a "$1/." .
+
+multiPackage:
+    x86_64:
+        environment:
+            L4RE_TOOLCHAIN: x86_64-l4re
+    aarch64:
+        environment:
+            L4RE_TOOLCHAIN: aarch64-l4re
+    arm:
+        environment:
+            L4RE_TOOLCHAIN: arm-l4re
+    riscv32:
+        environment:
+            L4RE_TOOLCHAIN: riscv32-l4re
+    riscv64:
+        environment:
+            L4RE_TOOLCHAIN: riscv64-l4re
+    mipsisa32r2el:
+        environment:
+            L4RE_TOOLCHAIN: mipsisa32r2el-l4re
+    mipsisa64r6el:
+        environment:
+            L4RE_TOOLCHAIN: mipsisa64r6el-l4re

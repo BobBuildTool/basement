@@ -1,0 +1,19 @@
+# vim:set ft=l4mods:
+
+modaddr 0x01100000
+
+default-kernel fiasco -serial_esc
+default-bootstrap bootstrap
+
+entry hello
+roottask moe rom/hello.cfg
+module l4re
+module ned
+module hello.cfg
+module libc.so.1
+module libgcc_s.so.1
+module libstdc++.so.6
+module hello-c
+module hello-cpp
+module hello-c-static
+module hello-cpp-static
