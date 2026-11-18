@@ -90,8 +90,16 @@ The following GCC toolchains are predefined for commonly used target systems:
   floating point ABI.
 * ``devel::cross-toolchain-arm-none-eabi``: ARMv7 bare metal toolchain with
   newlib libc.
+* ``devel::cross-toolchain-mipsisa32r2el-l4re``: MIPS32 Release 2 little
+  endian L4Re.
+* ``devel::cross-toolchain-mipsisa64r6el-l4re``: MIPS64 Release 6 little
+  endian L4Re.
 * ``devel::cross-toolchain-x86_64-linux-gnu``: x86_64 toolchain for Linux with glibc.
 * ``devel::cross-toolchain-x86_64-l4re``: x86_64 toolchain for L4Re.
+* ``devel::cross-toolchain-riscv32-l4re``: RISC-V 32 bit L4Re toolchain
+  targeting the GC profile.
+* ``devel::cross-toolchain-riscv64-l4re``: RISC-V 64 bit L4Re toolchain
+  targeting the GC profile.
 * ``devel::cross-toolchain-riscv64-linux-gnu``: RISC-V toolchain targeting the GC
   profile.
 

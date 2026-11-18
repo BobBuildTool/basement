@@ -252,6 +252,36 @@ multiPackage:
                     GCC_TARGET_ABI: "lp64d"
                     GCC_LIBC: "glibc"
 
+            riscv32-l4re:
+                environment:
+                    AUTOCONF_TARGET: "riscv32-l4re"
+                    ARCH: "riscv"
+                    GCC_TARGET_ARCH: "rv32gc"
+                    GCC_TARGET_ABI: "ilp32d"
+                    GCC_LIBC: "libc-l4re"
+
+            riscv64-l4re:
+                environment:
+                    AUTOCONF_TARGET: "riscv64-l4re"
+                    ARCH: "riscv"
+                    GCC_TARGET_ARCH: "rv64gc"
+                    GCC_TARGET_ABI: "lp64d"
+                    GCC_LIBC: "libc-l4re"
+
+            # MIPS32 Release 2, little endian
+            mipsisa32r2el-l4re:
+                environment:
+                    AUTOCONF_TARGET: "mipsisa32r2el-l4re"
+                    ARCH: "mips"
+                    GCC_LIBC: "libc-l4re"
+
+            # MIPS64 Release 6, little endian
+            mipsisa64r6el-l4re:
+                environment:
+                    AUTOCONF_TARGET: "mipsisa64r6el-l4re"
+                    ARCH: "mips"
+                    GCC_LIBC: "libc-l4re"
+
     # Clang based toolchains. The underlying system is still primarily based on gcc.
     clang:
         Config:
