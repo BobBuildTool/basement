@@ -1,0 +1,52 @@
+inherit: [make]
+
+metaEnvironment:
+    PKG_VERSION: "r-2026-W46"
+    PKG_LICENSE: "GPL-2.0-only"
+
+checkoutSCM:
+    scm: url
+    url: $GITHUB_MIRROR/L4Re/fiasco/archive/refs/tags/${PKG_VERSION}.tar.gz
+    digestSHA1: f91f43616f9f1cece0a5830c44c4452b1b6fbe7b
+    stripComponents: 1
+
+buildTools: [host-toolchain, target-toolchain]
+buildVars: [AUTOCONF_HOST, CROSS_COMPILE]
+buildScript: |
+    case $AUTOCONF_HOST in
+        x86_64-*)
+            KCONFIG=( CONFIG_AMD64=y )
+            ;;
+        aarch64-*)
+            KCONFIG=( CONFIG_ARM=y CONFIG_PF_ARM_VIRT=y CONFIG_ARM_CORTEX_A57=y )
+            ;;
+        riscv64-*)
+            KCONFIG=( CONFIG_RISCV=y CONFIG_PF_RISCV_VIRT=y )
+            ;;
+        riscv32-*)
+            KCONFIG=( CONFIG_RISCV=y CONFIG_PF_RISCV_VIRT=y
+                      CONFIG_RISCV_CPU_32IMA=y )
+            ;;
+        mipsisa32r2*)
+            KCONFIG=( CONFIG_MIPS=y CONFIG_PF_MALTA=y CONFIG_CPU_MIPS32_R2=y )
+            ;;
+        mipsisa64r6*)
+            KCONFIG=( CONFIG_MIPS=y CONFIG_PF_MALTA=y CONFIG_CPU_MIPS64_R6=y )
+            ;;
+        *)
+            echo "Unsupported: $AUTOCONF_HOST" >&2
+            exit 1
+    esac
+
+    if [[ ! -e build/.bob-init-done ]] ; then
+        rm -rf build
+        make -C "$1" B="$PWD/build"
+        printf '%s\n' "${KCONFIG[@]}" > build/globalconfig.out
+        makeSequential -C build olddefconfig
+        touch build/.bob-init-done
+    fi
+
+    makeParallel -C build CROSS_COMPILE="$CROSS_COMPILE"
+
+packageScript: |
+    cp -a "$1/build/fiasco" "$1/build/globalconfig.out" .
