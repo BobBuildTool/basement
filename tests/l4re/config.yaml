@@ -1,0 +1,4 @@
+bobMinimumVersion: "1.2"
+
+layers:
+    - self

@@ -1,0 +1,28 @@
+inherit: [strip]
+
+metaEnvironment:
+    PKG_LICENSE: "MIT"
+
+checkoutSCM:
+    scm: import
+    url: src/hello/
+    prune: True
+
+buildTools: [target-toolchain]
+buildVars: [CC, CXX, CPPFLAGS, CFLAGS, CXXFLAGS, LDFLAGS]
+buildScript: |
+    mkdir -p usr/bin usr/lib
+
+    $CC $CPPFLAGS $CFLAGS $LDFLAGS -o usr/bin/hello-c "$1/hello.c"
+    $CC $CPPFLAGS $CFLAGS $LDFLAGS -static -o usr/bin/hello-c-static "$1/hello.c"
+    $CXX $CPPFLAGS $CXXFLAGS $LDFLAGS -o usr/bin/hello-cpp "$1/hello.cpp"
+    $CXX $CPPFLAGS $CXXFLAGS $LDFLAGS -static -o usr/bin/hello-cpp-static "$1/hello.cpp"
+
+    # Runtime libraries of the dynamically linked programs
+    for i in libc.so.1 libgcc_s.so.1 libstdc++.so.6 ; do
+        cp -L "$($CC -print-file-name=$i)" usr/lib/
+    done
+
+packageScript: |
+    cp -a "$1/usr" .
+    stripAll .
