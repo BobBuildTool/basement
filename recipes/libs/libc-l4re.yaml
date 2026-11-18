@@ -25,6 +25,9 @@ buildScript: |
         aarch64-*)
             DEFCONFIG=config.arm64-virt-v8a
             ;;
+        arm-*)
+            DEFCONFIG=config.arm-rv-v7a
+            ;;
         x86_64-*)
             DEFCONFIG=config.amd64
             ;;
