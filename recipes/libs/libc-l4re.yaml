@@ -1,0 +1,74 @@
+inherit: [make, strip]
+
+metaEnvironment:
+    PKG_VERSION: "r-2026-W46"
+    PKG_LICENSE: "MIT AND GPL-3.0-only with GCC-exception-3.1 AND GPL-3.0-or-later AND GPL-2.0-only"
+
+checkoutSCM:
+    - scm: url
+      dir: .
+      url: $GITHUB_MIRROR/L4Re/mk/archive/refs/tags/${PKG_VERSION}.tar.gz
+      digestSHA1: 15e691501df6aba5ff20cfaf61a39bbfe587e571
+      stripComponents: 1
+    - scm: url
+      dir: pkg/l4re-core
+      url: $GITHUB_MIRROR/L4Re/l4re-core/archive/refs/tags/${PKG_VERSION}.tar.gz
+      digestSHA1: a2538312afdf210304fa95ff171ab5c26a28c201
+      stripComponents: 1
+
+buildTools: [host-toolchain, target-toolchain, flex, bison]
+buildToolsWeak: [m4, perl]
+buildVars: [AUTOCONF_HOST, CROSS_COMPILE]
+buildScript: |
+    KCONFIG=()
+    case $AUTOCONF_HOST in
+        aarch64-*)
+            DEFCONFIG=config.arm64-virt-v8a
+            ;;
+        x86_64-*)
+            DEFCONFIG=config.amd64
+            ;;
+        riscv64-*)
+            DEFCONFIG=config.riscv64-virt
+            ;;
+        riscv32-*)
+            DEFCONFIG=config.riscv32-virt
+            ;;
+        mipsisa32r2*)
+            DEFCONFIG=config.mips
+            KCONFIG+=( CONFIG_CPU_MIPS_32R2=y )
+            ;;
+        mipsisa32r6*)
+            DEFCONFIG=config.mips
+            KCONFIG+=( CONFIG_CPU_MIPS_32R6=y )
+            ;;
+        mipsisa64r2*)
+            DEFCONFIG=config.mips
+            KCONFIG+=( CONFIG_CPU_MIPS_64R2=y )
+            ;;
+        mipsisa64r6*)
+            DEFCONFIG=config.mips
+            KCONFIG+=( CONFIG_CPU_MIPS_64R6=y )
+            ;;
+        *)
+            echo "Unsupported: $AUTOCONF_HOST" >&2
+            exit 1
+    esac
+
+    if [[ ! -e build/.bob-init-done ]] ; then
+        cp "$1/mk/defconfig/$DEFCONFIG" defconfig
+        for i in "${KCONFIG[@]}" CONFIG_BID_STRIP_BINARIES=n ; do
+            echo "$i" >> defconfig
+        done
+        rm -rf build
+        makeParallel -C "$1" B="$PWD/build" DEFCONFIG="$PWD/defconfig"
+        makeParallel -C build olddefconfig
+        touch build/.bob-init-done
+    fi
+
+    cd build
+    makeParallel sysroot
+
+packageScript: |
+    cp -a $1/build/sysroot/* .
+    stripAll .
