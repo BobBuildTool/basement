@@ -1,4 +1,4 @@
-inherit: [make, strip]
+inherit: [make, patch, strip]
 
 metaEnvironment:
     PKG_VERSION: "r-2026-W46"
@@ -15,6 +15,10 @@ checkoutSCM:
       url: $GITHUB_MIRROR/L4Re/l4re-core/archive/refs/tags/${PKG_VERSION}.tar.gz
       digestSHA1: a2538312afdf210304fa95ff171ab5c26a28c201
       stripComponents: 1
+
+checkoutDeterministic: True
+checkoutScript: |
+    patchApplySeries $<@libc-l4re/*.patch@>
 
 buildTools: [host-toolchain, target-toolchain, flex, bison]
 buildToolsWeak: [m4, perl]
