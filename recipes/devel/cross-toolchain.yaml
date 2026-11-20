@@ -159,7 +159,7 @@ multiPackage:
                 environment:
                     AUTOCONF_TARGET: "x86_64-l4re"
                     ARCH: "x86_64"
-                    GCC_LIBC: "uclibc-l4re"
+                    GCC_LIBC: "musl-l4re"
 
             # x86_64 "cross" compiling toolchain. Ships its own glibc.
             x86_64-linux-gnu:
@@ -213,7 +213,7 @@ multiPackage:
                 environment:
                     AUTOCONF_TARGET: "aarch64-l4re"
                     ARCH: "arm64"
-                    GCC_LIBC: "uclibc-l4re"
+                    GCC_LIBC: "musl-l4re"
                     GCC_TARGET_ARCH: "armv8-a"
 
             # ARMv8-A AArch64 "cross" compiling toolchain. Ships its own glibc.

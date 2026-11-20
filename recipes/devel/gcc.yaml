@@ -238,7 +238,7 @@ multiPackage:
                     glibc:
                     newlib:
                     uclibc-ng:
-                    uclibc-l4re:
+                    musl-l4re:
                     mingw-w64:
 
             GCC_ENABLE_LANGUAGES:
@@ -289,7 +289,7 @@ multiPackage:
             - libs::glibc
             - libs::newlib
             - libs::uclibc-ng
-            - libs::uclibc-l4re
+            - libs::musl-l4re
             - libs::mingw-w64
 
         multiPackage:
@@ -314,8 +314,8 @@ multiPackage:
                             if: "$(eq,${GCC_LIBC},newlib)"
                           - name: libs::uclibc-ng
                             if: "$(eq,${GCC_LIBC},uclibc-ng)"
-                          - name: libs::uclibc-l4re
-                            if: "$(eq,${GCC_LIBC},uclibc-l4re)"
+                          - name: libs::musl-l4re
+                            if: "$(eq,${GCC_LIBC},musl-l4re)"
                           - name: libs::mingw-w64
                             if: "$(eq,${GCC_LIBC},mingw-w64)"
 
