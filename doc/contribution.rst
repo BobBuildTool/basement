@@ -122,7 +122,26 @@ defined.
     source code package. In the best case, a single identifier applies.
     Sometimes, a more complicated license expression (e.g.  ``GPL-2.0-only OR
     BSD-3-Clause``) is required. See the SPDX specification for details how
-    licenses are expressed.
+    licenses are expressed. When the license is not covered by a standard SPDX
+    identifier, a ``LicenseRef-*`` identifier can be used to reference a license
+    file in the source tree. Such identifiers are resolved via
+    ``PKG_LICENSE_PATH``.
+
+``PKG_LICENSE_PATH`` (optional)
+    Maps ``LicenseRef-*`` identifiers used in ``PKG_LICENSE`` to the license
+    files in the source tree. It is required when ``PKG_LICENSE`` contains one
+    or more ``LicenseRef-*`` identifiers. The value is a list of ``lic:file``
+    pairs, one per line. The ``lic`` is the part of the identifier after the
+    ``LicenseRef-`` prefix and the ``file`` is the path of the license file
+    relative to the root of the source tree. During packaging, each referenced
+    license file is copied into the package so that the ``LicenseRef-*``
+    identifiers can be resolved.
+
+    For example, a recipe with ``PKG_LICENSE: "LicenseRef-flex"`` and a
+    license file ``COPYING`` in the source root would declare::
+
+        PKG_LICENSE_PATH: |
+            flex:COPYING
 
 Declaring configuration variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
