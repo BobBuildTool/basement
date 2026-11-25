@@ -107,16 +107,16 @@ Standard meta variables
 
 Meta variables, like the name suggests, hold meta information like the version
 or license about the recipe. So far, the following standard variables have been
-defined:
+defined.
 
-``PKG_VERSION``
+``PKG_VERSION`` (mandatory)
     The version of the package that is built. Must be present when the recipe
     downloads a source code package. The version number should be exactly like
     the upstream package declared it. For packages that do not have an exact
     version number, like untagged git commits, a sensible version string should
     still be used e.g., ``v0.25.0-4-gee29e75c``.
 
-``PKG_LICENSE``
+``PKG_LICENSE`` (mandatory)
     The license of the package as `SPDX License Identifier
     <https://spdx.org/licenses/>`_. Must be present when the recipe downloads a
     source code package. In the best case, a single identifier applies.
