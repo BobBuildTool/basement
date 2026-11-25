@@ -177,6 +177,18 @@ defined.
         PKG_COPYRIGHT_PATH: |
             jsoncpp:AUTHORS
 
+``PKG_CPE`` (optional)
+    The `Common Platform Enumeration (CPE)
+    <https://nvd.nist.gov/products/cpe>`_ of the package as a full CPE string,
+    e.g.::
+
+        PKG_CPE: "cpe:2.3:a:jsoncpp_project:jsoncpp:1.9.6:*:*:*:*:*:*:*"
+
+    The version field can be written as ``$$``, in which case it is replaced
+    by the value of ``PKG_VERSION`` during SBOM generation. If this variable
+    is not set, the CPE is calculated from the available information when a
+    SBOM is generated.
+
 Declaring configuration variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
