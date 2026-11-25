@@ -155,6 +155,28 @@ defined.
         PKG_LICENSE_PATH: |
             flex:COPYING
 
+``PKG_COPYRIGHT`` (optional)
+    The copyright information of the package. Either given directly as string
+    (e.g. ``Copyright (C) 2024 Jane Doe``) or using ``CopyrightRef-*``
+    identifiers that reference copyright files in the source tree. Such
+    identifiers are resolved via ``PKG_COPYRIGHT_REF``.
+
+``PKG_COPYRIGHT_PATH`` (optional)
+    Maps ``CopyrightRef-*`` identifiers used in ``PKG_COPYRIGHT`` to the
+    copyright files in the source tree. It is required when ``PKG_COPYRIGHT``
+    contains one or more ``CopyrightRef-*`` identifiers. The value is a list of
+    ``ref:file`` pairs, one per line. The ``ref`` is the part of the identifier
+    after the ``CopyrightRef-`` prefix and the ``file`` is the path of the
+    copyright file relative to the root of the source tree. During packaging,
+    each referenced copyright file is copied into the package so that the
+    ``CopyrightRef-*`` identifiers can be resolved.
+
+    For example, a recipe with ``PKG_COPYRIGHT: "CopyrightRef-jsoncpp"`` and a
+    copyright file ``AUTHORS`` in the source root would declare::
+
+        PKG_COPYRIGHT_PATH: |
+            jsoncpp:AUTHORS
+
 Declaring configuration variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
