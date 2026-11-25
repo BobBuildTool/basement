@@ -116,6 +116,18 @@ defined.
     version number, like untagged git commits, a sensible version string should
     still be used e.g., ``v0.25.0-4-gee29e75c``.
 
+``PKG_SUMMARY`` (mandatory)
+    A short description of the package. It should briefly state what the
+    package provides. The value must be a single line.
+
+    To keep long descriptions readable in the recipe, it can be written across
+    multiple lines using the YAML folded block scalar (``>-``), which folds the
+    newlines into spaces and removes the final newline::
+
+        PKG_SUMMARY: >-
+            JsonCpp is a C++ library that allows manipulating JSON values,
+            including serialization and deserialization to and from strings
+
 ``PKG_LICENSE`` (mandatory)
     The license of the package as `SPDX License Identifier
     <https://spdx.org/licenses/>`_. Must be present when the recipe downloads a
