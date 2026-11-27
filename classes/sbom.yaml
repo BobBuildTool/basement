@@ -1,0 +1,155 @@
+Config:
+    SBOM_FILE_TYPES:
+        type: str
+        help: |
+            Override the autodetected file type of the deployed files.
+            In Cyclonedx SBOM format varios type classes are supported - see
+            https://cyclonedx.org/docs/1.7/json/#metadata_tools_oneOf_i0_components_items_type
+            for a complete list. This class tries to autodetect 'application', 'library'
+            and 'file' - types. But these detection can be wrong or incomplete.
+            By specifying this variable as a  semi-colon separated list of colon separated
+            file:type pairs the recipe can specify different types here, e.g. for
+            for linux recipes it could set:
+
+            SBOM_FILE_TYPES="bzImage:operating-system;.ko:device-driver"
+        default: ""
+    SBOM_ENABLED:
+        type: bool
+        default: True
+        help: If set (default) required files form SBOM generation are produced.
+
+packageVars: [PKG_VERSION, PKG_LICENSE, SBOM_FILE_TYPES]
+packageSetup: |
+    # Create file manifest
+    sbomCreateManifest()
+    {
+        local manifest_file=".bob/sbom-manifest.json"
+        local files=()
+        declare -A file_types
+
+        mkdir -p .bob
+
+        # split the SBOM_FILE_TYPES="<file>:<type>;<file><:type>"
+        IFS=';' read -ra items <<< "${SBOM_FILE_TYPES:-}"
+        for item in "${items[@]}"; do
+           [[ -z ${item} ]] && continue;
+           local file=${item%%:*}
+           local type=${item#*:}
+           file_types["$file"]=$type
+        done
+
+        while IFS= read -r -d '' file; do
+            files+=("${file#./}")
+        done < <(find . -type f -not -path "./.bob/*" -print0 2>/dev/null || true)
+
+        # Create JSON manifest with file info and hashes
+        {
+            echo "{"
+            echo '  "file_components": ['
+            first=true
+            for file in "${files[@]}"; do
+                if [[ $first == true ]]; then
+                    first=false
+                    echo '    {'
+                else
+                    echo ", {"
+                fi
+
+                echo "      \"hashes\": [ "
+                echo "        {\"alg\": \"SHA-256\", \"content\": \"$(sha256sum $file | cut -d' ' -f1)\" },"
+                echo "        {\"alg\": \"SHA-384\", \"content\": \"$(sha384sum $file | cut -d' ' -f1)\" },"
+                echo "        {\"alg\": \"SHA-512\", \"content\": \"$(sha512sum $file | cut -d' ' -f1)\" }"
+                echo "      ],"
+                echo "      \"name\": \"$file\","
+
+                # determine file type. See https://cyclonedx.org/docs/1.7/json/#metadata_tools_oneOf_i0_components_items_type
+                # for a list of valid types. For now we only support 'application', 'library' and 'file'.
+                # The recipe can set `SBOM_FILE_TYPES` to override auto detection.
+
+                local file_type=
+                for f in ${!file_types[@]}; do
+                    if [[ "$file" == *"$f"* ]]; then
+                       file_type=${file_types[$f]}
+                    fi
+                done
+                if [[ -z "$file_type" ]]; then
+                   local type="$(file -b "$file")"
+                   if [[ type == *executable* ]]; then
+                      file_type="application"
+                   elif [[ type == *shared* ]]; then
+                      file_type="library"
+                   else
+                      file_type="file"
+                   fi
+                fi
+                echo -n "      \"type\": \"${file_type}\""
+
+                if [ -n "${PKG_VERSION:-}" ]; then
+                  echo ","
+                  echo -n "      \"version\": \"${PKG_VERSION}\""
+                fi
+
+                if [[ -e .bsi-properties/$file ]]; then
+                  echo ","
+                  cat .bsi-properties/$file
+                else
+                  # add properties as required by BSI TR-03183-2 using the cyclonedx bsi::component
+                  # namespace (https://github.com/BSI-Bund/tr-03183-cyclonedx-property-taxonomy)
+
+                  local is_executable="false"
+                  [[ -x "$file" ]] && is_executable="true"
+
+                  # Determine BSI properties
+                  local is_archive="false"
+                  local is_structured="false"
+
+                  # Check if file is an archive or structured (contains metadata for decomposition)
+                  case "${file##*.}" in
+                      tar|zip|7z|jar|war|ear|deb|rpm|a|lib|iso)
+                          is_archive="true"
+                          is_structured="true"
+                          ;;
+                      gz|bz2|xz)
+                          # Check for compressed tar archives
+                          if [[ "$file" == *.tar.* ]]; then
+                              is_archive="true"
+                          fi
+                          is_structured="true"
+                          ;;
+                  esac
+
+                  # Section 3.2.1: Only executable and archive files MUST be listed.
+                  if [[ $is_archive == true ]] || [[ $is_executable == true ]]; then
+                      echo ","
+                      echo "      \"properties\": ["
+                      echo "       {\"name\": \"bsi:component:archive\", \"value\": \"$is_archive\" },"
+                      if [ -n "${PKG_LICENSE:-}" ]; then
+                        echo "       {\"name\": \"bsi:component:effectiveLicence\", \"value\": \"${PKG_LICENSE}\" },"
+                      fi
+                      echo "       {\"name\": \"bsi:component:executable\", \"value\": \"$is_executable\" },"
+                      local rel_path="$(basename $file)"
+                      echo "       {\"name\": \"bsi:component:filename\", \"value\": \"$rel_path\" },"
+                      echo "       {\"name\": \"bsi:component:structured\", \"value\": \"$is_structured\" }"
+                      echo -n "      ]"
+                  fi
+                fi
+                echo ""
+                echo -n "    }"
+            done
+            echo ""
+            echo '  ],'
+        } > "$manifest_file"
+        echo "  \"bob:sbom-manifest-id\": \"$(sha256sum $manifest_file | cut -d' ' -f1)\"" >> $manifest_file
+        echo "}" >> $manifest_file
+    }
+
+packageVars: [SBOM_ENABLED]
+packageFinalize: |
+    if [[ ${SBOM_ENABLED} ]]; then
+       sbomCreateManifest
+    fi
+
+packageAuditFiles:
+    sbom_manifest:
+      filename: ".bob/sbom-manifest.json"
+      if: "${SBOM_ENABLED}"
