@@ -107,22 +107,87 @@ Standard meta variables
 
 Meta variables, like the name suggests, hold meta information like the version
 or license about the recipe. So far, the following standard variables have been
-defined:
+defined.
 
-``PKG_VERSION``
+``PKG_VERSION`` (mandatory)
     The version of the package that is built. Must be present when the recipe
     downloads a source code package. The version number should be exactly like
     the upstream package declared it. For packages that do not have an exact
     version number, like untagged git commits, a sensible version string should
     still be used e.g., ``v0.25.0-4-gee29e75c``.
 
-``PKG_LICENSE``
+``PKG_SUMMARY`` (mandatory)
+    A short description of the package. It should briefly state what the
+    package provides. The value must be a single line.
+
+    To keep long descriptions readable in the recipe, it can be written across
+    multiple lines using the YAML folded block scalar (``>-``), which folds the
+    newlines into spaces and removes the final newline::
+
+        PKG_SUMMARY: >-
+            JsonCpp is a C++ library that allows manipulating JSON values,
+            including serialization and deserialization to and from strings
+
+``PKG_LICENSE`` (mandatory)
     The license of the package as `SPDX License Identifier
     <https://spdx.org/licenses/>`_. Must be present when the recipe downloads a
     source code package. In the best case, a single identifier applies.
     Sometimes, a more complicated license expression (e.g.  ``GPL-2.0-only OR
     BSD-3-Clause``) is required. See the SPDX specification for details how
-    licenses are expressed.
+    licenses are expressed. When the license is not covered by a standard SPDX
+    identifier, a ``LicenseRef-*`` identifier can be used to reference a license
+    file in the source tree. Such identifiers are resolved via
+    ``PKG_LICENSE_PATH``.
+
+``PKG_LICENSE_PATH`` (optional)
+    Maps ``LicenseRef-*`` identifiers used in ``PKG_LICENSE`` to the license
+    files in the source tree. It is required when ``PKG_LICENSE`` contains one
+    or more ``LicenseRef-*`` identifiers. The value is a list of ``lic:file``
+    pairs, one per line. The ``lic`` is the part of the identifier after the
+    ``LicenseRef-`` prefix and the ``file`` is the path of the license file
+    relative to the root of the source tree. During packaging, each referenced
+    license file is copied into the package so that the ``LicenseRef-*``
+    identifiers can be resolved.
+
+    For example, a recipe with ``PKG_LICENSE: "LicenseRef-flex"`` and a
+    license file ``COPYING`` in the source root would declare::
+
+        PKG_LICENSE_PATH: |
+            flex:COPYING
+
+``PKG_COPYRIGHT`` (optional)
+    The copyright information of the package. Either given directly as string
+    (e.g. ``Copyright (C) 2024 Jane Doe``) or using ``CopyrightRef-*``
+    identifiers that reference copyright files in the source tree. Such
+    identifiers are resolved via ``PKG_COPYRIGHT_REF``.
+
+``PKG_COPYRIGHT_PATH`` (optional)
+    Maps ``CopyrightRef-*`` identifiers used in ``PKG_COPYRIGHT`` to the
+    copyright files in the source tree. It is required when ``PKG_COPYRIGHT``
+    contains one or more ``CopyrightRef-*`` identifiers. The value is a list of
+    ``ref:file`` pairs, one per line. The ``ref`` is the part of the identifier
+    after the ``CopyrightRef-`` prefix and the ``file`` is the path of the
+    copyright file relative to the root of the source tree. During packaging,
+    each referenced copyright file is copied into the package so that the
+    ``CopyrightRef-*`` identifiers can be resolved.
+
+    For example, a recipe with ``PKG_COPYRIGHT: "CopyrightRef-jsoncpp"`` and a
+    copyright file ``AUTHORS`` in the source root would declare::
+
+        PKG_COPYRIGHT_PATH: |
+            jsoncpp:AUTHORS
+
+``PKG_CPE`` (optional)
+    The `Common Platform Enumeration (CPE)
+    <https://nvd.nist.gov/products/cpe>`_ of the package as a full CPE string,
+    e.g.::
+
+        PKG_CPE: "cpe:2.3:a:jsoncpp_project:jsoncpp:1.9.6:*:*:*:*:*:*:*"
+
+    The version field can be written as ``$$``, in which case it is replaced
+    by the value of ``PKG_VERSION`` during SBOM generation. If this variable
+    is not set, the CPE is calculated from the available information when a
+    SBOM is generated.
 
 Declaring configuration variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
