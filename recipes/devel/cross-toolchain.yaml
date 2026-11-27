@@ -159,7 +159,7 @@ multiPackage:
                 environment:
                     AUTOCONF_TARGET: "x86_64-l4re"
                     ARCH: "x86_64"
-                    GCC_LIBC: "uclibc-l4re"
+                    GCC_LIBC: "libc-l4re"
 
             # x86_64 "cross" compiling toolchain. Ships its own glibc.
             x86_64-linux-gnu:
@@ -209,11 +209,19 @@ multiPackage:
                     GCC_LIBC: "newlib"
                     GCC_MULTILIB: "aprofile,rmprofile"
 
+            arm-l4re:
+                environment:
+                    AUTOCONF_TARGET: "arm-l4re"
+                    ARCH: "arm"
+                    GCC_TARGET_ARCH: "armv7-a+fp"
+                    GCC_TARGET_FLOAT_ABI: "hard"
+                    GCC_LIBC: "libc-l4re"
+
             aarch64-l4re:
                 environment:
                     AUTOCONF_TARGET: "aarch64-l4re"
                     ARCH: "arm64"
-                    GCC_LIBC: "uclibc-l4re"
+                    GCC_LIBC: "libc-l4re"
                     GCC_TARGET_ARCH: "armv8-a"
 
             # ARMv8-A AArch64 "cross" compiling toolchain. Ships its own glibc.
@@ -251,6 +259,36 @@ multiPackage:
                     GCC_TARGET_ARCH: "rv64gc"
                     GCC_TARGET_ABI: "lp64d"
                     GCC_LIBC: "glibc"
+
+            riscv32-l4re:
+                environment:
+                    AUTOCONF_TARGET: "riscv32-l4re"
+                    ARCH: "riscv"
+                    GCC_TARGET_ARCH: "rv32gc"
+                    GCC_TARGET_ABI: "ilp32d"
+                    GCC_LIBC: "libc-l4re"
+
+            riscv64-l4re:
+                environment:
+                    AUTOCONF_TARGET: "riscv64-l4re"
+                    ARCH: "riscv"
+                    GCC_TARGET_ARCH: "rv64gc"
+                    GCC_TARGET_ABI: "lp64d"
+                    GCC_LIBC: "libc-l4re"
+
+            # MIPS32 Release 2, little endian
+            mipsisa32r2el-l4re:
+                environment:
+                    AUTOCONF_TARGET: "mipsisa32r2el-l4re"
+                    ARCH: "mips"
+                    GCC_LIBC: "libc-l4re"
+
+            # MIPS64 Release 6, little endian
+            mipsisa64r6el-l4re:
+                environment:
+                    AUTOCONF_TARGET: "mipsisa64r6el-l4re"
+                    ARCH: "mips"
+                    GCC_LIBC: "libc-l4re"
 
     # Clang based toolchains. The underlying system is still primarily based on gcc.
     clang:

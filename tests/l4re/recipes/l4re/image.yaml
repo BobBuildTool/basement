@@ -1,0 +1,148 @@
+inherit: [make, patch]
+
+metaEnvironment:
+    PKG_VERSION: "r-2026-W46"
+    PKG_LICENSE: "GPL-2.0-only AND MIT"
+
+depends:
+    - l4re::fiasco
+    - l4re::hello
+
+checkoutSCM:
+    - scm: url
+      dir: l4re
+      url: $GITHUB_MIRROR/L4Re/mk/archive/refs/tags/${PKG_VERSION}.tar.gz
+      digestSHA1: 15e691501df6aba5ff20cfaf61a39bbfe587e571
+      stripComponents: 1
+    - scm: url
+      dir: l4re/pkg/l4re-core
+      url: $GITHUB_MIRROR/L4Re/l4re-core/archive/refs/tags/${PKG_VERSION}.tar.gz
+      digestSHA1: a2538312afdf210304fa95ff171ab5c26a28c201
+      stripComponents: 1
+    - scm: url
+      dir: l4re/pkg/bootstrap
+      url: $GITHUB_MIRROR/L4Re/bootstrap/archive/refs/tags/${PKG_VERSION}.tar.gz
+      digestSHA1: 5e89cc34b7fc408f92093b19e6a6529a1d04f97d
+      stripComponents: 1
+    - scm: url
+      dir: l4re/pkg/drivers-frst
+      url: $GITHUB_MIRROR/L4Re/drivers-frst/archive/refs/tags/${PKG_VERSION}.tar.gz
+      digestSHA1: a766ac95b98218f7b81cdd0ee091b08491203ba0
+      stripComponents: 1
+    - scm: url
+      dir: l4re/pkg/libfdt
+      url: $GITHUB_MIRROR/L4Re/libfdt/archive/refs/tags/${PKG_VERSION}.tar.gz
+      digestSHA1: 91a22f829965617b7efe947a9cc4483e20ce6a22
+      stripComponents: 1
+    - scm: import
+      dir: conf
+      url: src/image/
+      prune: True
+
+checkoutScript: |
+    cd l4re
+    patchApplySeries $<@image/*.patch@>
+
+buildTools: [host-toolchain, target-toolchain, flex, bison]
+buildToolsWeak: [m4, perl]
+buildVars: [AUTOCONF_HOST, CROSS_COMPILE]
+buildScript: |
+    FIASCO="${BOB_DEP_PATHS[l4re::fiasco]}"
+    HELLO="${BOB_DEP_PATHS[l4re::hello]}"
+
+    KCONFIG=()
+    case $AUTOCONF_HOST in
+        x86_64-*)
+            DEFCONFIG=config.amd64
+            QEMU="qemu-system-x86_64 -M q35 -m 512"
+            ;;
+        aarch64-*)
+            DEFCONFIG=config.arm64-virt-v8a
+            QEMU="qemu-system-aarch64 -M virt,virtualization=true -cpu cortex-a57 -m 1024"
+            ;;
+        arm-*)
+            DEFCONFIG=config.arm-rv-v7a
+            KCONFIG+=( CONFIG_PLATFORM_TYPE_arm_virt=y )
+            QEMU="qemu-system-arm -M virt,virtualization=true -cpu cortex-a15 -m 1024"
+            ;;
+        riscv64-*)
+            DEFCONFIG=config.riscv64-virt
+            QEMU="qemu-system-riscv64 -M virt -bios default -m 1024"
+            ;;
+        riscv32-*)
+            DEFCONFIG=config.riscv32-virt
+            QEMU="qemu-system-riscv32 -M virt -bios default -m 1024"
+            ;;
+        mipsisa32r2*)
+            DEFCONFIG=config.mips
+            KCONFIG+=( CONFIG_PLATFORM_TYPE_malta=y CONFIG_CPU_MIPS_32R2=y )
+            QEMU="qemu-system-mipsel -M malta -cpu P5600 -m 256"
+            ;;
+        mipsisa64r6*)
+            DEFCONFIG=config.mips
+            KCONFIG+=( CONFIG_PLATFORM_TYPE_malta=y CONFIG_CPU_MIPS_64R6=y )
+            QEMU="qemu-system-mips64el -M malta -cpu I6400 -m 256"
+            ;;
+        *)
+            echo "Unsupported: $AUTOCONF_HOST" >&2
+            exit 1
+    esac
+
+    if [[ ! -e build/.bob-init-done ]] ; then
+        cp "$1/l4re/mk/defconfig/$DEFCONFIG" defconfig
+        for i in "${KCONFIG[@]}" CONFIG_BID_STRIP_BINARIES=n ; do
+            echo "$i" >> defconfig
+        done
+        rm -rf build
+        makeParallel -C "$1/l4re" B="$PWD/build" DEFCONFIG="$PWD/defconfig"
+        makeParallel -C build olddefconfig
+        touch build/.bob-init-done
+    fi
+
+    makeParallel -C build
+    makeSequential -C build E=hello elfimage \
+        MODULES_LIST="$1/conf/modules.list" \
+        MODULE_SEARCH_PATH="$1/conf:$FIASCO:$HELLO/usr/bin:$HELLO/usr/lib"
+
+    cat > run-qemu.sh <<EOF
+    #!/bin/bash
+    #
+    # Boot the L4Re hello image in QEMU. Pass "--check" to stop QEMU as soon
+    # as all programs have finished. Additional arguments are passed to QEMU.
+
+    IMAGE="\$(dirname "\$(readlink -f "\$0")")/bootstrap_hello.elf"
+    QEMU=( $QEMU -kernel "\$IMAGE" -nographic )
+
+    if [[ \${1:-} != --check ]] ; then
+        exec "\${QEMU[@]}" "\$@"
+    fi
+    shift
+
+    coproc QEMU_PROC { exec "\${QEMU[@]}" -monitor none "\$@" < /dev/null 2>&1; }
+    ok=0
+    finished=0
+    while IFS= read -r -t \${TIMEOUT:-300} line <&\${QEMU_PROC[0]} ; do
+        printf '%s\n' "\$line"
+        case \$line in
+            *"Hello from C!"*|*"Hello from C++ with threads and exceptions!"*)
+                ok=\$((ok + 1)) ;;
+            *"All hello programs finished."*)
+                finished=1
+                break ;;
+        esac
+    done
+    kill \$QEMU_PROC_PID 2>/dev/null
+    wait
+
+    if [[ \$finished -eq 1 && \$ok -eq 4 ]] ; then
+        echo "PASSED"
+        exit 0
+    fi
+    echo "FAILED: \$ok of 4 programs succeeded" >&2
+    exit 1
+    EOF
+    chmod +x run-qemu.sh
+
+packageScript: |
+    cp -L "$1/build/images/bootstrap_hello.elf" .
+    cp "$1/run-qemu.sh" .

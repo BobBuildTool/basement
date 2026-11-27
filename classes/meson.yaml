@@ -55,6 +55,14 @@ buildSetup: |
                 MESON_CPU_FAMILY=x86
                 : ${MESON_CPU=i686}
                 ;;
+            mips64*|mipsisa64*)
+                MESON_CPU_FAMILY=mips64
+                : ${MESON_CPU=${AUTOCONF_HOST%%-*}}
+                ;;
+            mips*)
+                MESON_CPU_FAMILY=mips
+                : ${MESON_CPU=${AUTOCONF_HOST%%-*}}
+                ;;
             riscv32-*)
                 MESON_CPU_FAMILY=riscv32
                 : ${MESON_CPU=rv32gc}

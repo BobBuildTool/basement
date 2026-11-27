@@ -14,7 +14,14 @@ checkoutDeterministic: True
 checkoutScript: |
     patchApplySeries $<@ncurses/*.patch@>
 
+Config:
+    NCURSES_PROGS:
+        type: bool
+        default: True
+        help: Build the terminal tools like tic, infocmp and tput.
+
 buildTools: [host-toolchain]
+buildVars: [NCURSES_PROGS]
 buildScript: |
     # We need to pass the path of the just built tic
     # able to run on the building machine, so that the
@@ -43,6 +50,10 @@ buildScript: |
             OPTS=( --with-shared --with-normal )
             ;;
     esac
+
+    if [[ $NCURSES_PROGS == 0 ]] ; then
+        OPTS+=( --without-progs )
+    fi
 
     autotoolsBuild $1 \
             ${OPTS[@]}              \

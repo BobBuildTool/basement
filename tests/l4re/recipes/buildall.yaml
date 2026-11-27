@@ -1,0 +1,12 @@
+inherit: [ "basement::rootrecipe" ]
+
+depends:
+    - devel::cross-toolchain-x86_64-l4re
+    - devel::cross-toolchain-aarch64-l4re
+    - devel::cross-toolchain-arm-l4re
+    - devel::cross-toolchain-riscv32-l4re
+    - devel::cross-toolchain-riscv64-l4re
+    - devel::cross-toolchain-mipsisa32r2el-l4re
+    - devel::cross-toolchain-mipsisa64r6el-l4re
+
+packageDepends: True
